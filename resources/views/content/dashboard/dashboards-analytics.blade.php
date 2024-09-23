@@ -33,7 +33,7 @@
             </div>
           </div>
         </div>
-        <p class="mb-1">Profit</p>
+        <p class="mb-1">CHIFFRES D’AFFAIRES</p>
         <h4 class="card-title mb-3">$12,628</h4>
         <small class="text-success fw-medium"><i class='bx bx-up-arrow-alt'></i> +72.80%</small>
       </div>
@@ -57,7 +57,7 @@
             </div>
           </div>
         </div>
-        <p class="mb-1">Sales</p>
+        <p class="mb-1">NOMBRE D’UTILISATEURS</p>
         <h4 class="card-title mb-3">$4,679</h4>
         <small class="text-success fw-medium"><i class='bx bx-up-arrow-alt'></i> +28.42%</small>
       </div>
@@ -81,7 +81,7 @@
             </div>
           </div>
         </div>
-        <p class="mb-1">Payments</p>
+        <p class="mb-1">MOYENNE DES VENTES</p>
         <h4 class="card-title mb-3">$2,456</h4>
         <small class="text-danger fw-medium"><i class='bx bx-down-arrow-alt'></i> -14.82%</small>
       </div>

@@ -43,4 +43,18 @@ class RecapitulatifController extends Controller
 
         return response()->json(['message' => 'Recapitulative generated successfully']);
     }
+    public function showDashboard()
+{
+    // Retrieve the latest recap for the authenticated user
+    $recap = Recapitulatif::where('user_id', Auth::id())->latest()->first();
+
+    // Check if recap exists and pass variables to the view
+    return view('content.dashboard.dashboards-analytics', [
+        'totalOrders' => $recap->total_orders ?? 0,
+        'totalRevenue' => $recap->total_revenue ?? 0,
+        'averageSales' => $recap->average_sales ?? 0,
+        'totalClients' => $recap->total_clients ?? 0,
+    ]);
+}
+
 }

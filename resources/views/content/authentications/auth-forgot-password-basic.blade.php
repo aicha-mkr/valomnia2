@@ -24,7 +24,7 @@
             </a>
           </div>
           <!-- /Logo -->
-       
+          <h4 class="mb-1">Forgot Password? 🔒</h4>
           <p class="mb-6">Enter your email and we'll send you instructions to reset your password</p>
           <form id="formAuthentication" class="mb-6" action="{{url('/')}}" method="GET">
             <div class="mb-6">

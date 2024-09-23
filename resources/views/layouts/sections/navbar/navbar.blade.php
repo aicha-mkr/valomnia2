@@ -44,7 +44,7 @@ $navbarDetached = ($navbarDetached ?? '');
         <!-- /Search -->
         <ul class="navbar-nav flex-row align-items-center ms-auto">
 
-         
+          <!-- Place this tag where you want the button to render. -->
        
 
           <!-- User -->

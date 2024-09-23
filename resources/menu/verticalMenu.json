@@ -27,7 +27,7 @@
           "name": "Notifications",
           "slug": "pages-account-settings-notifications"
         }
-     
+
       ]
     },
     {
@@ -36,9 +36,9 @@
       "slug": "auth",
       "submenu": [
         {
-          "url": "auth/login-basic",
+          "url": "auth/login",
           "name": "Login",
-          "slug": "auth-login-basic",
+          "slug": "auth-login",
           "target": "_blank"
         }
       ]

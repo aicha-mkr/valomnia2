@@ -1,55 +1,66 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use Illuminate\Http\Request;
 use App\Models\User;
-use Illuminate\Support\Facades\Session;
 use Exception;
 
 class AuthenticationController extends Controller
 {
     public function login(Request $request)
     {
-        $response=["status"=>400,"error",""];
-        try{
+        $response = ["status" => 400, "error" => ""];
 
-            $credentials = $request->all();
-            $data=$request->all();
-            // echo json_decode($data);die();
-            $response_found= User::FindUser($request->all());
-            $user=$response_found['data']["user"] ?? null;
+        // Validate the request
+        $request->validate([
+            'organisation' => 'required|string',
+            'email' => 'required|email',
+            'password' => 'required|string',
+        ]);
+
+        try {
+            $credentials = $request->only('organisation', 'email', 'password');
+            $response_found = User::FindUser($credentials);
+            $user = $response_found['data']['user'] ?? null;
+
             if ($response_found["status"] == 200 && isset($user) && isset($user->token)) {
-                //checkpassword
-                $response=["status"=>200,"data"=>$user];
-            }else{
+                // Valid user found
+                $response = ["status" => 200, "data" => $user];
+            } else {
+                // Attempt login and check response
                 $response = User::UserLogin($credentials);
                 if ($response["status"] == 200) {
+                    // Only store the user if login is successful
                     $user_data = $response["data"];
                     $cookies = $response["cookies"] ?? '';
                     $user_data["cookies"] = $cookies;
                     $user_data["organisation"] = $credentials["organisation"];
                     $user_data["password"] = $credentials["password"];
-                    $roles = $user_data["user"]["role"];
-                    // echo json_encode(array_search("ROLE_ADMIN", $roles));die();
-                    //indexOf role ROLE_ADMIN
-                    //if (array_search("ROLE_ADMIN", $roles) !== false) {
-                    $response_created=User::UpdateOrCreated($user_data);
-
+            
+                    $response_created = User::UpdateOrCreated($user_data);
+                    
                     if ($response_created["status"] == 200) {
-                        $user=$response_created["user"];
-                        $response=["status"=>200,"data"=>$user];
+                        $user = $response_created["user"];
+                        $response = ["status" => 200, "data" => $user];
                     } else {
-                        $response=["status"=>400,"error"=>$response_created["error"]];
-
+                        $response = ["status" => 400, "error" => $response_created["error"]];
                     }
-
                 } else {
-                    $response=["status"=>401,"error"=>'Invalid credentials'];
+                    // Invalid credentials
+                    $response = ["status" => 401, "error" => 'Invalid credentials'];
                 }
+            
             }
-        }catch (Exception $ex){
-            $response=["status"=>400,"error"=>$ex->getMessage()];
+        } catch (Exception $ex) {
+            $response = ["status" => 400, "error" => $ex->getMessage()];
         }
+
         return response()->json($response);
+    }
+
+    public function showLoginForm()
+    {
+        return view('content.authentications.auth-login-basic');
     }
 }
