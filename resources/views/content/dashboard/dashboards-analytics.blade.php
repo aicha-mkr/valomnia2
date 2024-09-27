@@ -15,103 +15,81 @@
 @endsection
 
 @section('content')
+<!-- Cards Section -->
 <div class="row">
-  <div class="col-lg-3 col-md-6 mb-6">
-    <div class="card h-100">
-      <div class="card-body">
-        <div class="card-title d-flex align-items-start justify-content-between mb-4">
-          <div class="avatar flex-shrink-0">
-            <img src="{{ asset('assets/img/icons/unicons/chart-success.png') }}" alt="chart success" class="rounded">
+  <div class="col-lg-3 col-md-6 mb-4">
+      <div class="card h-100">
+          <div class="card-body d-flex flex-column">
+              <div class="card-title d-flex align-items-start justify-content-between mb-4">
+                  <div class="avatar flex-shrink-0">
+                      <img src="{{ asset('assets/img/icons/unicons/chart-success.png') }}" alt="chart success" class="rounded">
+                  </div>
+                  <div class="dropdown">
+                      <button class="btn p-0" type="button" id="cardOpt3" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          <i class="bx bx-dots-vertical-rounded text-muted"></i>
+                      </button>
+                      <div class="dropdown-menu dropdown-menu-end" aria-labelledby="cardOpt3">
+                          <a class="dropdown-item" href="javascript:void(0);">View More</a>
+                          <a class="dropdown-item" href="javascript:void(0);">Delete</a>
+                      </div>
+                  </div>
+              </div>
+              <p class="mb-1">CHIFFRES D’AFFAIRES</p>
+              <h4 class="card-title mb-3">${{ number_format($totalRevenue ?? 0, 2) }}</h4>
+              <small class="text-success fw-medium"><i class='bx bx-up-arrow-alt'></i> +72.80%</small>
           </div>
-          <div class="dropdown">
-            <button class="btn p-0" type="button" id="cardOpt3" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              <i class="bx bx-dots-vertical-rounded text-muted"></i>
-            </button>
-            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="cardOpt3">
-              <a class="dropdown-item" href="javascript:void(0);">View More</a>
-              <a class="dropdown-item" href="javascript:void(0);">Delete</a>
-            </div>
-          </div>
-        </div>
-        <p class="mb-1">CHIFFRES D’AFFAIRES</p>
-        <h4 class="card-title mb-3">$12,628</h4>
-        <small class="text-success fw-medium"><i class='bx bx-up-arrow-alt'></i> +72.80%</small>
       </div>
-    </div>
   </div>
 
-  <div class="col-lg-3 col-md-6 mb-6">
-    <div class="card h-100">
-      <div class="card-body">
-        <div class="card-title d-flex align-items-start justify-content-between mb-4">
-          <div class="avatar flex-shrink-0">
-            <img src="{{ asset('assets/img/icons/unicons/wallet-info.png') }}" alt="wallet info" class="rounded">
+  <div class="col-lg-3 col-md-6 mb-4">
+      <div class="card h-100">
+          <div class="card-body d-flex flex-column">
+              <div class="card-title d-flex align-items-start justify-content-between mb-4">
+                <div class="avatar flex-shrink-0">
+                  <img src="{{ asset('assets/img/icons/unicons/chart-success.png') }}" alt="chart success" class="rounded">
+                </div>
+              </div>
+              <p class="mb-1">TOTAL CLIENTS</p>
+              <h4 class="card-title mb-3">{{ $totalClients ?? 'N/A' }}</h4>
+              <small class="text-success fw-medium"><i class='bx bx-up-arrow-alt'></i> +0.00%</small>
           </div>
-          <div class="dropdown">
-            <button class="btn p-0" type="button" id="cardOpt6" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              <i class="bx bx-dots-vertical-rounded text-muted"></i>
-            </button>
-            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="cardOpt6">
-              <a class="dropdown-item" href="javascript:void(0);">View More</a>
-              <a class="dropdown-item" href="javascript:void(0);">Delete</a>
-            </div>
-          </div>
-        </div>
-        <p class="mb-1">NOMBRE D’UTILISATEURS</p>
-        <h4 class="card-title mb-3">$4,679</h4>
-        <small class="text-success fw-medium"><i class='bx bx-up-arrow-alt'></i> +28.42%</small>
       </div>
-    </div>
   </div>
 
-  <div class="col-lg-3 col-md-6 mb-6">
-    <div class="card h-100">
-      <div class="card-body">
-        <div class="card-title d-flex align-items-start justify-content-between mb-4">
-          <div class="avatar flex-shrink-0">
-            <img src="{{ asset('assets/img/icons/unicons/paypal.png') }}" alt="paypal" class="rounded">
+  <div class="col-lg-3 col-md-6 mb-4">
+      <div class="card h-100">
+          <div class="card-body d-flex flex-column">
+              <div class="card-title d-flex align-items-start justify-content-between mb-4">
+                <div class="avatar flex-shrink-0">
+                  <img src="{{ asset('assets/img/icons/unicons/wallet-info.png') }}" alt="wallet info" class="rounded">
+                </div>
+              </div>
+             
+              <p class="mb-1">AVERAGE SALES</p>
+              <h4 class="card-title mb-3">{{ $averageSales ?? 'N/A' }}</h4>
+              <small class="text-success fw-medium"><i class='bx bx-up-arrow-alt'></i> +0.00%</small>
           </div>
-          <div class="dropdown">
-            <button class="btn p-0" type="button" id="cardOpt4" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              <i class="bx bx-dots-vertical-rounded text-muted"></i>
-            </button>
-            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="cardOpt4">
-              <a class="dropdown-item" href="javascript:void(0);">View More</a>
-              <a class="dropdown-item" href="javascript:void(0);">Delete</a>
-            </div>
-          </div>
-        </div>
-        <p class="mb-1">MOYENNE DES VENTES</p>
-        <h4 class="card-title mb-3">$2,456</h4>
-        <small class="text-danger fw-medium"><i class='bx bx-down-arrow-alt'></i> -14.82%</small>
       </div>
-    </div>
   </div>
 
-  <div class="col-lg-3 col-md-6 mb-6">
-    <div class="card h-100">
-      <div class="card-body">
-        <div class="card-title d-flex align-items-start justify-content-between mb-4">
-          <div class="avatar flex-shrink-0">
-            <img src="{{ asset('assets/img/icons/unicons/cc-primary.png') }}" alt="Credit Card" class="rounded">
+  <div class="col-lg-3 col-md-6 mb-4">
+      <div class="card h-100">
+          <div class="card-body d-flex flex-column">
+              <div class="card-title d-flex align-items-start justify-content-between mb-4">
+                <div class="avatar flex-shrink-0">
+                  <img src="{{ asset('assets/img/icons/unicons/paypal.png') }}" alt="paypal" class="rounded">
+                </div>
+              </div>
+              <p class="mb-1">TOTAL ORDERS</p>
+              <h4 class="card-title mb-3">{{ $totalOrders ?? 'N/A' }}</h4>
+              <small class="text-success fw-medium"><i class='bx bx-up-arrow-alt'></i> +0.00%</small>
           </div>
-          <div class="dropdown">
-            <button class="btn p-0" type="button" id="cardOpt1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              <i class="bx bx-dots-vertical-rounded text-muted"></i>
-            </button>
-            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="cardOpt1">
-              <a class="dropdown-item" href="javascript:void(0);">View More</a>
-              <a class="dropdown-item" href="javascript:void(0);">Delete</a>
-            </div>
-          </div>
-        </div>
-        <p class="mb-1">Transactions</p>
-        <h4 class="card-title mb-3">$14,857</h4>
-        <small class="text-success fw-medium"><i class='bx bx-up-arrow-alt'></i> +28.14%</small>
       </div>
-    </div>
   </div>
 </div>
+
+  
+
 
 
   <!-- Total Revenue -->

@@ -10,8 +10,6 @@ class AuthenticationController extends Controller
 {
     public function login(Request $request)
     {
-        $response = ["status" => 400, "error" => ""];
-
         // Validate the request
         $request->validate([
             'organisation' => 'required|string',
@@ -24,39 +22,75 @@ class AuthenticationController extends Controller
             $response_found = User::FindUser($credentials);
             $user = $response_found['data']['user'] ?? null;
 
-            if ($response_found["status"] == 200 && isset($user) && isset($user->token)) {
-                // Valid user found
-                $response = ["status" => 200, "data" => $user];
-            } else {
-                // Attempt login and check response
-                $response = User::UserLogin($credentials);
-                if ($response["status"] == 200) {
-                    // Only store the user if login is successful
-                    $user_data = $response["data"];
-                    $cookies = $response["cookies"] ?? '';
-                    $user_data["cookies"] = $cookies;
-                    $user_data["organisation"] = $credentials["organisation"];
-                    $user_data["password"] = $credentials["password"];
-            
-                    $response_created = User::UpdateOrCreated($user_data);
-                    
-                    if ($response_created["status"] == 200) {
-                        $user = $response_created["user"];
-                        $response = ["status" => 200, "data" => $user];
-                    } else {
-                        $response = ["status" => 400, "error" => $response_created["error"]];
-                    }
+            // Check if the request expects JSON
+            if ($request->wantsJson()) {
+                if ($response_found["status"] == 200 && isset($user) && isset($user->token)) {
+                    return response()->json([
+                        'message' => 'User found',
+                        'user' => $user
+                    ]);
                 } else {
-                    // Invalid credentials
-                    $response = ["status" => 401, "error" => 'Invalid credentials'];
+                    // Attempt login and check response
+                    $response = User::UserLogin($credentials);
+                    if ($response["status"] == 200) {
+                        // User login successful
+                        $user_data = $response["data"];
+                        $cookies = $response["cookies"] ?? '';
+                        $user_data["cookies"] = $cookies;
+                        $user_data["organisation"] = $credentials["organisation"];
+                        $user_data["password"] = $credentials["password"];
+                
+                        $response_created = User::UpdateOrCreated($user_data);
+                        
+                        if ($response_created["status"] == 200) {
+                            return response()->json([
+                                'message' => 'Login successful',
+                                'user' => $user_data
+                            ]);
+                        } else {
+                            return response()->json(['error' => $response_created["error"]], 500);
+                        }
+                    } elseif ($response["status"] == 401) {
+                        return response()->json(['error' => 'Invalid credentials'], 401);
+                    } else {
+                        return response()->json(['error' => 'An error occurred during login.'], 500);
+                    }
                 }
-            
+            } else {
+                // Handle web requests
+                if ($response_found["status"] == 200 && isset($user) && isset($user->token)) {
+                    return view('content.dashboard.dashboards-analytics');
+                } else {
+                    $response = User::UserLogin($credentials);
+                    if ($response["status"] == 200) {
+                        $user_data = $response["data"];
+                        $cookies = $response["cookies"] ?? '';
+                        $user_data["cookies"] = $cookies;
+                        $user_data["organisation"] = $credentials["organisation"];
+                        $user_data["password"] = $credentials["password"];
+                
+                        $response_created = User::UpdateOrCreated($user_data);
+
+                        if ($response_created["status"] == 200) {
+                            return view('content.dashboard.dashboards-analytics');
+                        } else {
+                            return view('content.pages.pages-misc-error')->withErrors(['error' => $response_created["error"]]);
+                        }
+                    } elseif ($response["status"] == 401) {
+                        return view('content.pages.pages-misc-error')->withErrors(['error' => 'Invalid credentials']);
+                    } else {
+                        return view('content.pages.pages-misc-error')->withErrors(['error' => 'An error occurred during login.']);
+                    }
+                }
             }
         } catch (Exception $ex) {
-            $response = ["status" => 400, "error" => $ex->getMessage()];
+            // Handle exception for both JSON and web
+            if ($request->wantsJson()) {
+                return response()->json(['error' => $ex->getMessage()], 500);
+            } else {
+                return view('content.pages.pages-misc-error')->withErrors(['error' => $ex->getMessage()]);
+            }
         }
-
-        return response()->json($response);
     }
 
     public function showLoginForm()
