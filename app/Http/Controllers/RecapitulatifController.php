@@ -18,37 +18,37 @@ class RecapitulatifController extends Controller
 
     public function generateRecapitulatifs()
     {
-        // Assurez-vous que l'utilisateur est authentifié
+        // Ensure the user is authenticated
         if (!Auth::check()) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        // Récupérer le nombre d'utilisateurs
-        $totalClients = $this->valomniaService->getTotalEmployees();
+        // Retrieve total employees
+        $totalClients = $this->valomniaService->getEmployees();
 
-        // Récupérer les opérations (commandes, pré-commandes, etc.)
+        // Retrieve operations
         $operations = $this->valomniaService->getOperations();
 
-        // Vérifiez si les opérations sont renvoyées correctement
+        // Check if operations were fetched correctly
         if (!$operations) {
             return response()->json(['error' => 'Failed to fetch data from Valomnia API'], 500);
         }
 
-        // Initialiser les variables
+        // Initialize variables
         $totalRevenue = 0; 
         $totalOrders = count($operations); 
         $totalQuantities = 0; 
 
         foreach ($operations as $operation) {
-            // Vérifiez que les champs existent avant de faire la somme
+            // Ensure fields exist before summing
             $totalRevenue += $operation['totalDiscounted'] ?? 0; 
             $totalQuantities += $operation['quantity'] ?? 0; 
         }
 
-        // Calculer la moyenne des ventes
+        // Calculate average sales
         $averageSales = $totalOrders > 0 ? $totalRevenue / $totalOrders : 0; 
 
-        // Enregistrez les récapitulatifs dans la base de données
+        // Save recap in the database
         $recap = new Recapitulatif();
         $recap->user_id = Auth::id();
         $recap->date = now();
@@ -64,16 +64,27 @@ class RecapitulatifController extends Controller
 
     public function showDashboard()
     {
-        // Récupérer le dernier récapitulatif pour l'utilisateur authentifié
+        // Retrieve sales data for the current week
+        $currentWeekSales = $this->valomniaService->getSalesForWeek(now()->startOfWeek(), now()->endOfWeek());
+        // Retrieve sales data for the last week
+        $lastWeekSales = $this->valomniaService->getSalesForWeek(now()->subWeek()->startOfWeek(), now()->subWeek()->endOfWeek());
+    
+        // Calculate average sales for both weeks, ensuring fallback to 0 if no sales exist
+        $averageSalesCurrentWeek = $currentWeekSales ? collect($currentWeekSales)->avg('totalDiscounted') : 0;
+        $averageSalesLastWeek = $lastWeekSales ? collect($lastWeekSales)->avg('totalDiscounted') : 0;
+    
+        // Retrieve the latest recap for the authenticated user
         $recap = Recapitulatif::where('user_id', Auth::id())->latest()->first();
-
-        // Vérifiez si le récapitulatif existe et passez les variables à la vue
+    
+        // Pass variables to the view with fallback values
         return view('content.dashboard.dashboards-analytics', [
             'totalOrders' => $recap->total_orders ?? 0,
             'totalRevenue' => $recap->total_revenue ?? 0,
             'averageSales' => $recap->average_sales ?? 0,
-            'totalQuantities' => $recap->total_quantities ?? 0, 
+            'totalQuantities' => $recap->total_quantities ?? 0,
             'totalClients' => $recap->total_clients ?? 0,
+            'averageSalesCurrentWeek' => $averageSalesCurrentWeek,
+            'averageSalesLastWeek' => $averageSalesLastWeek, // Ensure this line is present
         ]);
     }
-}
+    }

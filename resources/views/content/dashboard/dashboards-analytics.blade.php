@@ -24,19 +24,11 @@
                   <div class="avatar flex-shrink-0">
                       <img src="{{ asset('assets/img/icons/unicons/chart-success.png') }}" alt="chart success" class="rounded">
                   </div>
-                  <div class="dropdown">
-                      <button class="btn p-0" type="button" id="cardOpt3" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                          <i class="bx bx-dots-vertical-rounded text-muted"></i>
-                      </button>
-                      <div class="dropdown-menu dropdown-menu-end" aria-labelledby="cardOpt3">
-                          <a class="dropdown-item" href="javascript:void(0);">View More</a>
-                          <a class="dropdown-item" href="javascript:void(0);">Delete</a>
-                      </div>
-                  </div>
+                  
               </div>
-              <p class="mb-1">CHIFFRES D’AFFAIRES</p>
-              <h4 class="card-title mb-3">${{ number_format($totalRevenue ?? 0, 2) }}</h4>
-              <small class="text-success fw-medium"><i class='bx bx-up-arrow-alt'></i> +72.80%</small>
+              <p class="mb-1">TOTAL REVENUE</p>
+              <h4 class="card-title mb-3">${{ number_format($totalRevenue ?? 0, 2) }}TND</h4>
+              <small class="text-success fw-medium"><i class='bx bx-up-arrow-alt'></i> +00.00%</small>
           </div>
       </div>
   </div>
@@ -50,7 +42,7 @@
                 </div>
               </div>
               <p class="mb-1">TOTAL CLIENTS</p>
-              <h4 class="card-title mb-3">{{ $totalClients ?? 'N/A' }}</h4>
+              <h4 class="card-title mb-3">{{ number_format ($totalClients ?? 0, 2) }}TND</h4>
               <small class="text-success fw-medium"><i class='bx bx-up-arrow-alt'></i> +0.00%</small>
           </div>
       </div>
@@ -60,13 +52,13 @@
       <div class="card h-100">
           <div class="card-body d-flex flex-column">
               <div class="card-title d-flex align-items-start justify-content-between mb-4">
-                <div class="avatar flex-shrink-0">
-                  <img src="{{ asset('assets/img/icons/unicons/wallet-info.png') }}" alt="wallet info" class="rounded">
-                </div>
+                 <div class="avatar flex-shrink-0">
+                <img src="{{ asset('assets/img/icons/unicons/wallet-info.png') }}" alt="wallet info" class="rounded">
+              </div>
               </div>
              
               <p class="mb-1">AVERAGE SALES</p>
-              <h4 class="card-title mb-3">{{ $averageSales ?? 'N/A' }}</h4>
+            <h4 class="card-title mb-3">{{ number_format ($averageSales ?? 0, 2) }}TND</h4>
               <small class="text-success fw-medium"><i class='bx bx-up-arrow-alt'></i> +0.00%</small>
           </div>
       </div>
@@ -81,7 +73,7 @@
                 </div>
               </div>
               <p class="mb-1">TOTAL ORDERS</p>
-              <h4 class="card-title mb-3">{{ $totalOrders ?? 'N/A' }}</h4>
+              <h4 class="card-title mb-3">{{number_format ( $totalOrders ?? 0, 2) }}TND</h4>
               <small class="text-success fw-medium"><i class='bx bx-up-arrow-alt'></i> +0.00%</small>
           </div>
       </div>
@@ -125,9 +117,13 @@
                   </script>
                 </button>
                 <button type="button" class="btn btn-outline-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-                  <span class="visually-hidden">Toggle Dropdown</span>
+                  <span class="visually-hidden">select a year</span>
                 </button>
                 <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="javascript:void(0);">2023</a></li>
+
+                  <li><a class="dropdown-item" href="javascript:void(0);">2022</a></li>
+
                   <li><a class="dropdown-item" href="javascript:void(0);">2021</a></li>
                   <li><a class="dropdown-item" href="javascript:void(0);">2020</a></li>
                   <li><a class="dropdown-item" href="javascript:void(0);">2019</a></li>

@@ -12,6 +12,7 @@ class VerifyCsrfToken
      */
     protected $except = [
         'api/*', // This will exclude all routes starting with /api from CSRF protection
+        'generate-recapitulatifs', 
     ];
     public function handle(Request $request, Closure $next): Response
     {

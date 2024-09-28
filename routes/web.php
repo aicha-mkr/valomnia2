@@ -44,6 +44,7 @@ use App\Http\Controllers\form_layouts\HorizontalForm;
 use App\Http\Controllers\tables\Basic as TablesBasic;
 use App\Http\Middleware\ApiMiddleware;
 use App\Http\Controllers\AuthenticationController;
+use App\Http\Controllers\RecapitulatifController;
 // Test Route
 Route::get('/test', function () {
     return "test view";
@@ -53,6 +54,8 @@ Route::post('/login', [AuthenticationController::class, 'login']);
 Route::get('/login', [AuthenticationController::class, 'showLoginForm'])->name('login');
 
 
+
+Route::middleware('auth:api')->post('/generate-recapitulatifs', [RecapitulatifController::class, 'generateRecapitulatifs']);
 
 Route::get('/auth/login', [AuthenticationController::class, 'showLoginForm']);
 // API routes with middleware

@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class ValomniaService
 {
@@ -13,18 +14,37 @@ class ValomniaService
     {
         $this->baseUrl = env('VALOMNIA_BASE_URL', 'https://developers.valomnia.com/');
         $this->apiKey = env('VALOMNIA_API_KEY');
+
+        if (is_null($this->apiKey)) {
+            throw new \Exception('API key is not set in the environment variables.');
+        }
     }
 
     public function getOperations()
     {
-        $endpoint = '/operations'; // Remplace par l'endpoint approprié de l'API Valomnia
+        $endpoint = '/operations';
         return $this->getData($endpoint);
     }
 
     public function getEmployees()
     {
-        $endpoint = '/employees'; // Remplace par l'endpoint approprié de l'API Valomnia
+        $endpoint = '/employees';
         return $this->getData($endpoint);
+    }
+
+    public function getSalesForWeek($startDate, $endDate)
+    {
+        $operations = $this->getOperations();
+        
+        if (!isset($operations['data'])) {
+            return [];
+        }
+
+        // Filter operations for the specified week
+        return array_filter($operations['data'], function ($operation) use ($startDate, $endDate) {
+            $operationDate = \Carbon\Carbon::parse($operation['date']); // Adjust the key based on your API response
+            return $operationDate->between($startDate, $endDate);
+        });
     }
 
     private function getData($endpoint)
@@ -38,7 +58,13 @@ class ValomniaService
             return $response->json();
         }
 
-        return null;
+        Log::error('API request failed', [
+            'endpoint' => $endpoint,
+            'status' => $response->status(),
+            'response' => $response->body(),
+        ]);
+
+        return null; // Or throw an exception based on your needs
     }
 
     public function calculateKPI()
@@ -46,7 +72,7 @@ class ValomniaService
         $operations = $this->getOperations();
         $employees = $this->getEmployees();
 
-        if (!$operations || !$employees) {
+        if (!isset($operations['data']) || !isset($employees['data'])) {
             return [
                 'totalRevenue' => 0,
                 'totalOrders' => 0,
@@ -55,11 +81,10 @@ class ValomniaService
             ];
         }
 
-        // Calcul des KPI selon sansa "aicha edit"
         $totalRevenue = array_sum(array_column($operations['data'], 'totalDiscounted'));
         $totalOrders = count(array_column($operations['data'], 'reference'));
         $totalEmployees = count($employees['data']);
-        $averageSales = $totalOrders ? $totalRevenue / $totalOrders : 0;
+        $averageSales = $totalOrders > 0 ? $totalRevenue / $totalOrders : 0;
 
         return [
             'totalRevenue' => $totalRevenue,
