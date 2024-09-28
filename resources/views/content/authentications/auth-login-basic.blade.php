@@ -23,8 +23,8 @@
           <h4 class="mb-1">Welcome to your Valomnia Dashboard! 👋</h4>
           <p class="mb-6">Please sign in to your account and start the adventure</p>
 
-          <form id="formAuthentication" action="{{ route('') }}" method="POST">
-            @csrf
+          <form id="formAuthentication" class ="mb-6" action="{{ url('/') }}" method="get">
+          
               <div class="mb-6">
               <label for="organisation" class="form-label">Organisation</label>
               <input type="text" class="form-control" id="organisation" name="organisation" placeholder="Enter your organisation" autofocus required>
