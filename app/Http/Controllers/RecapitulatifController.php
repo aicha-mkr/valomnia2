@@ -7,6 +7,8 @@ use App\Services\ValomniaService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+
+
 class RecapitulatifController extends Controller
 {
     protected $valomniaService;
@@ -38,6 +40,7 @@ class RecapitulatifController extends Controller
         $totalRevenue = 0; 
         $totalOrders = count($operations); 
         $totalQuantities = 0; 
+        $apiKey = env('API_KEY');
 
         foreach ($operations as $operation) {
             // Ensure fields exist before summing
