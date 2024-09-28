@@ -48,8 +48,13 @@ use App\Http\Controllers\AuthenticationController;
 Route::get('/test', function () {
     return "test view";
 });
-Route::get('/auth/login', [AuthenticationController::class, 'showLoginForm']);
+Route::post('/login', [AuthenticationController::class, 'login']);
+// routes/web.php
+Route::get('/login', [AuthenticationController::class, 'showLoginForm'])->name('login');
 
+
+
+Route::get('/auth/login', [AuthenticationController::class, 'showLoginForm']);
 // API routes with middleware
 Route::prefix('api')->middleware([ApiMiddleware::class])->group(function () {
     Route::post('/login', [AuthenticationController::class, 'login']);

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Recapitulatif; // Importation du modèle Recapitulatif
+use App\Models\Recapitulatif;
 use App\Services\ValomniaService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -23,38 +23,57 @@ class RecapitulatifController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        // Appel du service pour obtenir les KPIs
-        $kpis = $this->valomniaService->calculateKPI();
+        // Récupérer le nombre d'utilisateurs
+        $totalClients = $this->valomniaService->getTotalEmployees();
 
-        // Vérifiez si les KPIs sont renvoyés correctement
-        if (!$kpis) {
+        // Récupérer les opérations (commandes, pré-commandes, etc.)
+        $operations = $this->valomniaService->getOperations();
+
+        // Vérifiez si les opérations sont renvoyées correctement
+        if (!$operations) {
             return response()->json(['error' => 'Failed to fetch data from Valomnia API'], 500);
         }
 
+        // Initialiser les variables
+        $totalRevenue = 0; 
+        $totalOrders = count($operations); 
+        $totalQuantities = 0; 
+
+        foreach ($operations as $operation) {
+            // Vérifiez que les champs existent avant de faire la somme
+            $totalRevenue += $operation['totalDiscounted'] ?? 0; 
+            $totalQuantities += $operation['quantity'] ?? 0; 
+        }
+
+        // Calculer la moyenne des ventes
+        $averageSales = $totalOrders > 0 ? $totalRevenue / $totalOrders : 0; 
+
         // Enregistrez les récapitulatifs dans la base de données
         $recap = new Recapitulatif();
-        $recap->user_id = Auth::id(); // Utilisez Auth::id() pour obtenir l'ID de l'utilisateur authentifié
+        $recap->user_id = Auth::id();
         $recap->date = now();
-        $recap->total_orders = $kpis['totalOrders'] ?? 0; // Assurez-vous que les clés existent dans $kpis
-        $recap->total_revenue = $kpis['totalRevenue'] ?? 0;
-        $recap->average_sales = $kpis['averageSales'] ?? 0;
-        $recap->total_clients = $kpis['totalEmployees'] ?? 0;
+        $recap->total_orders = $totalOrders;
+        $recap->total_revenue = $totalRevenue; 
+        $recap->average_sales = $averageSales;
+        $recap->total_quantities = $totalQuantities; 
+        $recap->total_clients = $totalClients;
         $recap->save();
 
         return response()->json(['message' => 'Recapitulative generated successfully']);
     }
+
     public function showDashboard()
-{
-    // Retrieve the latest recap for the authenticated user
-    $recap = Recapitulatif::where('user_id', Auth::id())->latest()->first();
+    {
+        // Récupérer le dernier récapitulatif pour l'utilisateur authentifié
+        $recap = Recapitulatif::where('user_id', Auth::id())->latest()->first();
 
-    // Check if recap exists and pass variables to the view
-    return view('content.dashboard.dashboards-analytics', [
-        'totalOrders' => $recap->total_orders ?? 0,
-        'totalRevenue' => $recap->total_revenue ?? 0,
-        'averageSales' => $recap->average_sales ?? 0,
-        'totalClients' => $recap->total_clients ?? 0,
-    ]);
-}
-
+        // Vérifiez si le récapitulatif existe et passez les variables à la vue
+        return view('content.dashboard.dashboards-analytics', [
+            'totalOrders' => $recap->total_orders ?? 0,
+            'totalRevenue' => $recap->total_revenue ?? 0,
+            'averageSales' => $recap->average_sales ?? 0,
+            'totalQuantities' => $recap->total_quantities ?? 0, 
+            'totalClients' => $recap->total_clients ?? 0,
+        ]);
+    }
 }
