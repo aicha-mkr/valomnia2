@@ -9,7 +9,9 @@
   "license": "MIT",
   "require": {
     "php": "^8.2",
+    "guzzlehttp/guzzle": "^7.9",
     "laravel/framework": "^11.0",
+    "laravel/passport": "^12.3",
     "laravel/tinker": "^2.9"
   },
   "require-dev": {

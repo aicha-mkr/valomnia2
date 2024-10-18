@@ -37,45 +37,42 @@
         </div>
       </div>
       <div class="card-body pt-4">
-        <form id="formAccountSettings" method="POST" onsubmit="return false">
+        <form id="formAccountSettings" method="POST" action="{{ route('account.update') }}">
+          @csrf  <!-- CSRF Token -->
           <div class="row g-6">
-            <div class="col-md-6">
-              <label for="firstName" class="form-label">First Name</label>
-              <input class="form-control" type="text" id="firstName" name="firstName" value="John" autofocus />
-            </div>
-            <div class="col-md-6">
-              <label for="lastName" class="form-label">Last Name</label>
-              <input class="form-control" type="text" name="lastName" id="lastName" value="Doe" />
-            </div>
-            <div class="col-md-6">
-              <label for="email" class="form-label">E-mail</label>
-              <input class="form-control" type="text" id="email" name="email" value="john.doe@example.com" placeholder="john.doe@example.com" />
-            </div>
-            <div class="col-md-6">
-              <label for="organization" class="form-label">Organization</label>
-              <input type="text" class="form-control" id="organization" name="organization" value="{{config('variables.creatorName')}}" />
-            </div>
-            <div class="col-md-6">
-              <label class="form-label" for="phoneNumber">Phone Number</label>
-              <div class="input-group input-group-merge">
-                <span class="input-group-text">US (+1)</span>
-                <input type="text" id="phoneNumber" name="phoneNumber" class="form-control" placeholder="202 555 0111" />
+              <div class="col-md-6">
+                  <label for="firstName" class="form-label">First Name</label>
+                  <input class="form-control" type="text" id="firstName" name="firstName" value="John" autofocus />
               </div>
-            </div>
-            <div class="col-md-6">
-              <label for="address" class="form-label">Address</label>
-              <input type="text" class="form-control" id="address" name="address" placeholder="Address" />
-            </div>
-            
-          <div class="mt-6">
-            <button type="submit" class="btn btn-primary me-3">Save changes</button>
-            <button type="reset" class="btn btn-outline-secondary">Cancel</button>
+              <div class="col-md-6">
+                  <label for="lastName" class="form-label">Last Name</label>
+                  <input class="form-control" type="text" name="lastName" id="lastName" value="Doe" />
+              </div>
+              <div class="col-md-6">
+                  <label for="email" class="form-label">E-mail</label>
+                  <input class="form-control" type="email" id="email" name="email" value="john.doe@example.com" placeholder="john.doe@example.com" />
+              </div>
+              <div class="col-md-6">
+                  <label for="organization" class="form-label">Organization</label>
+                  <input type="text" class="form-control" id="organization" name="organization" value="{{ config('variables.creatorName') }}" />
+              </div>
+              <div class="col-md-6">
+                  <label class="form-label" for="phoneNumber">Phone Number</label>
+                  <div class="input-group input-group-merge">
+                      <span class="input-group-text">US (+1)</span>
+                      <input type="text" id="phoneNumber" name="phoneNumber" class="form-control" placeholder="202 555 0111" />
+                  </div>
+              </div>
+              <div class="col-md-6">
+                  <label for="address" class="form-label">Address</label>
+                  <input type="text" class="form-control" id="address" name="address" placeholder="Address" />
+              </div>
           </div>
-        </form>
-      </div>
-      <!-- /Account -->
-    </div>
-  
+          <div class="mt-6">
+              <button type="submit" class="btn btn-primary me-3">Save changes</button>
+              <button type="reset" class="btn btn-outline-secondary">Cancel</button>
+          </div>
+      </form>
   </div>
 </div>
 @endsection

@@ -33,8 +33,14 @@ class Kernel extends HttpKernel
         'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'csrf' => \App\Http\Middleware\VerifyCsrfToken::class,
+        'generate.recapitulatif' => \App\Http\Middleware\GenerateRecapitulatifMiddleware::class,
+        
+        
     ];
-
+    protected $commands = [
+        \App\Console\Commands\SendWeeklySummary::class,
+    ];
+    protected $signature = 'email:send-weekly-summary';
     /**
      * The application's middleware groups.
      *

@@ -6,8 +6,7 @@ use App\Models\Recapitulatif;
 use App\Services\ValomniaService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
-
+use Illuminate\Support\Facades\Log; // Import Log for logging
 
 class RecapitulatifController extends Controller
 {
@@ -25,11 +24,13 @@ class RecapitulatifController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        // Retrieve total employees
+        // Retrieve total clients
         $totalClients = $this->valomniaService->getEmployees();
+        Log::info('Total clients retrieved:', ['total_clients' => $totalClients]);
 
         // Retrieve operations
         $operations = $this->valomniaService->getOperations();
+        Log::info('Operations retrieved:', ['operations' => $operations]);
 
         // Check if operations were fetched correctly
         if (!$operations) {
@@ -40,7 +41,6 @@ class RecapitulatifController extends Controller
         $totalRevenue = 0; 
         $totalOrders = count($operations); 
         $totalQuantities = 0; 
-        $apiKey = env('API_KEY');
 
         foreach ($operations as $operation) {
             // Ensure fields exist before summing
@@ -52,30 +52,24 @@ class RecapitulatifController extends Controller
         $averageSales = $totalOrders > 0 ? $totalRevenue / $totalOrders : 0; 
 
         // Save recap in the database
-        $recap = new Recapitulatif();
-        $recap->user_id = Auth::id();
-        $recap->date = now();
-        $recap->total_orders = $totalOrders;
-        $recap->total_revenue = $totalRevenue; 
-        $recap->average_sales = $averageSales;
-        $recap->total_quantities = $totalQuantities; 
-        $recap->total_clients = $totalClients;
-        $recap->save();
+        $recap = Recapitulatif::create([
+            'user_id' => Auth::id(),
+            'date' => now(),
+            'total_orders' => $totalOrders,
+            'total_revenue' => $totalRevenue, 
+            'average_sales' => $averageSales,
+            'total_quantities' => $totalQuantities, 
+            'total_clients' => $totalClients,
+        ]);
+        
+        Log::info('Recapitulatif created:', ['recap' => $recap]);
 
         return response()->json(['message' => 'Recapitulative generated successfully']);
     }
 
     public function showDashboard()
     {
-        // Retrieve sales data for the current week
-        $currentWeekSales = $this->valomniaService->getSalesForWeek(now()->startOfWeek(), now()->endOfWeek());
-        // Retrieve sales data for the last week
-        $lastWeekSales = $this->valomniaService->getSalesForWeek(now()->subWeek()->startOfWeek(), now()->subWeek()->endOfWeek());
-    
-        // Calculate average sales for both weeks, ensuring fallback to 0 if no sales exist
-        $averageSalesCurrentWeek = $currentWeekSales ? collect($currentWeekSales)->avg('totalDiscounted') : 0;
-        $averageSalesLastWeek = $lastWeekSales ? collect($lastWeekSales)->avg('totalDiscounted') : 0;
-    
+     
         // Retrieve the latest recap for the authenticated user
         $recap = Recapitulatif::where('user_id', Auth::id())->latest()->first();
     
@@ -86,8 +80,7 @@ class RecapitulatifController extends Controller
             'averageSales' => $recap->average_sales ?? 0,
             'totalQuantities' => $recap->total_quantities ?? 0,
             'totalClients' => $recap->total_clients ?? 0,
-            'averageSalesCurrentWeek' => $averageSalesCurrentWeek,
-            'averageSalesLastWeek' => $averageSalesLastWeek, // Ensure this line is present
+      
         ]);
     }
-    }
+}

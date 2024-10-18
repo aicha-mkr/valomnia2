@@ -7,13 +7,14 @@ use App\Http\Controllers\layouts\WithoutNavbar;
 use App\Http\Controllers\layouts\Fluid;
 use App\Http\Controllers\layouts\Container;
 use App\Http\Controllers\layouts\Blank;
+
+
 use App\Http\Controllers\pages\AccountSettingsAccount;
 use App\Http\Controllers\pages\AccountSettingsNotifications;
 use App\Http\Controllers\pages\AccountSettingsConnections;
 use App\Http\Controllers\pages\MiscError;
 use App\Http\Controllers\pages\MiscUnderMaintenance;
-use App\Http\Controllers\authentications\RegisterBasic;
-use App\Http\Controllers\authentications\ForgotPasswordBasic;
+
 use App\Http\Controllers\cards\CardBasic;
 use App\Http\Controllers\user_interface\Accordion;
 use App\Http\Controllers\user_interface\Alerts;
@@ -45,6 +46,9 @@ use App\Http\Controllers\tables\Basic as TablesBasic;
 use App\Http\Middleware\ApiMiddleware;
 use App\Http\Controllers\AuthenticationController;
 use App\Http\Controllers\RecapitulatifController;
+use App\Http\Controllers\EmailSummaryController;
+
+
 // Test Route
 Route::get('/test', function () {
     return "test view";
@@ -53,18 +57,25 @@ Route::post('/login', [AuthenticationController::class, 'login']);
 // routes/web.php
 Route::get('/login', [AuthenticationController::class, 'showLoginForm'])->name('login');
 
+Route::post('/generate-recapitulatifs', [RecapitulatifController::class, 'generateRecapitulatifs']);
 
 
-Route::middleware('auth:api')->post('/generate-recapitulatifs', [RecapitulatifController::class, 'generateRecapitulatifs']);
-
-Route::get('/auth/login', [AuthenticationController::class, 'showLoginForm']);
+    Route::get('/auth/login', [AuthenticationController::class, 'showLoginForm']);
 // API routes with middleware
 Route::prefix('api')->middleware([ApiMiddleware::class])->group(function () {
     Route::post('/login', [AuthenticationController::class, 'login']);
+    Route::post('/generate-recapitulatifs', [RecapitulatifController::class, 'generateRecapitulatifs'])->middleware('auth:api');
 });
-
 // Main Page Route
 Route::get('/', [Analytics::class, 'index'])->name('dashboard-analytics');
+
+
+Route::get('/dashboard', [AuthenticationController::class, 'showDashboard'])->name('dashboard');
+Route::get('/error', function () {
+    return view('pages.miserror'); // Remplacez par le bon chemin de votre vue d'erreur
+})->name('pages-misc-error');
+
+
 
 // layout routes
 Route::get('/layouts/without-menu', [WithoutMenu::class, 'index'])->name('layouts-without-menu');
@@ -74,9 +85,32 @@ Route::get('/layouts/container', [Container::class, 'index'])->name('layouts-con
 Route::get('/layouts/blank', [Blank::class, 'index'])->name('layouts-blank');
 
 // pages routes
-Route::get('/pages/account-settings-account', [AccountSettingsAccount::class, 'index'])->name('pages-account-settings-account');
+
+// Routes protégées par le middleware auth
+Route::middleware(['auth'])->group(function () {
+    Route::get('/pages/account-settings-account', [AccountSettingsAccount::class, 'index'])->name('pages-account-settings-notifications');
+    Route::post('/account/update', [AccountSettingsAccount::class, 'update'])->name('account.update');
+});
+//pour verifier si user identifier wala le 
+Route::get('/check-auth', function () {
+    return auth()->check() ? 'Utilisateur authentifié' : 'Utilisateur non authentifié';
+});
+Route::get('/check/auth', [AuthenticationController::class, 'checkAuth'])->middleware('auth:api');
+
+
+
+
+// Route sans authentification
 Route::get('/pages/account-settings-notifications', [AccountSettingsNotifications::class, 'index'])->name('pages-account-settings-notifications');
-Route::get('/pages/account-settings-connections', [AccountSettingsConnections::class, 'index'])->name('pages-account-settings-connections');
+
+
+
+
+// Routes nécessitant une authentification
+Route::middleware(['auth'])->group(function () {
+    Route::get('/pages/account-settings-account', [AccountSettingsAccount::class, 'index'])->name('account.settings');
+    Route::post('/account/update', [AccountSettingsAccount::class, 'update'])->name('account.update');
+});Route::get('/pages/account-settings-connections', [AccountSettingsConnections::class, 'index'])->name('pages-account-settings-connections');
 Route::get('/pages/misc-error', [MiscError::class, 'index'])->name('pages-misc-error');
 Route::get('/pages/misc-under-maintenance', [MiscUnderMaintenance::class, 'index'])->name('pages-misc-under-maintenance');
 
