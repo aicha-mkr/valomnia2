@@ -1,63 +1,54 @@
 <?php
-
 namespace App\Http\Controllers;
-use Illuminate\Support\Facades\Log; // Import Log for logging
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Auth;
 use Exception;
 
 class AuthenticationController extends Controller
 {
     public function login(Request $request)
     {
-        $response = ["status" => 400, "error" => ""]; 
+        $response = ["status" => 400, "error" => ""];
+
         try {
             $credentials = $request->all();
-    
-            // Recherche d'utilisateur
             $response_found = User::FindUser($credentials);
             $user = $response_found['data']["user"] ?? null;
-    
-            if ($response_found["status"] == 200 && isset($user) && isset($user->token)) {
-                // Utilisateur existant
-                Session::put('user_id', $user['id']);
+
+            if ($response_found["status"] == 200 && $user) {
+                // Existing user
+                Session::put('user_id', $user->id);
                 Session::put('user_data', $user);
-    
-                // Handle response based on request type
-                if ($request->expectsJson()) {
-                    return response()->json(['status' => 'success', 'user' => $user]);
-                }
-    
-                return redirect()->route('dashboard'); // Redirect to dashboard
+                Auth::login($user);  // Ensure the user is logged in
+
+                Log::info('User logged in:', ['user_id' => $user->id]);
+
+                return $this->handleResponse($request, ['status' => 'success', 'user' => $user]);
             } else {
-                // Essayer de connecter l'utilisateur
                 $response = User::UserLogin($credentials);
+
                 if ($response["status"] == 200) {
                     $user_data = $response["data"];
-                    $cookies = $response["cookies"] ?? '';
-                    $user_data["cookies"] = $cookies;
                     $user_data["organisation"] = $credentials["organisation"];
                     $user_data["password"] = $credentials["password"];
-    
-                    // Mettre à jour ou créer l'utilisateur
+                    
+                    // Retrieve and assign cookies
+                    $cookies = $response["cookies"] ?? '';
+                    $user_data["cookies"] = $cookies;  // Add cookies to user data
+
                     $response_created = User::UpdateOrCreated($user_data);
+
                     if ($response_created["status"] == 200) {
                         $user = $response_created["user"];
-                        
-                        // Enregistrement des données dans la session
+                        Log::info('User logged in:', ['user_id' => $user['id']]);
                         Session::put('user_id', $user['id']);
-                        Session::put('user_data', $user);
-                        Log::info('User logged in:', ['user_id' => $user->id]);
+                        Auth::loginUsingId($user['id']); // Ensure the user is logged in
 
-    
-                        // Handle response based on request type
-                        if ($request->expectsJson()) {
-                            return response()->json(['status' => 'success', 'user' => $user]);
-                        }
-    
-                        return redirect()->route('dashboard'); // Redirect to dashboard
+                        return $this->handleResponse($request, ['status' => 'success', 'user' => $user]);
                     } else {
                         $response = ["status" => 400, "error" => $response_created["error"]];
                     }
@@ -68,22 +59,35 @@ class AuthenticationController extends Controller
         } catch (Exception $ex) {
             $response = ["status" => 400, "error" => $ex->getMessage()];
         }
-    
-        // Handle error response
-        if ($request->expectsJson()) {
-            return response()->json(['status' => 'error', 'message' => $response['error']], 400);
-        }
-    
-        return redirect()->route('pages-misc-error')->withErrors($response['error']);
+
+        return $this->handleResponse($request, ['status' => 'error', 'message' => $response['error']], 400);
     }
+
+    private function handleResponse(Request $request, $data, $status = 200)
+    {
+        if ($request->expectsJson()) {
+            return response()->json($data, $status);
+        } else {
+            if ($status === 400 || $status === 401) {
+                return redirect()->route('pages-misc-error')->withErrors($data['message']);
+            } else {
+                return redirect()->route('dashboard');
+            }
+        }
+    }
+
     public function showDashboard()
     {
-        return view('content.dashboard.dashboards-analytics'); // Show the dashboard view
+        if (Auth::check()) {
+            return view('content.dashboard.dashboards-analytics');
+        } else {
+            return redirect()->route('login');
+        }
     }
 
     public function showLoginForm()
     {
-        return view('content.authentications.auth-login-basic'); // Remplacez par votre vue
+        return view('content.authentications.auth-login-basic');
     }
 
     public function checkSession()

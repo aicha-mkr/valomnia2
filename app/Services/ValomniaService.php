@@ -1,108 +1,111 @@
 <?php
-
 namespace App\Services;
+
 use Illuminate\Support\Facades\Mail;
 use App\Mail\WeeklySummary;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Recapitulatif;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class ValomniaService
 {
     protected $baseUrl;
-    protected $bearerToken;
+    protected $apiKey;
 
     public function __construct()
     {
-        $this->baseUrl = config('services.valomnia.base_url');
-        $this->bearerToken = config('services.valomnia.bearer_token');
+        $this->baseUrl = env('VALOMNIA_BASE_URL', 'https://developers.valomnia.com/');
+        $this->apiKey = env('VALOMNIA_API_KEY');
+    }
+
+    // Fetch operations by ID
+    public function getOperations($id)
+    {
+        $endpoint = "api/VERSION/orders/{$id}"; // Ensure VERSION is properly specified
+        return $this->getData($endpoint);
+    }
     
-        dump($this->bearerToken); // Check if the token is loaded correctly
-    
-        if (is_null($this->bearerToken)) {
-            throw new \Exception('Bearer token is not set in the environment variables.');
-        }
+    // Fetch employee data by ID
+    public function getEmployees($id)
+    {
+        $endpoint = "api/VERSION/employees/{$id}"; // Ensure VERSION is properly specified
+        return $this->getData($endpoint);
     }
 
-    public function getOperations()
-    {
-        $endpoint = '/operations';
-        $data = $this->getData($endpoint);
-        Log::info('Operations fetched:', ['data' => $data]);
-
-        return $data; // Return the full data structure
-    }
-
-    public function getEmployees(): array
-    {
-        $endpoint = '/employees';
-        $data = $this->getData($endpoint);
-        Log::info('Employees fetched:', ['data' => $data]);
-
-        // Extract emails if data is structured as expected
-        return isset($data['data']) ? array_column($data['data'], 'email') : [];
-    }
-
-    private function getData($endpoint)
-    {
+    // Generic method to get data from the API
+    private function getData($endpoint) {
         $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $this->bearerToken, // Use the correct property
             'Accept' => 'application/json',
-        ])->get($this->baseUrl . $endpoint);
-
-        if ($response->successful()) {
-            return $response->json();
-        }
-
-        Log::error('API request failed', [
-            'endpoint' => $endpoint,
-            'status' => $response->status(),
-            'response' => $response->body(),
-        ]);
-
-        return null; // Or throw an exception based on your needs
-    }
-    public function calculateKPI()
-    {
-        $response = Http::get('https://your-api-endpoint.com/api/your-endpoint');
-
+            'API-Key' => $this->apiKey
+        ])->withCookies(request()->cookies->all(), 'your-domain.com') // Replace with your actual domain
+          ->get($this->baseUrl . $endpoint);
+    
         if ($response->successful()) {
             $data = $response->json();
-            Log::info('Fetched data:', ['data' => $data]);
-            
-            // Assurez-vous que les données sont présentes
+            Log::info('API response for endpoint: ' . $endpoint, $data);
+            return $data;
+        } else {
+            Log::error('API request failed for endpoint: ' . $endpoint, [
+                'status' => $response->status(),
+                'body' => $response->body(),
+            ]);
+            return null;
+        }
+    }
+
+    // Calculate KPIs based on specific operation ID
+    public function calculateKPI($operationId)
+    {
+        $operation = $this->getOperations($operationId);
+        $employees = $this->getEmployees(Auth::id()); // Get current user's employee data
+
+        if (!$operation || !$employees) {
             return [
-                'totalRevenue' => $data['data']['totalRevenue'] ?? 0,
-                'totalOrders' => $data['data']['totalOrders'] ?? 0,
-                'totalEmployees' => $data['data']['totalEmployees'] ?? 0,
-                'averageSales' => $data['data']['averageSales'] ?? 0,
+                'totalRevenue' => 0,
+                'totalOrders' => 0,
+                'totalEmployees' => 0,
+                'averageSales' => 0,
             ];
         }
 
-        Log::error('API request failed:', ['status' => $response->status(), 'body' => $response->body()]);
+        // Calculate KPIs
+        $totalRevenue = $operation['totalDiscounted'] ?? 0;
+        $totalOrders = 1; // Since we are fetching a single operation
+        $totalEmployees = count($employees); // Count of employees related to the operation
+        $averageSales = $totalOrders > 0 ? $totalRevenue / $totalOrders : 0;
+
         return [
-            'totalRevenue' => 0,
-            'totalOrders' => 0,
-            'totalEmployees' => 0,
-            'averageSales' => 0,
+            'totalRevenue' => $totalRevenue,
+            'totalOrders' => $totalOrders,
+            'totalEmployees' => $totalEmployees,
+            'averageSales' => $averageSales,
         ];
     }
-    private function fetchDataFromSource()
+
+    // Store recap data into the database
+    public function storeRecapData($recapData)
     {
-        // Example of fetching data
-        $response = Http::get('https://your-api-endpoint.com/api/your-endpoint'); // Adjust as necessary
-        $data = $response->json();
-    
-        Log::info('Fetched data:', ['data' => $data]); // Log the fetched data
-    
-        return $data['data'] ?? null; // Adjust based on your API response structure
+        Log::info('Storing recap data:', $recapData);
+
+        Recapitulatif::updateOrCreate(
+            ['user_id' => Auth::id(), 'date' => now()->toDateString()],
+            [
+                'total_orders' => $recapData['totalOrders'],
+                'total_revenue' => $recapData['totalRevenue'],
+                'average_sales' => $recapData['averageSales'],
+                'total_quantities' => $recapData['totalQuantities'] ?? 0,
+                'total_clients' => $recapData['totalClients'] ?? 0,
+            ]
+        );
     }
-    public function sendWeeklySummary($email)
+
+    // Send a weekly summary email
+    public function sendWeeklySummary($email, $operationId)
     {
-        $recapData = $this->calculateKPI(); // Ensure this returns valid data
-        $recipientName = 'User'; // Replace with actual recipient name if available
-        
+        $recapData = $this->calculateKPI($operationId); // Pass the operation ID
+        $recipientName = 'User'; // Adjust as needed
+
         Mail::to($email)->send(new WeeklySummary($recapData, $recipientName));
     }
-
-
 }

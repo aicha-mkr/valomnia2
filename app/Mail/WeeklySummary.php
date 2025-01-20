@@ -17,7 +17,7 @@ class WeeklySummary extends Mailable
         $this->recapData = $recapData;
         $this->recipientName = $recipientName;
     }
-
+    
     public function build()
     {
         return $this->view('content.email.send_summary')

@@ -46,7 +46,23 @@ use App\Http\Controllers\tables\Basic as TablesBasic;
 use App\Http\Middleware\ApiMiddleware;
 use App\Http\Controllers\AuthenticationController;
 use App\Http\Controllers\RecapitulatifController;
-use App\Http\Controllers\EmailSummaryController;
+use App\Http\Controllers\EmailTemplateController;
+
+
+
+
+
+Route::middleware(['web'])->group(function () {
+    Route::middleware(['auth'])->group(function () {
+        Route::get('/email/liste', [EmailTemplateController::class, 'index'])->name('email.liste');
+        Route::get('/email/create', [EmailTemplateController::class, 'create'])->name('email.create');
+        Route::get('/dashboard', [AuthenticationController::class, 'showDashboard'])->name('dashboard');
+    });
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/email/create', [EmailTemplateController::class, 'create'])->name('email.create');
+});
 
 
 // Test Route
@@ -60,19 +76,26 @@ Route::get('/login', [AuthenticationController::class, 'showLoginForm'])->name('
 Route::post('/generate-recapitulatifs', [RecapitulatifController::class, 'generateRecapitulatifs']);
 
 
+Route::middleware(['auth:api'])->group(function () {
+    Route::get('generate-recapitulatif/{operationId}', [RecapitulatifController::class, 'generateRecapitulatif']);
+});
     Route::get('/auth/login', [AuthenticationController::class, 'showLoginForm']);
 // API routes with middleware
 Route::prefix('api')->middleware([ApiMiddleware::class])->group(function () {
     Route::post('/login', [AuthenticationController::class, 'login']);
     Route::post('/generate-recapitulatifs', [RecapitulatifController::class, 'generateRecapitulatifs'])->middleware('auth:api');
+
 });
 // Main Page Route
 Route::get('/', [Analytics::class, 'index'])->name('dashboard-analytics');
 
 
+Route::middleware(['web'])->group(function () { // This should have a matching closing bracket
+    // Your route definitions
+});
 Route::get('/dashboard', [AuthenticationController::class, 'showDashboard'])->name('dashboard');
 Route::get('/error', function () {
-    return view('pages.miserror'); // Remplacez par le bon chemin de votre vue d'erreur
+    return view('pages.misecerror'); 
 })->name('pages-misc-error');
 
 

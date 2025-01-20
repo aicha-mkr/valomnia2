@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Recapitulatif extends Model
 {
     // Indique la table associée au modèle
-    protected $table = 'recapitulatifs';
+    protected $table = 'recaps';
 
     // Les attributs qui peuvent être assignés en masse
     protected $fillable = [
@@ -31,7 +31,7 @@ class Recapitulatif extends Model
         return $this->belongsTo(User::class);
     }
 
-    // Méthodes supplémentaires ou calculs
+    // Méthodes supplémentaires ou calculus
     public function getFormattedTotalRevenueAttribute()
     {
         return number_format($this->total_revenue, 2);

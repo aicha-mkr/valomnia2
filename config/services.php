@@ -30,9 +30,6 @@ return [
       'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
     ],
   ],
-  'valomnia' => [
-    'base_url' => env('VALOMNIA_BASE_URL', 'https://developers.valomnia.com/'),
-    'bearer_token' => env('VALOMNIA_BEARER_TOKEN'),
-],
+  
 
 ];
