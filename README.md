@@ -9,5 +9,5 @@ Key features include:
 - **Customization** ✏️: Users can customize the content and format of the summaries.
 - **Scheduled Delivery** 🕒: Summaries are sent out at scheduled times, ensuring timely updates.
 - **API Integration** 🔗: Real-time data retrieval from Valomnia's API.
-- **Notifications** 🔔: Alerts and notifications about the summary status.
+- **EMAIL** 🔔: Alerts and EMAILS about the summary status.
 - **History Maintenance** 🗂️: A record of all sent summaries is maintained for reference.
