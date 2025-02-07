@@ -14,8 +14,7 @@
     </div>
 
     
-    <h5>Créer un Nouveau Template Mail</h5>
-
+ 
                     <p class="text-center mb-4">
 
                         <a class="btn btn-primary me-1" data-bs-toggle="collapse" href="#collapseRapport" role="button" aria-expanded="true" onclick="toggleCollapse('collapseRapport')">

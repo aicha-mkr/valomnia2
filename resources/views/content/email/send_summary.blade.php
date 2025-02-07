@@ -1,147 +1,57 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-        }
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #f2f2f2;
-            padding: 10px;
-        }
-        header img {
-            height: 40px;
-        }
-        .new-setting {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .new-setting button {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        th, td {
-            padding: 10px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        .action {
-            display: flex;
-            justify-content: space-around;
-        }
-        .action button {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 14px;
-            cursor: pointer;
-        }
-        .kpi-row {
-            display: flex;
-            align-items: center;
-        }
-        .kpi-row input[type="checkbox"] {
-            margin-right: 10px;
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <img src="{{ asset('assets/img/logo/valomnialogo.png') }}" alt="Valomnia Logo" width="150" />
-        <p>{{ date('d/m/Y') }}</p>
-    </header>
-    <div class="new-setting">
-        <h1>Paramètres d'envoi d'e-mail</h1>
-        <button>Ajouter un nouveau paramètre</button>
-    </div>
-    <table>
-        <tr>
-            <th>Titre</th>
-            <th>Date</th>
-            <th>Déclenché</th>
-            <th>Action</th>
-        </tr>
-        <tr>
-            <td>Nouvelle configuration</td>
-            <td>11/04/2023</td>
-            <td>Hebdomadaire</td>
-            <td class="action">
-                <button>Modifier</button>
-                <button>Supprimer</button>
-            </td>
-        </tr>
-        <tr>
-            <td>Ancienne configuration</td>
-            <td>01/01/2023</td>
-            <td>Mensuel</td>
-            <td class="action">
-                <button>Modifier</button>
-                <button>Supprimer</button>
-            </td>
-        </tr>
-    </table>
-    <h1>Récapitulatif Hebdomadaire</h1>
-    <table>
-        <tr>
-            <th>KPI</th>
-            <th>Valeur</th>
-        </tr>
-        <tr class="kpi-row">
-            <td>
-                <input type="checkbox" id="total-revenue" {{ $recapData['totalRevenue'] ? 'checked' : '' }}>
-                <label for="total-revenue">Total Revenue</label>
-            </td>
-            <td>{{ $recapData['totalRevenue'] }}</td>
-        </tr>
-        <tr class="kpi-row">
-            <td>
-                <input type="checkbox" id="total-orders" {{ $recapData['totalOrders'] ? 'checked' : '' }}>
-                <label for="total-orders">Total Orders</label>
-            </td>
-            <td>{{ $recapData['totalOrders'] }}</td>
-        </tr>
-        <tr class="kpi-row">
-            <td>
-                <input type="checkbox" id="total-employees" {{ $recapData['totalEmployees'] ? 'checked' : '' }}>
-                <label for="total-employees">Total Employees</label>
-            </td>
-            <td>{{ $recapData['totalEmployees'] }}</td>
-        </tr>
-        <tr class="kpi-row">
-            <td>
-                <input type="checkbox" id="average-sales" {{ $recapData['averageSales'] ? 'checked' : '' }}>
-                <label for="average-sales">Average Sales</label>
-            </td>
-            <td>{{ $recapData['averageSales'] }}</td>
-        </tr>
-    </table>
-</body>
-</html>
+@extends('layouts.contentNavbarLayout')
+
+@section('title', 'Modifier le Modèle d\'E-mail')
+
+@section('content')
+<div>
+    <h2>Modifier le Modèle d'E-mail</h2>
+    <form action="{{ route('email.update', $template->id) }}" method="POST">
+        @csrf
+        @method('PUT')
+        <div>
+            <label for="type">Type :</label>
+            <select name="type" id="type" onchange="toggleFields()">
+                <option value="rapport" {{ $template->type == 'rapport' ? 'selected' : '' }}>Rapport</option>
+                <option value="alerte" {{ $template->type == 'alerte' ? 'selected' : '' }}>Alerte</option>
+            </select>
+        </div>
+        <div>
+            <label for="title">Titre :</label>
+            <input type="text" name="title" id="title" value="{{ $template->title }}" required>
+        </div>
+        <div id="reportFields" style="{{ $template->type == 'rapport' ? 'display:block;' : 'display:none;' }}">
+            <label for="report">Choisir un Rapport :</label>
+            <select name="report" id="report">
+                <!-- Options de rapport ici -->
+            </select>
+        </div>
+        <div id="alertFields" style="{{ $template->type == 'alerte' ? 'display:block;' : 'display:none;' }}">
+            <!-- Options spécifiques aux alertes -->
+        </div>
+        <div>
+            <label for="description">Description :</label>
+            <textarea name="description" id="description" required>{{ $template->description }}</textarea>
+        </div>
+        <div>
+            <h3>KPI Sélectionnés :</h3>
+            @foreach ($kpis as $kpi)
+                <div>
+                    <input type="checkbox" id="kpi-{{ $kpi->id }}" name="kpis[]" value="{{ $kpi->id }}" {{ in_array($kpi->id, $template->kpis) ? 'checked' : '' }}>
+                    <label for="kpi-{{ $kpi->id }}">{{ $kpi->label }}</label>
+                </div>
+            @endforeach
+        </div>
+        <button type="submit">Modifier</button>
+    </form>
+</div>
+
+@section('scripts')
+<script>
+    function toggleFields() {
+        const type = document.getElementById('type').value;
+        document.getElementById('reportFields').style.display = type === 'rapport' ? 'block' : 'none';
+        document.getElementById('alertFields').style.display = type === 'alerte' ? 'block' : 'none';
+    }
+</script>
+@endsection
+@endsection
