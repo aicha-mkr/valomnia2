@@ -95,7 +95,7 @@ Route::middleware(['web'])->group(function () { // This should have a matching c
 });
 Route::get('/dashboard', [AuthenticationController::class, 'showDashboard'])->name('dashboard');
 Route::get('/error', function () {
-    return view('pages.misecerror'); 
+    return view('pages.misecerror');
 })->name('pages-misc-error');
 
 
@@ -114,7 +114,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/pages/account-settings-account', [AccountSettingsAccount::class, 'index'])->name('pages-account-settings-notifications');
     Route::post('/account/update', [AccountSettingsAccount::class, 'update'])->name('account.update');
 });
-//pour verifier si user identifier wala le 
+//pour verifier si user identifier wala le
 Route::get('/check-auth', function () {
     return auth()->check() ? 'Utilisateur authentifié' : 'Utilisateur non authentifié';
 });
@@ -178,3 +178,8 @@ Route::get('/form/layouts-horizontal', [HorizontalForm::class, 'index'])->name('
 
 // tables routes
 Route::get('/tables/basic', [TablesBasic::class, 'index'])->name('tables-basic');
+
+
+
+
+Route::get('/email-templates', [EmailTemplateController::class, 'index'])->name('email.index');
