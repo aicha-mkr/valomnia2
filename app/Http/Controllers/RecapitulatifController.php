@@ -22,17 +22,30 @@ class RecapitulatifController extends Controller
         if (!Auth::check()) {
             return response()->json(['error' => 'Unauthenticated'], 401);
         }
-
+    
+        // Validate operation ID
+        if (!$this->isValidOperationId($operationId)) {
+            return response()->json(['error' => 'Invalid operation ID'], 400);
+        }
+    
         // Calculate KPI based on the operation ID
         $recapData = $this->valomniaService->calculateKPI($operationId);
-
+    
         // Store recap data into the database
         $this->valomniaService->storeRecapData($recapData);
-
+    
         // Return a response with the calculated data
         return response()->json([
             'message' => 'Recapitulatif generated successfully',
             'data' => $recapData
         ], 200);
+    }
+    
+    // Méthode d'exemple pour vérifier la validité de l'ID d'opération
+    private function isValidOperationId($operationId)
+    {
+        // Logique pour vérifier si l'ID d'opération est valide
+        // Par exemple, vérifier s'il existe dans la base de données
+        return true; // Remplacez par la logique réelle
     }
 }

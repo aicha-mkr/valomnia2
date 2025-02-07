@@ -1,170 +1,126 @@
 @extends('layouts.contentNavbarLayout')
 
-@section('title', 'Liste des Modèles d\'E-mail')
+@section('title', 'Créer un Nouveau Template')
 
 @section('content')
 <div class="col-md-12">
     <div class="nav-align-top">
-      <ul class="nav nav-pills flex-column flex-md-row mb-6">
-        <li class="nav-item"><a class="nav-link active" href="javascript:void(0);"><i class="bx bx-sm bx-user me-1_5"></i> Account</a></li>
-        <li class="nav-item"><a class="nav-link" href="{{url('pages/account-settings-notifications')}}"><i class="bx bx-sm bx-bell me-1_5"></i> Notifications</a></li>
-        <li class="nav-item"><a class="nav-link" href="{{url('email/create')}}"><i class="bx bx-sm bx-envelope me-1_5"></i> Create Email</a></li>
-        <li class="nav-item"><a class="nav-link" href="{{url('email/liste')}}"><i class="bx bx-sm bx-envelope me-1_5"></i> Liste</a></li>
-
-      </ul>
-    <div class="content">
-        <div class="card">
-            <div class="card-header">
-                <h2>Paramètres d'envoi d'e-mail</h2>
-                <button class="btn btn-success">Ajouter un nouveau paramètre</button>
-            </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Titre</th>
-                        <th>Date</th>
-                        <th>Déclenché</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Nouvelle configuration</td>
-                        <td>11/04/2023</td>
-                        <td>Hebdomadaire</td>
-                        <td>
-                            <button class="btn btn-primary">Modifier</button>
-                            <button class="btn btn-danger">Supprimer</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Ancienne configuration</td>
-                        <td>01/01/2023</td>
-                        <td>Mensuel</td>
-                        <td>
-                            <button class="btn btn-primary">Modifier</button>
-                            <button class="btn btn-danger">Supprimer</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-<br><br<<br><br<<br><br>
-        <div class="card">
-            <div class="card-header">
-                <h2>Récapitulatif Hebdomadaire</h2>
-            </div>
-           
-            <div class="card">
-                
-                <div class="kpi-container">
-                     <br><br><br><br><br>
-                    <div class="kpi-item left">
-                        <h3>{{ $recapDataArray['total_revenue'] }} TND</h3>
-                        <small>Total Revenue</small>
-                    </div>
-                    <div class="kpi-item center">
-                        <h3>{{ $recapDataArray['total_clients'] }}</h3>
-                        <small>Total Clients</small>
-                    </div>
-                    <div class="kpi-item right">
-                        <h3>{{ $recapDataArray['average_sales'] }} TND</h3>
-                        <small>Average Sales</small>
-                    </div>
-                </div>
-                
-                <div class="chart-container">
-                    
-                    <div id="orderStatisticsChart"></div>
-                </div>
-                
-            </b>
-        </div>
-
-        <div class="card-footer">
-            
-            <h3>KPIs</h3>
-            <div class="kpi-container">
-                <div class="kpi-row">
-                    <input type="checkbox" id="total-revenue" checked onchange="updateKPI(this, '{{ $recapDataArray['total_revenue'] }} TND')">
-                    <label for="total-revenue">Total Revenue</label>
-                    <span id="value-total-revenue">{{ $recapDataArray['total_revenue'] }} TND</span>
-                </div>
-                <div class="kpi-row">
-                    <input type="checkbox" id="total-clients" checked onchange="updateKPI(this, '{{ $recapDataArray['total_clients'] }}')">
-                    <label for="total-clients">Total Clients</label>
-                    <span id="value-total-clients">{{ $recapDataArray['total_clients'] }}</span>
-                </div>
-                <div class="kpi-row">
-                    <input type="checkbox" id="average-sales" checked onchange="updateKPI(this, '{{ $recapDataArray['average_sales'] }} TND')">
-                    <label for="average-sales">Average Sales</label>
-                    <span id="value-average-sales">{{ $recapDataArray['average_sales'] }} TND</span>
-                </div>
-                <div class="kpi-row">
-                    <input type="checkbox" id="total-orders" checked onchange="updateKPI(this, '{{ $recapDataArray['total_orders'] }}')">
-                    <label for="total-orders">Total Orders</label>
-                    <span id="value-total-orders">{{ $recapDataArray['total_orders'] }}</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="selected-kpis">
-            <h3>KPI Sélectionnés</h3>
-            <div id="selectedKPIValue">Aucun KPI sélectionné</div>
-        </div>
-        
-        <script>
-            function updateKPI(checkbox, value) {
-                const selectedKPIValue = document.getElementById('selectedKPIValue');
-                const selectedKPIs = Array.from(document.querySelectorAll('.kpi-row input[type="checkbox"]:checked'))
-                                          .map(cb => cb.nextSibling.textContent);
-                const selectedValues = selectedKPIs.length > 0 ? selectedKPIs.join(', ') : 'Aucun KPI sélectionné';
-                selectedKPIValue.textContent = selectedValues;
-            }
-        </script>
-
-        <style>
-            .kpi-container {
-                display: flex;
-                justify-content: space-between;
-                margin-top: 20px;
-            }
-            .kpi-item {
-                flex: 1;
-                text-align: center;
-            }
-            .kpi-item.left {
-                text-align: left;
-            }
-            .kpi-item.center {
-                text-align: center;
-            }
-            .kpi-item.right {
-                text-align: right;
-            }
-            .selected-kpis {
-                margin-top: 20px;
-                font-weight: bold;
-            }
-            table {
-                width: 100%;
-                border-collapse: collapse;
-                margin-top: 20px;
-            }
-            th, td {
-                padding: 10px;
-                text-align: left;
-                border-bottom: 1px solid #ddd;
-            }
-            th {
-                background-color: #f2f2f2;
-            }
-            .kpi-row {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 10px;
-            }
-        </style>
+        <ul class="nav nav-pills flex-column flex-md-row mb-6">
+            <li class="nav-item"><a class="nav-link" href="javascript:void(0);"><i class="bx bx-sm bx-user me-1_5"></i> Account</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{url('pages/account-settings-notifications')}}"><i class="bx bx-sm bx-bell me-1_5"></i> Notifications</a></li>
+            <li class="nav-item"><a class="nav-link active" href="{{url('email/create')}}"><i class="bx bx-sm bx-envelope me-1_5"></i> Create Email</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{url('email/liste')}}"><i class="bx bx-sm bx-envelope me-1_5"></i> Liste</a></li>
+        </ul>
     </div>
+
+    <h5>Créer un Nouveau Template Mail</h5>
+
+ 
+                    <p class="demo-inline-center">
+                        <a class="btn btn-primary me-1" data-bs-toggle="collapse" href="#collapseRapport" role="button" aria-expanded="true" onclick="toggleCollapse('collapseRapport')">
+                            Rapport
+                        </a>
+                        <a class="btn btn-warning me-1" data-bs-toggle="collapse" href="#collapseAlerte" role="button" aria-expanded="false" onclick="toggleCollapse('collapseAlerte')">
+                            Alerte
+                        </a>
+                    </p>
+               
+
+        <div class="col-12">
+            <div class="collapse show" id="collapseRapport">
+                <div class="card mb-6">
+                    <h5 class="card-header">Formulaire de Rapport</h5>
+                    <div class="card-body">
+                        <form>
+                            <div class="mb-4">
+                                <label for="rapport-title" class="form-label">Titre</label>
+                                <input type="text" class="form-control" id="rapport-title" placeholder="Titre du rapport" required />
+                            </div>
+                            <div class="mb-4">
+                                <label for="rapport-description" class="form-label">Description</label>
+                                <textarea class="form-control" id="rapport-description" rows="3" placeholder="Ajouter des informations supplémentaires" required></textarea>
+                            </div>
+                            <div class="mb-4">
+                                <label for="rapport-email-header" class="form-label">En-tête d'Email</label>
+                                <input type="text" class="form-control" id="rapport-email-header" placeholder="En-tête de l'email" required />
+                            </div>
+                            <div class="mb-4">
+                                <label for="rapport-email-footer" class="form-label">Pied de page d'Email</label>
+                                <input type="text" class="form-control" id="rapport-email-footer" placeholder="Pied de page de l'email" required />
+                            </div>
+                            <div class="mb-4">
+                                <label for="rapport-available-reports" class="form-label">Rapports Disponibles</label>
+                                <select class="form-select" id="rapport-available-reports" aria-label="Rapports Disponibles">
+                                    <option selected>Choisir un rapport</option>
+                                    <option value="performance">Performance Metrics</option>
+                                    <option value="financial">Financial Summary</option>
+                                    <option value="user-analytics">User Analytics</option>
+                                </select>
+                            </div>
+                            <div class="mb-4">
+                                <button type="submit" class="btn btn-primary">Créer le Rapport</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12">
+            <div class="collapse" id="collapseAlerte">
+                <div class="card mb-6">
+                    <h5 class="card-header">Formulaire d'Alerte</h5>
+                    <div class="card-body">
+                        <form>
+                            <div class="mb-4">
+                                <label for="alerte-title" class="form-label">Titre</label>
+                                <input type="text" class="form-control" id="alerte-title" placeholder="Titre de l'alerte" required />
+                            </div>
+                            <div class="mb-4">
+                                <label for="alerte-description" class="form-label">Description</label>
+                                <textarea class="form-control" id="alerte-description" rows="3" placeholder="Ajouter des informations supplémentaires" required></textarea>
+                            </div>
+                            <div class="mb-4">
+                                <label for="alerte-email-header" class="form-label">En-tête d'Email</label>
+                                <input type="text" class="form-control" id="alerte-email-header" placeholder="En-tête de l'email" required />
+                            </div>
+                            <div class="mb-4">
+                                <label for="alerte-email-footer" class="form-label">Pied de page d'Email</label>
+                                <input type="text" class="form-control" id="alerte-email-footer" placeholder="Pied de page de l'email" required />
+                            </div>
+                            <div class="mb-4">
+                                <label for="alerte-available-reports" class="form-label">Rapports Disponibles</label>
+                                <select class="form-select" id="alerte-available-reports" aria-label="Rapports Disponibles">
+                                    <option selected>Choisir un rapport</option>
+                                    <option value="performance">Performance Metrics</option>
+                                    <option value="financial">Financial Summary</option>
+                                    <option value="user-analytics">User Analytics</option>
+                                </select>
+                            </div>
+                            <div class="mb-4">
+                                <button type="submit" class="btn btn-primary">Créer l'Alerte</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleCollapse(targetId) {
+        const rapport = document.getElementById('collapseRapport');
+        const alerte = document.getElementById('collapseAlerte');
+
+        if (targetId === 'collapseRapport') {
+            alerte.classList.remove('show');
+            rapport.classList.add('show');
+        } else if (targetId === 'collapseAlerte') {
+            rapport.classList.remove('show');
+            alerte.classList.add('show');
+        }
+    }
+</script>
+
 @endsection
