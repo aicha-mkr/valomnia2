@@ -3,30 +3,19 @@
 @section('title', 'Créer un Nouveau Template')
 
 @section('content')
-<div class="col-md-12">
-    <div class="nav-align-top">
-        <ul class="nav nav-pills flex-column flex-md-row mb-6">
-            <li class="nav-item"><a class="nav-link" href="javascript:void(0);"><i class="bx bx-sm bx-user me-1_5"></i> Account</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{url('pages/account-settings-notifications')}}"><i class="bx bx-sm bx-bell me-1_5"></i> Notifications</a></li>
-            <li class="nav-item"><a class="nav-link active" href="{{url('email/create')}}"><i class="bx bx-sm bx-envelope me-1_5"></i> Create Email</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{url('email/liste')}}"><i class="bx bx-sm bx-envelope me-1_5"></i> Liste</a></li>
-        </ul>
-    </div>
 
-    
- 
-                    <p class="text-center mb-4">
 
-                        <a class="btn btn-primary me-1" data-bs-toggle="collapse" href="#collapseRapport" role="button" aria-expanded="true" onclick="toggleCollapse('collapseRapport')">
-                            Rapport
-                        </a>
-                        <a class="btn btn-warning me-1" data-bs-toggle="collapse" href="#collapseAlerte" role="button" aria-expanded="false" onclick="toggleCollapse('collapseAlerte')">
-                            Alerte
-                        </a>
-                    </p>
-               
+    <p class="text-center mb-4">
+        <a class="btn btn-primary me-1" data-bs-toggle="collapse" href="#collapseRapport" role="button" aria-expanded="true" onclick="toggleCollapse('collapseRapport')">
+            Rapport
+        </a>
+        <a class="btn btn-warning me-1" data-bs-toggle="collapse" href="#collapseAlerte" role="button" aria-expanded="false" onclick="toggleCollapse('collapseAlerte')">
+            Alerte
+        </a>
+    </p>
 
-        <div class="col-12">
+    <div class="row">
+        <div class="col-md-4">  <!-- Form Column -->
             <div class="collapse show" id="collapseRapport">
                 <div class="card mb-6">
                     <h5 class="card-header">Formulaire de Rapport</h5>
@@ -35,90 +24,50 @@
                             @csrf
                             <div class="mb-4">
                                 <label for="rapport-title" class="form-label">Titre</label>
-                                <input type="text" class="form-control" id="rapport-title" name="title" placeholder="Titre du rapport" required />
+                                <input type="text" class="form-control" id="rapport-title" name="title" placeholder="Titre du rapport" required oninput="updatePreview()" />
                             </div>
-                            <div class="mb-4">
-                                <label for="rapport-description" class="form-label">Description</label>
-                                <textarea class="form-control" id="rapport-description" name="description" rows="3" placeholder="Ajouter des informations supplémentaires" required></textarea>
-                            </div>
+
                             <div class="mb-4">
                                 <label for="rapport-email-header" class="form-label">En-tête d'Email</label>
-                                <input type="text" class="form-control" id="rapport-email-header" name="email_header" placeholder="En-tête de l'email" required />
+                                <input type="text" class="form-control" id="rapport-email-header" name="email_header" placeholder="En-tête de l'email" required oninput="updatePreview()" />
                             </div>
+
                             <div class="mb-4">
-                                <label for="rapport-email-footer" class="form-label">Pied de page d'Email</label>
-                                <input type="text" class="form-control" id="rapport-email-footer" name="email_footer" placeholder="Pied de page de l'email" required />
+                                <label for="rapport-email-subject" class="form-label">Sujet</label>
+                                <input type="text" class="form-control" id="rapport-email-subject" name="email_subject" placeholder="Sujet de l'email" required oninput="updatePreview()" />
                             </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="show-header" checked onchange="toggleHeaderSubject()" />
+                                <label class="form-check-label" for="show-header">Afficher l'en-tête</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="show-subject" onchange="toggleHeaderSubject()" />
+                                <label class="form-check-label" for="show-subject">Afficher le sujet</label>
+                            </div>
+
                             <div class="row mb-4">
-                                <div class="col-6">
+                                <div class="col-12">
                                     <h5 class="card-header">Select KPIs to Include</h5>
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="total_revenue" id="totalRevenueCheckbox" name="kpis[]" onclick="toggleCard('totalRevenueCard')" />
+                                        <input class="form-check-input" type="checkbox" value="total_revenue" id="totalRevenueCheckbox" name="kpis[]" onclick="updateKPI('total_revenue', this.checked)" />
                                         <label class="form-check-label" for="totalRevenueCheckbox">Total Revenue</label>
                                     </div>
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="total_clients" id="totalClientsCheckbox" name="kpis[]" onclick="toggleCard('totalClientsCard')" />
+                                        <input class="form-check-input" type="checkbox" value="total_clients" id="totalClientsCheckbox" name="kpis[]" onclick="updateKPI('total_clients', this.checked)" />
                                         <label class="form-check-label" for="totalClientsCheckbox">Total Customers</label>
                                     </div>
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="average_sales" id="averageSalesCheckbox" name="kpis[]" onclick="toggleCard('averageSalesCard')" />
+                                        <input class="form-check-input" type="checkbox" value="average_sales" id="averageSalesCheckbox" name="kpis[]" onclick="updateKPI('average_sales', this.checked)" />
                                         <label class="form-check-label" for="averageSalesCheckbox">Average Sales</label>
                                     </div>
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="total_orders" id="totalOrdersCheckbox" name="kpis[]" onclick="toggleCard('totalOrdersCard')" />
+                                        <input class="form-check-input" type="checkbox" value="total_orders" id="totalOrdersCheckbox" name="kpis[]" onclick="updateKPI('total_orders', this.checked)" />
                                         <label class="form-check-label" for="totalOrdersCheckbox">Total Orders</label>
-                                    </div>
-                                </div>
-                                
-                                <div class="col-6 d-flex flex-wrap justify-content-start position-relative" style="height: 400px;">
-                                    <!-- Cards Section -->
-                                    <div id="kpiCards" class="d-flex flex-wrap">
-                                        <!-- Total Revenue Card -->
-                                        <div class="card d-none square-card" id="totalRevenueCard">
-                                            <div class="card-body d-flex align-items-center">
-                                                <i class="fas fa-dollar-sign me-3" style="font-size: 24px;"></i>
-                                                <div>
-                                                    <h5 class="card-title">Total Revenue</h5>
-                                                    <h6 class="card-subtitle mb-2 text-muted">$84,686.00</h6>
-                                                    <p class="card-text">+24% vs last month</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <!-- More cards... -->
                                     </div>
                                 </div>
                             </div>
                             
-                            <script>
-                                function toggleCard(cardId) {
-                                    const card = document.getElementById(cardId);
-                                    card.classList.toggle('d-none');
-                                }
-                            </script>
-                            
-                            <style>
-                                .square-card {
-                                    width: 200px; /* Adjust this for a square shape */
-                                    height: 200px; /* Adjust this for a square shape */
-                                    margin: 10px; /* Space between cards */
-                                    position: relative; /* Allow overlapping */
-                                    transition: transform 0.2s; /* Smooth transition */
-                                    border-radius: 10px; /* Rounded corners */
-                                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-                                }
-                                .square-card:hover {
-                                    transform: scale(1.05); /* Slight zoom effect on hover */
-                                }
-                                #kpiCards {
-                                    position: relative;
-                                    display: flex;
-                                    flex-wrap: wrap;
-                                    justify-content: flex-start;
-                                }
-                            </style>
-                            
-                            <!-- Add Font Awesome CDN in your HTML head -->
-                            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
                             <div class="mb-4">
                                 <button type="submit" class="btn btn-primary">Créer le Rapport</button>
                             </div>
@@ -128,42 +77,62 @@
             </div>
         </div>
 
-        <div class="col-12">
-            <div class="collapse" id="collapseAlerte">
-                <div class="card mb-6">
-                    <h5 class="card-header">Formulaire d'Alerte</h5>
-                    <div class="card-body">
-                        <form>
-                            <div class="mb-4">
-                                <label for="alerte-title" class="form-label">Titre</label>
-                                <input type="text" class="form-control" id="alerte-title" placeholder="Titre de l'alerte" required />
-                            </div>
-                            <div class="mb-4">
-                                <label for="alerte-description" class="form-label">Description</label>
-                                <textarea class="form-control" id="alerte-description" rows="3" placeholder="Ajouter des informations supplémentaires" required></textarea>
-                            </div>
-                            <div class="mb-4">
-                                <label for="alerte-email-header" class="form-label">En-tête d'Email</label>
-                                <input type="text" class="form-control" id="alerte-email-header" placeholder="En-tête de l'email" required />
-                            </div>
-                            <div class="mb-4">
-                                <label for="alerte-email-footer" class="form-label">Pied de page d'Email</label>
-                                <input type="text" class="form-control" id="alerte-email-footer" placeholder="Pied de page de l'email" required />
-                            </div>
-                            <div class="mb-4">
-                                <label for="alerte-available-reports" class="form-label">Rapports Disponibles</label>
-                                <select class="form-select" id="alerte-available-reports" aria-label="Rapports Disponibles">
-                                    <option selected>Choisir un rapport</option>
-                                    <option value="performance">Performance Metrics</option>
-                                    <option value="financial">Financial Summary</option>
-                                    <option value="user-analytics">User Analytics</option>
-                                </select>
-                            </div>
-                            <div class="mb-4">
-                                <button type="submit" class="btn btn-primary">Créer l'Alerte</button>
-                            </div>
-                        </form>
+        <div class="col-md-8">  <!-- Preview Column -->
+            <div class="card mb-6">
+                <h5 class="card-header">Aperçu de l'Email</h5>
+                <div class="card-body" id="email-preview">
+                    <h3 id="preview-header">En-tête de l'email</h3>
+                    <div style="border: 1px solid #ccc; padding: 15px; border-radius: 5px;">
+                        <p id="preview-content">
+                            <span class="fixed-text">Texte fixe : </span>
+                            <textarea id="editable-content" rows="3" style="border: 1px solid #ccc; padding: 5px; width: 100%;" placeholder="Modifier le contenu ici..." oninput="updatePreviewDynamic()">
+                                Description
+                            </textarea>
+                        </p>
+                        <div id="kpi-cards" class="row mt-3">
+                            <!-- KPI Cards will be inserted here -->
+                        </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12">
+        <div class="collapse" id="collapseAlerte">
+            <div class="card mb-6">
+                <h5 class="card-header">Formulaire d'Alerte</h5>
+                <div class="card-body">
+                    <form>
+                        <div class="mb-4">
+                            <label for="alerte-title" class="form-label">Titre</label>
+                            <input type="text" class="form-control" id="alerte-title" placeholder="Titre de l'alerte" required />
+                        </div>
+                        <div class="mb-4">
+                            <label for="alerte-description" class="form-label">Description</label>
+                            <textarea class="form-control" id="alerte-description" rows="3" placeholder="Ajouter des informations supplémentaires" required></textarea>
+                        </div>
+                        <div class="mb-4">
+                            <label for="alerte-email-header" class="form-label">En-tête d'Email</label>
+                            <input type="text" class="form-control" id="alerte-email-header" placeholder="En-tête de l'email" required />
+                        </div>
+                        <div class="mb-4">
+                            <label for="alerte-email-footer" class="form-label">Pied de page d'Email</label>
+                            <input type="text" class="form-control" id="alerte-email-footer" placeholder="Pied de page de l'email" required />
+                        </div>
+                        <div class="mb-4">
+                            <label for="alerte-available-reports" class="form-label">Rapports Disponibles</label>
+                            <select class="form-select" id="alerte-available-reports" aria-label="Rapports Disponibles">
+                                <option selected>Choisir un rapport</option>
+                                <option value="performance">Performance Metrics</option>
+                                <option value="financial">Financial Summary</option>
+                                <option value="user-analytics">User Analytics</option>
+                            </select>
+                        </div>
+                        <div class="mb-4">
+                            <button type="submit" class="btn btn-primary">Créer l'Alerte</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -171,6 +140,13 @@
 </div>
 
 <script>
+    const kpiData = {
+        total_revenue: 10000,
+        total_clients: 150,
+        average_sales: 67,
+        total_orders: 75
+    };
+
     function toggleCollapse(targetId) {
         const rapport = document.getElementById('collapseRapport');
         const alerte = document.getElementById('collapseAlerte');
@@ -183,8 +159,67 @@
             alerte.classList.add('show');
         }
     }
+
+    function updatePreview() {
+        const emailHeader = document.getElementById('rapport-email-header').value;
+        const emailSubject = document.getElementById('rapport-email-subject').value;
+
+        document.getElementById('preview-header').innerText = emailHeader || 'En-tête de l\'email';
+        
+        // Update the subject based on the checked boxes
+        document.getElementById('preview-subject').innerText = emailSubject || 'Sujet de l\'email';
+    }
+
+    function updatePreviewDynamic() {
+        const dynamicContent = document.getElementById('editable-content').value;
+        // Update any element if needed, or handle the content display elsewhere.
+    }
+
+    function toggleHeaderSubject() {
+        const showHeader = document.getElementById('show-header').checked;
+        const showSubject = document.getElementById('show-subject').checked;
+
+        if (showHeader) {
+            document.getElementById('preview-header').style.display = 'block';
+        } else {
+            document.getElementById('preview-header').style.display = 'none';
+        }
+
+        if (showSubject) {
+            document.getElementById('preview-subject').style.display = 'block';
+        } else {
+            document.getElementById('preview-subject').style.display = 'none';
+        }
+
+        updatePreview(); // Update preview to reflect changes
+    }
+
+    function updateKPI(kpi, isChecked) {
+        const kpiCardsContainer = document.getElementById('kpi-cards');
+
+        if (isChecked) {
+            const card = document.createElement('div');
+            card.className = 'col-md-6 mb-2';
+            card.innerHTML = `
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="bx bx-chart"></i> ${kpi.replace('_', ' ').toUpperCase()}
+                        </h5>
+                        <p class="card-text">Valeur: ${kpiData[kpi]}</p>
+                    </div>
+                </div>
+            `;
+            kpiCardsContainer.appendChild(card);
+        } else {
+            const cards = Array.from(kpiCardsContainer.children);
+            const cardToRemove = cards.find(card => card.querySelector('.card-title').textContent.toLowerCase().includes(kpi.replace('_', ' ').toLowerCase()));
+
+            if (cardToRemove) {
+                kpiCardsContainer.removeChild(cardToRemove);
+            }
+        }
+    }
 </script>
 
-           
-        
 @endsection
