@@ -1,36 +1,42 @@
 <?php
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use App\Models\EmailTemplate;
-use App\Models\Recapitulatif;
-
+use Illuminate\Http\Request;
 
 class EmailTemplateController extends Controller
 {
     public function index()
     {
-        $user_id = Auth::id();
-        $emailTemplates = EmailTemplate::where('user_id', $user_id)->get();
-        return view('content.email.liste', compact('emailTemplates'));
+        $templates = EmailTemplate::all(); // Fetch all templates
+        return view('content.email.liste', compact('templates'));
     }
 
     public function create()
-{
-    $user_id = Auth::id();
-    $emailTemplates = EmailTemplate::where('user_id', $user_id)->get(); // Get email templates for the user
-    $recapData = Recapitulatif::where('user_id', $user_id)->first(); // Get recap data for the user
+    {
+        return view('content.email.create'); // Render the create template view
+    }
 
-    // Prepare recap data
-    $recapDataArray = [
-        'total_revenue' => $recapData->total_revenue ?? 0,
-        'total_clients' => $recapData->total_clients ?? 0,
-        'average_sales' => $recapData->average_sales ?? 0,
-        'total_orders' => $recapData->total_orders ?? 0,
-    ];
+    public function store(Request $request)
+    {
+        // Validate the incoming request
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'required|string',
+            'email_header' => 'required|string|max:255',
+            'email_footer' => 'required|string|max:255',
+        ]);
 
-    return view('content.email.create', compact('emailTemplates', 'recapDataArray'));
-}
-    // Ajoutez d'autres méthodes comme edit(), delete(), etc.
+        // Create a new email template
+        EmailTemplate::create([
+            'user_id' => auth()->id(),
+            'name' => $request->name,
+            'description' => $request->description,
+            'email_header' => $request->email_header,
+            'email_footer' => $request->email_footer,
+        ]);
+
+        // Redirect back to the email list with a success message
+        return redirect()->route('email-templates.index')->with('success', 'Template created successfully.');
+    }
 }

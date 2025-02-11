@@ -9,11 +9,9 @@ class EmailTemplate extends Model
 {
     use HasFactory;
 
-    // Specify the table if it's not the plural of the model name
-    protected $table = 'email_templates';
+    protected $table = 'email_templates'; // Ensure this matches your table name
+    protected $fillable = ['user_id', 'name', 'subject']; // Define fillable fields
 
-    // Define fillable fields for mass assignment
-    protected $fillable = ['name', 'subject', 'user_id'];
     // Define the relationship with the User model
     public function user()
     {

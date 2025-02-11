@@ -51,15 +51,15 @@ use App\Http\Controllers\EmailTemplateController;
 
 
 
-
 Route::middleware(['web'])->group(function () {
     Route::middleware(['auth'])->group(function () {
         Route::get('/email/liste', [EmailTemplateController::class, 'index'])->name('email.liste');
         Route::get('/email/create', [EmailTemplateController::class, 'create'])->name('email.create');
         Route::get('/dashboard', [AuthenticationController::class, 'showDashboard'])->name('dashboard');
+        Route::post('/email', [EmailTemplateController::class, 'store'])->name('email.store');
     });
 });
-
+Route::post('/email', [EmailTemplateController::class, 'store'])->name('email.store');
 Route::middleware(['auth'])->group(function () {
     Route::get('/email/create', [EmailTemplateController::class, 'create'])->name('email.create');
 });

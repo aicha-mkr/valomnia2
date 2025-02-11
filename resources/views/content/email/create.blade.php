@@ -31,52 +31,45 @@
                 <div class="card mb-6">
                     <h5 class="card-header">Formulaire de Rapport</h5>
                     <div class="card-body">
-                        <form>
+                        <form action="{{ route('email.store') }}" method="POST">
+                            @csrf
                             <div class="mb-4">
                                 <label for="rapport-title" class="form-label">Titre</label>
-                                <input type="text" class="form-control" id="rapport-title" placeholder="Titre du rapport" required />
+                                <input type="text" class="form-control" id="rapport-title" name="title" placeholder="Titre du rapport" required />
                             </div>
                             <div class="mb-4">
                                 <label for="rapport-description" class="form-label">Description</label>
-                                <textarea class="form-control" id="rapport-description" rows="3" placeholder="Ajouter des informations supplémentaires" required></textarea>
+                                <textarea class="form-control" id="rapport-description" name="description" rows="3" placeholder="Ajouter des informations supplémentaires" required></textarea>
                             </div>
                             <div class="mb-4">
                                 <label for="rapport-email-header" class="form-label">En-tête d'Email</label>
-                                <input type="text" class="form-control" id="rapport-email-header" placeholder="En-tête de l'email" required />
+                                <input type="text" class="form-control" id="rapport-email-header" name="email_header" placeholder="En-tête de l'email" required />
                             </div>
                             <div class="mb-4">
                                 <label for="rapport-email-footer" class="form-label">Pied de page d'Email</label>
-                                <input type="text" class="form-control" id="rapport-email-footer" placeholder="Pied de page de l'email" required />
+                                <input type="text" class="form-control" id="rapport-email-footer" name="email_footer" placeholder="Pied de page de l'email" required />
                             </div>
                             <div class="row mb-4">
                                 <div class="col-6">
                                     <h5 class="card-header">Select KPIs to Include</h5>
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="" id="totalRevenueCheckbox" onclick="toggleCard('totalRevenueCard')" />
-                                        <label class="form-check-label" for="totalRevenueCheckbox">
-                                            Total Revenue
-                                        </label>
+                                        <input class="form-check-input" type="checkbox" value="total_revenue" id="totalRevenueCheckbox" name="kpis[]" onclick="toggleCard('totalRevenueCard')" />
+                                        <label class="form-check-label" for="totalRevenueCheckbox">Total Revenue</label>
                                     </div>
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="" id="totalClientsCheckbox" onclick="toggleCard('totalClientsCard')" />
-                                        <label class="form-check-label" for="totalClientsCheckbox">
-                                            Total Customers
-                                        </label>
+                                        <input class="form-check-input" type="checkbox" value="total_clients" id="totalClientsCheckbox" name="kpis[]" onclick="toggleCard('totalClientsCard')" />
+                                        <label class="form-check-label" for="totalClientsCheckbox">Total Customers</label>
                                     </div>
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="" id="averageSalesCheckbox" onclick="toggleCard('averageSalesCard')" />
-                                        <label class="form-check-label" for="averageSalesCheckbox">
-                                            Average Sales
-                                        </label>
+                                        <input class="form-check-input" type="checkbox" value="average_sales" id="averageSalesCheckbox" name="kpis[]" onclick="toggleCard('averageSalesCard')" />
+                                        <label class="form-check-label" for="averageSalesCheckbox">Average Sales</label>
                                     </div>
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="" id="totalOrdersCheckbox" onclick="toggleCard('totalOrdersCard')" />
-                                        <label class="form-check-label" for="totalOrdersCheckbox">
-                                            Total Orders
-                                        </label>
+                                        <input class="form-check-input" type="checkbox" value="total_orders" id="totalOrdersCheckbox" name="kpis[]" onclick="toggleCard('totalOrdersCard')" />
+                                        <label class="form-check-label" for="totalOrdersCheckbox">Total Orders</label>
                                     </div>
                                 </div>
-                            
+                                
                                 <div class="col-6 d-flex flex-wrap justify-content-start position-relative" style="height: 400px;">
                                     <!-- Cards Section -->
                                     <div id="kpiCards" class="d-flex flex-wrap">
@@ -91,42 +84,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                            
-                                        <!-- Total Customers Card -->
-                                        <div class="card d-none square-card" id="totalClientsCard">
-                                            <div class="card-body d-flex align-items-center">
-                                                <i class="fas fa-users me-3" style="font-size: 24px;"></i>
-                                                <div>
-                                                    <h5 class="card-title">Total Customers</h5>
-                                                    <h6 class="card-subtitle mb-2 text-muted">8,634</h6>
-                                                    <p class="card-text">+12% vs last month</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                            
-                                        <!-- Average Sales Card -->
-                                        <div class="card d-none square-card" id="averageSalesCard">
-                                            <div class="card-body d-flex align-items-center">
-                                                <i class="fas fa-shopping-cart me-3" style="font-size: 24px;"></i>
-                                                <div>
-                                                    <h5 class="card-title">Average Sales</h5>
-                                                    <h6 class="card-subtitle mb-2 text-muted">$1,240.00</h6>
-                                                    <p class="card-text">+6% vs last month</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                            
-                                        <!-- Total Orders Card -->
-                                        <div class="card d-none square-card" id="totalOrdersCard">
-                                            <div class="card-body d-flex align-items-center">
-                                                <i class="fas fa-clipboard-list me-3" style="font-size: 24px;"></i>
-                                                <div>
-                                                    <h5 class="card-title">Total Orders</h5>
-                                                    <h6 class="card-subtitle mb-2 text-muted">2,420</h6>
-                                                    <p class="card-text">+18% vs last month</p>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        <!-- More cards... -->
                                     </div>
                                 </div>
                             </div>
@@ -134,11 +92,7 @@
                             <script>
                                 function toggleCard(cardId) {
                                     const card = document.getElementById(cardId);
-                                    if (card.classList.contains('d-none')) {
-                                        card.classList.remove('d-none');
-                                    } else {
-                                        card.classList.add('d-none');
-                                    }
+                                    card.classList.toggle('d-none');
                                 }
                             </script>
                             
@@ -152,11 +106,9 @@
                                     border-radius: 10px; /* Rounded corners */
                                     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
                                 }
-                            
                                 .square-card:hover {
                                     transform: scale(1.05); /* Slight zoom effect on hover */
                                 }
-                            
                                 #kpiCards {
                                     position: relative;
                                     display: flex;
