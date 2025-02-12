@@ -51,6 +51,11 @@ use App\Http\Controllers\EmailTemplateController;
 
 
 
+Route::middleware(['auth'])->group(function () {
+    Route::resource('email-templates', EmailTemplateController::class);
+});
+
+
 Route::middleware(['web'])->group(function () {
     Route::middleware(['auth'])->group(function () {
         Route::get('/email/liste', [EmailTemplateController::class, 'index'])->name('email.liste');
@@ -178,8 +183,3 @@ Route::get('/form/layouts-horizontal', [HorizontalForm::class, 'index'])->name('
 
 // tables routes
 Route::get('/tables/basic', [TablesBasic::class, 'index'])->name('tables-basic');
-
-
-
-
-Route::get('/email-templates', [EmailTemplateController::class, 'index'])->name('email.index');

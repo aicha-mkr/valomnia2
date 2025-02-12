@@ -3,20 +3,22 @@
 @section('title', 'Liste des Modèles d\'E-mail')
 
 @section('content')
-<div class="col-md-12">
-    <div class="nav-align-top">
-        <ul class="nav nav-pills flex-column flex-md-row mb-6">
-            <li class="nav-item"><a class="nav-link" href="{{ url('pages/account-settings-account') }}"><i class="bx bx-sm bx-user me-1_5"></i> Account</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{ url('pages/account-settings-notifications') }}"><i class="bx bx-sm bx-bell me-1_5"></i> Notifications</a></li>
-            <li class="nav-item"><a class="nav-link active" href="{{ url('email/liste') }}"><i class="bx bx-sm bx-envelope me-1_5"></i>Email Template Manager</a></li>
-        </ul>
+
+
+@if(session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+@endif
+
+
 
         <div class="card mb-4">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div>
                         <h5>Email Template Manager</h5>
-                        <p>A list of all email templates including reports and alerts.</p>
+                       
                     </div>
                     <a href="{{ url('email/create') }}" class="btn btn-primary">
                         <i class="bx bx-plus"></i> New Template
@@ -37,13 +39,13 @@
                             @foreach ($templates as $template)
                             <tr>
                                 <td>{{ $template->name }}</td>
-                                <td><span class="badge bg-label-primary">Template</span></td>
+                                <td><span class="badge bg-label-primary">Report</span></td>
                                 <td>{{ $template->updated_at->format('d/m/Y') }}</td>
                                 <td>
                                     <button class="btn p-0 text-primary" onclick="editRecord('{{ $template->name }}', 'Template', '{{ $template->updated_at->format('Y-m-d') }}', '{{ $template->id }}')">
                                         <i class="bx bx-edit-alt"></i>
                                     </button>
-                                    <form action="{{ route('email.destroy', $template->id) }}" method="POST" style="display:inline;">
+                                    <form action="{{ route('email-templates.destroy', $template->id) }}" method="POST" style="display:inline;">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn p-0 text-danger" onclick="return confirm('Are you sure you want to delete this template?');">
