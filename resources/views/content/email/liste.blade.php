@@ -68,7 +68,7 @@
             </div>
         </div>
 
-        <!-- Offcanvas pour éditer un enregistrement -->
+        <!-- Offcanvas pour éditer un enregistrement-->
         <div class="offcanvas offcanvas-end" tabindex="-1" id="editRecord" aria-labelledby="editRecordLabel">
             <div class="offcanvas-header">
                 <h5 id="editRecordLabel">Edit Record</h5>
@@ -129,5 +129,6 @@
         }
     }
 </script>
+
 
 @endsection
