@@ -47,6 +47,7 @@ $navbarDetached = ($navbarDetached ?? '');
           <!-- Place this tag where you want the button to render. -->
        
 
+         
           <!-- User -->
           <li class="nav-item navbar-dropdown dropdown-user dropdown">
             <a class="nav-link dropdown-toggle hide-arrow p-0" href="javascript:void(0);" data-bs-toggle="dropdown">
@@ -101,6 +102,10 @@ $navbarDetached = ($navbarDetached ?? '');
                 </li>
             </ul>
         </li>
+
+
+
+        
 
       @if(!isset($navbarDetached))
     </div>

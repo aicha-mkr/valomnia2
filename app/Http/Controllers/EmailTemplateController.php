@@ -1,36 +1,56 @@
 <?php
+// app/Http/Controllers/EmailTemplateController.php
+
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use App\Models\EmailTemplate;
-use App\Models\Recapitulatif;
-
+use Illuminate\Http\Request;
 
 class EmailTemplateController extends Controller
 {
     public function index()
     {
-        $user_id = Auth::id();
-        $emailTemplates = EmailTemplate::where('user_id', $user_id)->get();
-        return view('content.email.liste', compact('emailTemplates'));
+        $templates = EmailTemplate::all(); // Fetch all templates
+        return view('content.email.liste', compact('templates'));
     }
 
     public function create()
+    {
+        return view('content.email.create'); // Render the create template view
+    }
+    public function destroy($id)
+    {
+        $template = EmailTemplate::findOrFail($id); // This will throw a 404 if not found
+        $template->delete();
+    
+        return redirect()->route('email-templates.index')->with('success', 'Template deleted successfully.');
+    }
+    public function show($id)
 {
-    $user_id = Auth::id();
-    $emailTemplates = EmailTemplate::where('user_id', $user_id)->get(); // Get email templates for the user
-    $recapData = Recapitulatif::where('user_id', $user_id)->first(); // Get recap data for the user
-
-    // Prepare recap data
-    $recapDataArray = [
-        'total_revenue' => $recapData->total_revenue ?? 0,
-        'total_clients' => $recapData->total_clients ?? 0,
-        'average_sales' => $recapData->average_sales ?? 0,
-        'total_orders' => $recapData->total_orders ?? 0,
-    ];
-
-    return view('content.email.create', compact('emailTemplates', 'recapDataArray'));
+    $template = EmailTemplate::findOrFail($id); // Fetch the template by ID
+    return view('content.email.show', compact('template')); // Return the view with the template data
 }
-    // Ajoutez d'autres méthodes comme edit(), delete(), etc.
+    public function store(Request $request)
+{
+    $request->validate([
+        'title' => 'required|string|max:255',
+        'email_header' => 'required|string|max:255',
+        'email_subject' => 'required|string|max:255',
+        'content' => 'required|string', // Ensure content is validated
+    ]);
+
+    // Create a new email template
+    EmailTemplate::create([
+        'user_id' => auth()->id(), // Assuming the user is authenticated
+        'name' => $request->title,
+        'subject' => $request->email_subject,
+        'content' => $request->content, // Save the content
+        'template_type' => 'report',
+        'is_active' => true, // Set active status
+    ]);
+    
+
+    // Redirect back to the email list with a success message
+ // Redirect back to the email list with a success message
+ return redirect()->route('email-templates.index')->with('success', 'Template created successfully.');}
 }
