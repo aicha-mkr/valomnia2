@@ -18,7 +18,7 @@
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div>
                         <h5>Email Template Manager</h5>
-                       
+
                     </div>
                     <a href="{{ url('email/create') }}" class="btn btn-primary">
                         <i class="bx bx-plus"></i> New Template
@@ -61,7 +61,7 @@
             </div>
         </div>
 
-        <!-- Offcanvas for editing a record -->
+        <!-- Offcanvas pour éditer un enregistrement-->
         <div class="offcanvas offcanvas-end" tabindex="-1" id="editRecord" aria-labelledby="editRecordLabel">
             <div class="offcanvas-header">
                 <h5 id="editRecordLabel">Edit Record</h5>
@@ -119,5 +119,6 @@
         editOffcanvas.show();
     }
 </script>
+
 
 @endsection

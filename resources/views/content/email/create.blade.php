@@ -18,9 +18,9 @@
                     <form action="{{ route('email.store') }}" method="POST">
                         @csrf
                         <div class="mb-4">
-                            <label for="rapport-title" class="form-label">Titre</label>
-                            <input type="text" class="form-control" id="rapport-title" name="title" placeholder="Titre du rapport" required />
-                        </div>
+                        <label for="alerte-title" class="form-label">Titre</label>
+                        <input type="text" class="form-control" id="alerte-title" name="title" placeholder="Titre de l'alerte" required oninput="updateEmailTemplate()" />
+                    </div>
                         <div class="mb-4">
                             <label for="rapport-email-header" class="form-label">En-tête d'Email</label>
                             <input type="text" class="form-control" id="rapport-email-header" name="email_header" placeholder="En-tête de l'email" required />
@@ -1291,7 +1291,7 @@
         </div>
 
         <!-- Alerte Section -->
-        <div id="alerteSection" class="col-md-6 section" style="display: none;">
+        <div id="alerteSection"class="col-md-4 section" style="display: none;">
             <div class="card mb-6">
                 <h5 class="card-header">Formulaire d'Alerte</h5>
                 <div class="card-body">
@@ -1307,19 +1307,19 @@
                         </div>
                         <div class="mb-4">
                             <label for="alerte-title" class="form-label">Titre</label>
-                            <input type="text" class="form-control" id="alerte-title" name="title" placeholder="Titre de l'alerte" required />
-                        </div>
+                            <input type="text" class="form-control" id="alerte-title" name="title" placeholder="Titre de l'alerte" required oninput="updateEmailTemplate()" />                        </div>
                         <div class="mb-4">
                             <label for="alerte-email-subject" class="form-label">Sujet d'Email</label>
                             <input type="text" class="form-control" id="alerte-email-subject" name="email_subject" placeholder="Sujet de l'email" required />
                         </div>
-                        <div class="mb-4">
+
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="alert-open" onclick="toggleUrlSection()" />
+                            <label class="form-check-label" for="alert-open">Afficher Bouton</label>
+                        </div>
+                        <div id="urlSection" class="mb-4" style="display: none;">
                             <label for="alerte-url" class="form-label">URL Spécifique</label>
                             <input type="url" class="form-control" id="alerte-url" name="alert_url" placeholder="URL spécifique" required />
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="alert-open" />
-                            <label class="form-check-label" for="alert-open">Bouton si ouvert</label>
                         </div>
                         <div class="mb-4">
                             <button type="submit" class="btn btn-warning">Créer l'Alerte</button>
@@ -1330,11 +1330,10 @@
         </div>
 
         <!-- Email Template for Alerte -->
-        <div id="alerteTemplate" class="col-md-6" style="display: none;">
+        <div id="alerteTemplate"  class="col-md-8" style="display: none;"> <!-- 70% width -->
             <div class="card mb-6">
-                <h5 class="card-header">Template Email Alerte</h5>
-                <div class="card-body">
-                    <p>Voici le template d'email pour l'alerte.</p>
+              <div class="card-body">
+
                     <div>
                       <html xmlns="http://www.w3.org/1999/xhtml"><head><style type="text/css">
                         a { text-decoration: none; outline: none; }
@@ -1384,6 +1383,8 @@
                           .o_sans, .o_heading { font-family: "Roboto", sans-serif !important; }
                           .o_heading, strong, b { font-weight: 700 !important; }
                           a[x-apple-data-detectors] { color: inherit !important; text-decoration: none !important; }
+
+
                         }
                         #canvas td.o_hide, #canvas td.o_hide div { display: block!important; font-family: "Roboto", sans-serif; font-size: 16px!important; color: #000; font-size: inherit!important; max-height: none!important; width: auto!important; line-height: inherit!important; visibility: visible!important;}
                         .CodeMirror { line-height: 1.4; font-size: 12px; font-family: sans-serif; }
@@ -1440,8 +1441,8 @@
                                           </tr>
                                         </tbody>
                                       </table>
-                                      <h2 class="o_heading o_text-dark o_mb-xxs" data-color="Dark" data-size="Heading 2" data-min="20" data-max="40" style="font-family: Helvetica, Arial, sans-serif;font-weight: bold;margin-top: 0px;margin-bottom: 4px;color: #242b3d;font-size: 30px;line-height: 39px;">Welcome to B2B Valomnia</h2>
-                                     
+                                      <h2 class="o_heading o_text-dark o_mb-xxs" id="template-title" data-color="Dark" data-size="Heading 2" data-min="20" data-max="40" style="font-family: Helvetica, Arial, sans-serif;font-weight: bold;margin-top: 0px;margin-bottom: 4px;color: #242b3d;font-size: 30px;line-height: 39px;">Welcome to B2B Valomnia</h2>
+
                                     </td>
                                   </tr>
                                 </tbody>
@@ -1478,7 +1479,7 @@
                                   <tr>
                                     <td class="o_bg-white o_px-md o_py o_sans o_text o_text-secondary" align="left" data-bgcolor="Bg White" data-color="Secondary" data-size="Text Default" data-min="12" data-max="20" style="text-align: left;font-family: Helvetica, Arial, sans-serif;margin-top: 0px;margin-bottom: 0px;font-size: 16px;line-height: 24px;background-color: #ffffff;color: #424651;padding-left: 24px;padding-right: 24px;padding-top: 16px;padding-bottom: 16px;">
                                       <p style="margin-top: 0px;margin-bottom: 0px;">Welcome to B2B Valomnia! We're excited to have you on board.</p>
-                      
+
                                       <p style="margin-top: 0px;margin-bottom: 0px;">Below are your login credentials to get started:</p>
                                     </td>
                                   </tr>
@@ -1489,62 +1490,7 @@
                           </tr>
                         </tbody>
                       </table>
-                      <table data-module="label-xs0" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
-                        <tbody>
-                          <tr>
-                            <td class="o_bg-light o_px-xs" align="center" data-bgcolor="Bg Light" style="background-color: #dbe5ea;padding-left: 8px;padding-right: 8px;">
-                              <!--[if mso]><table width="432" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
-                              <table class="o_block-xs" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation" style="max-width: 432px;margin: 0 auto;">
-                                <tbody>
-                                  <tr>
-                                    <td class="o_bg-white o_px-md o_py o_sans o_text-xs o_text-light" align="center" data-bgcolor="Bg White" data-color="Light" data-size="Text XS" data-min="10" data-max="18" style="font-family: Helvetica, Arial, sans-serif;margin-top: 0px;margin-bottom: 0px;font-size: 14px;line-height: 21px;background-color: #ffffff;color: #82899a;padding-left: 24px;padding-right: 24px;padding-top: 16px;padding-bottom: 16px;">
-                                      <p class="o_mb" style="margin-top: 0px;margin-bottom: 16px;"><strong>E-mail Address</strong></p>
-                                      <table role="presentation" cellspacing="0" cellpadding="0" border="0">
-                                        <tbody>
-                                          <tr>
-                                            <td width="284" class="o_bg-ultra_light o_br o_text-xs o_sans o_px-xs o_py" align="center" data-bgcolor="Bg Ultra Light" data-size="Text XS" data-min="10" data-max="18" style="font-family: Helvetica, Arial, sans-serif;margin-top: 0px;margin-bottom: 0px;font-size: 14px;line-height: 21px;background-color: #ebf5fa;border-radius: 4px;padding-left: 8px;padding-right: 8px;padding-top: 16px;padding-bottom: 16px;">
-                                              <p class="o_text-dark" data-color="Dark" style="color: #242b3d;margin-top: 0px;margin-bottom: 0px;"><strong>robertallen@company.com</strong></p>
-                                            </td>
-                                          </tr>
-                                        </tbody>
-                                      </table>
-                                    </td>
-                                  </tr>
-                                </tbody>
-                              </table>
-                              <!--[if mso]></td></tr></table><![endif]-->
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table><table data-module="label-xs0"  width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
-                        <tbody>
-                          <tr>
-                            <td class="o_bg-light o_px-xs" align="center" data-bgcolor="Bg Light" style="background-color: #dbe5ea;padding-left: 8px;padding-right: 8px;">
-                              <!--[if mso]><table width="432" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
-                              <table class="o_block-xs" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation" style="max-width: 432px;margin: 0 auto;">
-                                <tbody>
-                                  <tr>
-                                    <td class="o_bg-white o_px-md o_py o_sans o_text-xs o_text-light" align="center" data-bgcolor="Bg White" data-color="Light" data-size="Text XS" data-min="10" data-max="18" style="font-family: Helvetica, Arial, sans-serif;margin-top: 0px;margin-bottom: 0px;font-size: 14px;line-height: 21px;background-color: #ffffff;color: #82899a;padding-left: 24px;padding-right: 24px;padding-top: 16px;padding-bottom: 16px;">
-                                      <p class="o_mb" style="margin-top: 0px;margin-bottom: 16px;"><strong>Password</strong></p>
-                                      <table role="presentation" cellspacing="0" cellpadding="0" border="0">
-                                        <tbody>
-                                          <tr>
-                                            <td width="284" class="o_bg-ultra_light o_br o_text-xs o_sans o_px-xs o_py" align="center" data-bgcolor="Bg Ultra Light" data-size="Text XS" data-min="10" data-max="18" style="font-family: Helvetica, Arial, sans-serif;margin-top: 0px;margin-bottom: 0px;font-size: 14px;line-height: 21px;background-color: #ebf5fa;border-radius: 4px;padding-left: 8px;padding-right: 8px;padding-top: 16px;padding-bottom: 16px;">
-                                              <p class="o_text-dark" data-color="Dark" style="color: #242b3d;margin-top: 0px;margin-bottom: 0px;"><strong>ROmdmmloed**</strong></p>
-                                            </td>
-                                          </tr>
-                                        </tbody>
-                                      </table>
-                                    </td>
-                                  </tr>
-                                </tbody>
-                              </table>
-                              <!--[if mso]></td></tr></table><![endif]-->
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                      
+
                       <table data-module="spacer00" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
                         <tbody>
                           <tr>
@@ -1613,23 +1559,7 @@
                           <tr>
                             <td class="o_bg-light o_px-xs" align="center" data-bgcolor="Bg Light" style="background-color: #dbe5ea;padding-left: 8px;padding-right: 8px;">
                               <!--[if mso]><table width="432" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
-                              <table class="o_block-xs" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation" style="max-width: 432px;margin: 0 auto;">
-                                <tbody>
-                                  <tr>
-                                    <td class="o_bg-white o_px-md o_py o_sans o_text o_text-secondary" align="left" data-bgcolor="Bg White" data-color="Secondary" data-size="Text Default" data-min="12" data-max="20" style="    text-align: left;font-family: Helvetica, Arial, sans-serif;margin-top: 0px;margin-bottom: 0px;font-size: 16px;line-height: 24px;background-color: #ffffff;color: #424651;padding-left: 24px;padding-right: 24px;padding-top: 16px;padding-bottom: 16px;">
-                                      <p style="margin-top: 0px;margin-bottom: 0px;"> <strong> Next Steps:</strong> </p>
-                                      <p style="margin-top: 0px;margin-bottom: 0px;">
-                                       
-                                          We recommend updating your password after your first login to secure your account.
-                      
-                                          If you have any questions or need assistance, our support team is here to help.
-                      
-                                          Thank you for joining B2B Valomnia, and we look forward to supporting your business journey.
-                                      </p>
-                                    </td>
-                                  </tr>
-                                </tbody>
-                              </table>
+                              
                               <!--[if mso]></td></tr></table><![endif]-->
                             </td>
                           </tr>
@@ -1660,9 +1590,9 @@
                                 <tbody>
                                   <tr>
                                     <td class="o_bg-white o_px-md o_py-lg o_bt-light o_br-b o_sans o_text-xs o_text-light" align="center" data-bgcolor="Bg White" data-color="Light" data-size="Text XS" data-min="10" data-max="18" data-border-top-color="Border Light" style="font-family: Helvetica, Arial, sans-serif;margin-top: 0px;margin-bottom: 0px;font-size: 14px;line-height: 21px;background-color: #ffffff;color: #82899a;border-top: 1px solid #d3dce0;border-radius: 0px 0px 4px 4px;padding-left: 24px;padding-right: 24px;padding-top: 32px;padding-bottom: 32px;">
-                                     
+
                                       <p class="o_mb" style="margin-top: 0px;margin-bottom: 16px;">©2025 Valomnia</p>
-                                    
+
                                     </td>
                                   </tr>
                                 </tbody>
@@ -1673,7 +1603,7 @@
                           </tr>
                         </tbody>
                       </table>
-                      
+
                       </body>
                         </html>
                     </div>
@@ -1704,5 +1634,17 @@
             alerteTemplate.style.display = 'block';
         }
     }
+
+    function updateEmailTemplate() {
+    const title = document.getElementById('alerte-title').value;
+    document.getElementById('template-title').innerText = title || "Welcome to B2B Valomnia"; // Default title
+}
+
+
+function toggleUrlSection() {
+    const urlSection = document.getElementById('urlSection');
+    const checkbox = document.getElementById('alert-open');
+    urlSection.style.display = checkbox.checked ? 'block' : 'none';
+}
 </script>
 @endsection
