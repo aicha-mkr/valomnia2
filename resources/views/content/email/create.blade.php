@@ -1317,6 +1317,10 @@
                             <input class="form-check-input" type="checkbox" id="alert-open" onclick="toggleUrlSection()" />
                             <label class="form-check-label" for="alert-open">Afficher Bouton</label>
                         </div>
+                        <div class="mb-4">
+                          <label for="alerte-title-button" class="form-label">Titre Bouton</label>
+                          <input type="text" class="form-control" id="alerte-title-button" name="title" placeholder="Titre de boutton" required oninput="updateEmailTemplate()" />                        </div>
+                      <div class="mb-4">
                         <div id="urlSection" class="mb-4" style="display: none;">
                             <label for="alerte-url" class="form-label">URL Spécifique</label>
                             <input type="url" class="form-control" id="alerte-url" name="alert_url" placeholder="URL spécifique" required />
@@ -1643,6 +1647,7 @@
 
 function toggleUrlSection() {
     const urlSection = document.getElementById('urlSection');
+    
     const checkbox = document.getElementById('alert-open');
     urlSection.style.display = checkbox.checked ? 'block' : 'none';
 }
