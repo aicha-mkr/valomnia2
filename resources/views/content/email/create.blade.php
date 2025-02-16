@@ -1516,16 +1516,6 @@
                         <tbody>
                           <tr>
                             <td class="o_bg-light o_px-xs" align="center" data-bgcolor="Bg Light" style="background-color: #dbe5ea;padding-left: 8px;padding-right: 8px;">
-                              <!--[if mso]><table width="432" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
-                              <table class="o_block-xs" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation" style="max-width: 432px;margin: 0 auto;">
-                                <tbody>
-                                  <tr>
-                                    <td class="o_bg-white o_px-md o_py o_sans o_text o_text-secondary" align="left" data-bgcolor="Bg White" data-color="Secondary" data-size="Text Default" data-min="12" data-max="20" style="    text-align: left;font-family: Helvetica, Arial, sans-serif;margin-top: 0px;margin-bottom: 0px;font-size: 16px;line-height: 24px;background-color: #ffffff;color: #424651;padding-left: 24px;padding-right: 24px;padding-top: 16px;padding-bottom: 16px;">
-                                      <p style="margin-top: 0px;margin-bottom: 0px;">To access your account, <strong>PRESS</strong> the button below:</p>
-                                    </td>
-                                  </tr>
-                                </tbody>
-                              </table>
                               <!--[if mso]></td></tr></table><![endif]-->
                             </td>
                           </tr>
@@ -1563,7 +1553,7 @@
                           <tr>
                             <td class="o_bg-light o_px-xs" align="center" data-bgcolor="Bg Light" style="background-color: #dbe5ea;padding-left: 8px;padding-right: 8px;">
                               <!--[if mso]><table width="432" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
-                              
+
                               <!--[if mso]></td></tr></table><![endif]-->
                             </td>
                           </tr>
