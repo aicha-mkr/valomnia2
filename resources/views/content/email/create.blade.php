@@ -23,41 +23,42 @@
                     </div>
                     <div class="mb-4">
                       <label for="alerte-title" class="form-label">Titre</label>
-                      <input type="text" class="form-control" id="alerte-title" name="title" placeholder="Titre de l'alerte" required oninput="updateEmailTemplate()" />
+                      <input type="text" class="form-control" id="rapport-title" name="title" placeholder="Titre de l'alerte" required oninput="updateReportTitle()" />
                   </div>
                       
-                      <div class="mb-4">
-                        <h5>Configurer le Texte de l'Email</h5>
-                        <textarea class="form-control" id="email-content" name="email_content" rows="6" placeholder="Entrez le contenu de l'email ici..."></textarea>
-                    </div>
+                  <div class="mb-4">
+                    <h5>Configurer le Texte du Rapport</h5>
+                    <textarea class="form-control" id="rapport-content" name="rapport_content" rows="6" 
+                              placeholder="Entrez le contenu du rapport ici..." oninput="updateRapportContent()"></textarea>
+                </div>
 
                       
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="show-title" onclick="toggleTitle()" checked />
+                  <label class="form-check-label" for="show-title">Afficher le Titre</label>
+              </div>
+              <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="show-paragraph" onclick="toggleParagraph()" checked />
+                  <label class="form-check-label" for="show-paragraph">Afficher le Texte de l'Email</label>
+              </div>
+                        <!-- KPI Selection Form -->
+              <div class="row mb-4">
+                <div class="col-12">
+                    <h5 class="card-header">Sélectionner les KPI</h5>
                     <div class="form-check">
-                      <input class="form-check-input" type="checkbox" id="show-title" onclick="toggleTitle()" checked />
-                      <label class="form-check-label" for="show-title">Afficher le Titre</label>
-                  </div>
-                  <div class="form-check">
-                      <input class="form-check-input" type="checkbox" id="show-paragraph" onclick="toggleParagraph()" />
-                      <label class="form-check-label" for="show-paragraph">Afficher le Texte de l'Email</label>
-                  </div>
-                      
-                      <div class="row mb-4">
-                          <div class="col-12">
-                              <h5 class="card-header">Sélectionner les KPI</h5>
-                              <div class="form-check">
-                                  <input class="form-check-input" type="checkbox" value="total_revenue" id="totalRevenueCheckbox" name="kpis[]" />
-                                  <label class="form-check-label" for="totalRevenueCheckbox">Total Revenue</label>
-                              </div>
-                              <div class="form-check">
-                                  <input class="form-check-input" type="checkbox" value="total_orders" id="totalOrdersCheckbox" name="kpis[]" />
-                                  <label class="form-check-label" for="totalOrdersCheckbox">Total Orders</label>
-                              </div>
-                              <div class="form-check">
-                                  <input class="form-check-input" type="checkbox" value="total_employees" id="totalEmployeesCheckbox" name="kpis[]" />
-                                  <label class="form-check-label" for="totalEmployeesCheckbox">Total Employees</label>
-                              </div>
-                          </div>
-                      </div>
+                        <input class="form-check-input" type="checkbox" value="total_revenue" id="totalRevenueCheckbox" name="kpis[]" checked onclick="updateKPI()" />
+                        <label class="form-check-label" for="totalRevenueCheckbox">Total Revenue</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="total_orders" id="totalOrdersCheckbox" name="kpis[]" checked onclick="updateKPI()" />
+                        <label class="form-check-label" for="totalOrdersCheckbox">Total Orders</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="total_employees" id="totalEmployeesCheckbox" name="kpis[]" checked onclick="updateKPI()" />
+                        <label class="form-check-label" for="totalEmployeesCheckbox">Total Employees</label>
+                    </div>
+                </div>
+              </div>
   
                       <div class="mb-4">
                           <h5>Ajouter un Bouton dans l'Email</h5>
@@ -474,24 +475,24 @@
                       </tbody>
                     </table>
                     
-<h2 id="report-title" class="o_heading o_text-dark o_mb-xxs" data-color="Dark" data-size="Heading 2" data-min="20" data-max="40"
-style="
-    font-family: Helvetica, Arial, sans-serif;
-    font-weight: bold;
-    margin-top: 0px;
-    margin-bottom: 4px;
-    color: #242b3d;
-    font-size: 30px;
-    line-height: 39px;">
-Report Title
-</h2>
+                    <h2 id="report-title" class="o_heading o_text-dark o_mb-xxs" data-color="Dark" data-size="Heading 2" data-min="20" data-max="40"
+                    style="
+                        font-family: Helvetica, Arial, sans-serif;
+                        font-weight: bold;
+                        margin-top: 0px;
+                        margin-bottom: 4px;
+                        color: #242b3d;
+                        font-size: 30px;
+                        line-height: 39px;">
+                    Report Title
+                    </h2>
                   </td>
                 </tr>
               </tbody>
             </table>
             <!--[if mso]></td></tr></table><![endif]-->
           </td>
-       
+
       </tbody>
     </table>
     <table
@@ -542,24 +543,8 @@ Report Title
                     padding-top: 16px;
                     padding-bottom: 16px;
                   ">
-                  <h4
-                    class="o_heading o_text-dark o_mb-xs"
-                    data-color="Dark"
-                    data-size="Heading 4"
-                    data-min="10"
-                    data-max="26"
-                    style="
-                      font-family: Helvetica, Arial, sans-serif;
-                      font-weight: bold;
-                      margin-top: 0px;
-                      margin-bottom: 8px;
-                      color: #242b3d;
-                      font-size: 18px;
-                      line-height: 23px;
-                    ">
-                    Your Account Details
-                  </h4>
-                  <p style="margin-top: 0px; margin-bottom: 0px">
+                  
+                  <p id="rapport-template-text" style="margin-top: 0px; margin-bottom: 0px">
                     Callously piranha however moronic selfless more because spitefully dear some far forward where
                     mounted underneath however feeling out less alas.
                   </p>
@@ -572,15 +557,12 @@ Report Title
       </tr>
     </tbody>
   </table>
-  
-
-
-
-
-
 
   
+
+
     <table
+    
       data-module="pricing-3cols"
       data-visible="false"
       data-thumb="http://www.stampready.net/dashboard/editor/user_uploads/zip_uploads/2018/11/19/pcVNfzKjZ3goPqkxr2hYT0ws/service_canceled/thumbnails/pricing-3cols.png"
@@ -591,6 +573,7 @@ Report Title
       role="presentation">
       <tbody>
         <tr>
+          
           <td
             class="o_bg-light o_px-xs"
             align="center"
@@ -605,9 +588,11 @@ Report Title
               border="0"
               role="presentation"
               style="max-width: 632px; margin: 0 auto">
+              
               <tbody>
                 <tr>
-                  <td
+                  <td  
+                    id="kpi-list"
                     class="o_re o_bg-white o_px o_pb-md"
                     align="center"
                     data-bgcolor="Bg White"
@@ -619,8 +604,26 @@ Report Title
                       padding-right: 16px;
                       padding-bottom: 24px;
                     ">
+                    <h4
+                    class="o_heading o_text-dark o_mb-xs"
+                    data-color="Dark"
+                    data-size="Heading 4"
+                    data-min="10"
+                    data-max="26"
+                    style="
+                      font-family: Helvetica, Arial, sans-serif;
+                      font-weight: bold;
+                      margin-top: 0px;
+                      margin-bottom: 8px;
+                      color: #242b3d;
+                      font-size: 18px;
+                      line-height: 23px;
+                    ">
+                    Your kpi Details
+                  </h4>
                     <!--[if mso]><table cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td width="200" align="center" valign="top" style="padding: 0px 8px;"><![endif]-->
                     <div
+                      id="kpi1"
                       class="o_col o_col-2 o_col-full"
                       style="display: inline-block; vertical-align: top; width: 100%; max-width: 180px">
                       <div style="font-size: 24px; line-height: 24px; height: 24px">&nbsp;</div>
@@ -654,6 +657,7 @@ Report Title
                                   <strong>Basic</strong>
                                 </p>
                                 <h2
+                                id="kpiValue1"
                                   class="o_heading o_text-primary"
                                   data-size="Heading 2"
                                   data-min="20"
@@ -724,6 +728,7 @@ Report Title
                     </div>
                     <!--[if mso]></td><td width="200" align="center" valign="top" style="padding: 0px 8px;"><![endif]-->
                     <div
+                      id="kpi2"
                       class="o_col o_col-2 o_col-full"
                       style="display: inline-block; vertical-align: top; width: 100%; max-width: 180px">
                       <div style="font-size: 24px; line-height: 24px; height: 24px">&nbsp;</div>
@@ -757,6 +762,7 @@ Report Title
                                   <strong>Premium</strong>
                                 </p>
                                 <h2
+                                id="kpiValue2"
                                   class="o_heading o_text-primary"
                                   data-size="Heading 2"
                                   data-min="20"
@@ -844,6 +850,7 @@ Report Title
                     </div>
                     <!--[if mso]></td><td width="200" align="center" valign="top" style="padding: 0px 8px;"><![endif]-->
                     <div
+                     id="kpi3"
                       class="o_col o_col-2 o_col-full"
                       style="display: inline-block; vertical-align: top; width: 100%; max-width: 200px">
                       <div style="font-size: 24px; line-height: 24px; height: 24px">&nbsp;</div>
@@ -877,6 +884,7 @@ Report Title
                                   <strong>Enterprise</strong>
                                 </p>
                                 <h2
+                                id="kpiValue3"
                                   class="o_heading o_text-primary"
                                   data-size="Heading 2"
                                   data-min="20"
@@ -972,7 +980,7 @@ Report Title
         </tr>
       </tbody>
     </table>
-    
+
     <table
       data-module="spacer0"
       data-thumb="http://www.stampready.net/dashboard/editor/user_uploads/zip_uploads/2018/11/19/pcVNfzKjZ3goPqkxr2hYT0ws/service_canceled/thumbnails/spacer.png"
@@ -1411,7 +1419,7 @@ Report Title
   </body>
 </html>
 
-                        
+
                     </div>
                 </div>
             </div>
@@ -1425,28 +1433,41 @@ Report Title
                     <form >
                         @csrf
                         <div class="mb-4">
-                            <label for="alerte-type" class="form-label">Type d'Alerte</label>
+                          <label for="alerte-type" class="form-label">Type d'Alerte</label>
                             <select class="form-select" id="alerte-type" name="alert_type" required>
-                                <option value="" disabled selected>Choisir un type d'alerte</option>
-                                <option value="stock">Stock</option>
-                                <option value="chiffre">Chiffre</option>
-                            </select>
-                        </div>
-                        <div class="mb-4">
-                            <label for="alerte-title" class="form-label">Titre</label>
-                            <input type="text" class="form-control" id="alerte-title" name="title" placeholder="Titre de l'alerte" required oninput="updateEmailTemplate()" />                        </div>
-                        <div class="mb-4">
-                            <label for="alerte-email-subject" class="form-label">Sujet d'Email</label>
-                            <input type="text" class="form-control" id="alerte-email-subject" name="email_subject" placeholder="Sujet de l'email" required />
+                              <option value="">Sélectionnez un type</option>
+                              <option value="stock">Stock</option>
+                                <option value="prix">Prix</option>
+
+                             </select>
                         </div>
 
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="alert-open" onclick="toggleUrlSection()" />
-                            <label class="form-check-label" for="alert-open">Afficher Bouton</label>
-                        </div>
-                        <div id="urlSection" class="mb-4" style="display: none;">
-                            <label for="alerte-url" class="form-label">URL Spécifique</label>
-                            <input type="url" class="form-control" id="alerte-url" name="alert_url" placeholder="URL spécifique" required />
+                 <div class="mb-4">
+    <label for="alerte-title" class="form-label">Titre</label>
+    <input type="text" class="form-control" id="alerte-title" name="alert_title" placeholder="Titre de l'alerte" required oninput="updateAlertTitle() " />
+</div>
+
+    <div class="mb-4">
+        <label for="alerte-email-subject" class="form-label">Sujet d'Email</label>
+        <input type="text" class="form-control" id="alerte-email-subject"  name="email_subject" placeholder="Sujet de l'email" required />
+    </div>
+
+    <div class="mb-4">
+      <label for="alerte-title" class="form-label">Titre de l'alerte</label>
+      <input type="text" id="alerte-title" class="form-control" oninput="updateAlertContent()" placeholder="Titre de l'alerte" />
+  </div>
+<div class="form-check">
+        <input class="form-check-input" type="checkbox" id="alert-open" onclick="toggleUrlSection()" />
+        <label class="form-check-label" for="alert-open">Afficher Bouton</label>
+    </div>
+
+    <div id="urlSection" class="mb-4" style="display: none;">
+        <label for="alerte-url" class="form-label">URL Spécifique</label>
+        <input type="url" class="form-control" id="alerte-url" name="alert_url" placeholder="URL spécifique" required oninput="updateButtonUrl()" />
+        <div class="mb-4">
+            <label for="alerte-text" class="form-label">Texte</label>
+            <textarea class="form-control" id="alerte-text" name="alert_text" rows="3" placeholder="Entrez votre texte ici" oninput="updateTemplateText()"></textarea>
+        </div>
                         </div>
                         <div class="mb-4">
                             <button type="submit" class="btn btn-warning">Créer l'Alerte</button>
@@ -1568,7 +1589,7 @@ Report Title
                                           </tr>
                                         </tbody>
                                       </table>
-                                      <h2 class="o_heading o_text-dark o_mb-xxs" id="template-title" data-color="Dark" data-size="Heading 2" data-min="20" data-max="40" style="font-family: Helvetica, Arial, sans-serif;font-weight: bold;margin-top: 0px;margin-bottom: 4px;color: #242b3d;font-size: 30px;line-height: 39px;">Welcome to B2B Valomnia</h2>
+                                      <h2 class="o_heading o_text-dark o_mb-xxs" id="template-title" data-color="Dark" data-size="Heading 2" data-min="20" data-max="40" style="font-family: Helvetica, Arial, sans-serif;font-weight: bold;margin-top: 0px;margin-bottom: 4px;color: #242b3d;font-size: 30px;line-height: 39px;">Titre de l'alerte par défaut</h2>
 
                                     </td>
                                   </tr>
@@ -1605,9 +1626,8 @@ Report Title
                                 <tbody>
                                   <tr>
                                     <td class="o_bg-white o_px-md o_py o_sans o_text o_text-secondary" align="left" data-bgcolor="Bg White" data-color="Secondary" data-size="Text Default" data-min="12" data-max="20" style="text-align: left;font-family: Helvetica, Arial, sans-serif;margin-top: 0px;margin-bottom: 0px;font-size: 16px;line-height: 24px;background-color: #ffffff;color: #424651;padding-left: 24px;padding-right: 24px;padding-top: 16px;padding-bottom: 16px;">
-                                      <p style="margin-top: 0px;margin-bottom: 0px;">Welcome to B2B Valomnia! We're excited to have you on board.</p>
+                                      <p id="template-text" style="margin-top: 0px;margin-bottom: 0px;">Welcome to B2B Valomnia! We're excited to have you on board.</p>
 
-                                      <p style="margin-top: 0px;margin-bottom: 0px;">Below are your login credentials to get started:</p>
                                     </td>
                                   </tr>
                                 </tbody>
@@ -1650,22 +1670,22 @@ Report Title
                             <td class="o_bg-light o_px-xs" align="center" data-bgcolor="Bg Light" style="background-color: #dbe5ea;padding-left: 8px;padding-right: 8px;">
                               <!--[if mso]><table width="432" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
                               <table class="o_block-xs" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation" style="max-width: 432px;margin: 0 auto;">
-                                <tbody>
-                                  <tr>
-                                    <td class="o_bg-white o_px-md o_py-xs" align="center" data-bgcolor="Bg White" style="background-color: #ffffff;padding-left: 24px;padding-right: 24px;padding-top: 8px;padding-bottom: 8px;">
-                                      <table align="center" cellspacing="0" cellpadding="0" border="0" role="presentation">
-                                        <tbody>
-                                          <tr>
-                                            <td width="300" class="o_btn o_bg-success o_br o_heading o_text" align="center" data-bgcolor="Bg Success" data-size="Text Default" data-min="12" data-max="20" style="font-family: Helvetica, Arial, sans-serif;font-weight: bold;margin-top: 0px;margin-bottom: 0px;font-size: 16px;line-height: 24px;mso-padding-alt: 12px 24px;background-color: #0ec06e;border-radius: 4px;">
-                                              <a class="o_text-white" href="https://example.com/" data-color="White" style="text-decoration: none;outline: none;color: #ffffff;display: block;padding: 12px 24px;mso-text-raise: 3px;">Access Your Account</a>
-                                            </td>
-                                          </tr>
-                                        </tbody>
-                                      </table>
-                                    </td>
-                                  </tr>
-                                </tbody>
-                              </table>
+        <tbody>
+            <tr>
+                <td class="o_bg-white o_px-md o_py-xs" align="center" data-bgcolor="Bg White" style="background-color: #ffffff;padding-left: 24px;padding-right: 24px;padding-top: 8px;padding-bottom: 8px;">
+                    <table align="center" cellspacing="0" cellpadding="0" border="0" role="presentation">
+                        <tbody>
+                            <tr>
+                                <td width="300" class="o_btn o_bg-success o_br o_heading o_text" id="action-button" align="center" data-bgcolor="Bg Success" data-size="Text Default" data-min="12" data-max="20" style="font-family: Helvetica, Arial, sans-serif;font-weight: bold;margin-top: 0px;margin-bottom: 0px;font-size: 16px;line-height: 24px;mso-padding-alt: 12px 24px;background-color: #0ec06e;border-radius: 4px; display: none;">
+                                    <a class="o_text-white" id="action-link" href="https://example.com/" data-color="White" style="text-decoration: none;outline: none;color: #ffffff;display: block;padding: 12px 24px;mso-text-raise: 3px;">Access Your Account</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+        </tbody>
+    </table>
                               <!--[if mso]></td></tr></table><![endif]-->
                             </td>
                           </tr>
@@ -1708,7 +1728,7 @@ Report Title
                                   <tr>
                                     <td class="o_bg-white o_px-md o_py-lg o_bt-light o_br-b o_sans o_text-xs o_text-light" align="center" data-bgcolor="Bg White" data-color="Light" data-size="Text XS" data-min="10" data-max="18" data-border-top-color="Border Light" style="font-family: Helvetica, Arial, sans-serif;margin-top: 0px;margin-bottom: 0px;font-size: 14px;line-height: 21px;background-color: #ffffff;color: #82899a;border-top: 1px solid #d3dce0;border-radius: 0px 0px 4px 4px;padding-left: 24px;padding-right: 24px;padding-top: 32px;padding-bottom: 32px;">
 
-                                      <p class="o_mb" style="margin-top: 0px;margin-bottom: 16px;">©2025 Valomnia</p>
+                                      <p class="o_mb" style="margin-top: 0px;margin-bottom: 16px;">©2006 Valomnia</p>
 
                                     </td>
                                   </tr>
@@ -1730,7 +1750,6 @@ Report Title
     </div>
 
 @endsection
-
 @section('page-script')
 <script>
     function toggleSections(section) {
@@ -1752,25 +1771,124 @@ Report Title
         }
     }
 
-    function updateEmailTemplate() {
-        const titleInput = document.getElementById('alerte-title').value;
+    function updateReportTitle() {
+        // Get the value from the input field
+        const titleInput = document.getElementById('rapport-title').value;
+        // Get the template title element
         const reportTitle = document.getElementById('report-title');
-        reportTitle.textContent = titleInput || 'Report Title';
+        // Update the title or set default if input is empty
+        reportTitle.innerText = titleInput || "Titre du rapport par défaut"; // Default title
+    }
+    function updateRapportContent() {
+        // Get the value from the textarea
+        const rapportContent = document.getElementById('rapport-content').value;
+        // Get the rapport template text element
+        const rapportTemplateText = document.getElementById('rapport-template-text');
+        // Update the paragraph or set default if input is empty
+        rapportTemplateText.innerText = rapportContent || "Contenu par défaut du rapport. Veuillez entrer votre texte ci-dessus."; // Default text
     }
 
+    function toggleTitle() {
+        const titleElement = document.getElementById('report-title');
+        const titleCheckbox = document.getElementById('show-title');
+        titleElement.style.display = titleCheckbox.checked ? 'block' : 'none'; // Show or hide title
+    }
+
+    function toggleParagraph() {
+        const contentElement = document.getElementById('rapport-template-text');
+        const paragraphCheckbox = document.getElementById('show-paragraph');
+        contentElement.style.display = paragraphCheckbox.checked ? 'block' : 'none'; // Show or hide content
+    }
+    
 
 
-function toggleUrlSection() {
-    const urlSection = document.getElementById('urlSection');
-    const checkbox = document.getElementById('alert-open');
-    urlSection.style.display = checkbox.checked ? 'block' : 'none';
-}
 
 
-function toggleButtonInput() {
+
+    function updateAlertText() {
+        const text = document.getElementById('alerte-text').value;
+        document.getElementById('template-text').innerText = text || "Welcome to B2B Valomnia! We're excited to have you on board."; // Texte par défaut
+    }
+
+    
+    function updateAlertTitle() {
+        // Get the value from the input field
+        const titleInput = document.getElementById('alerte-title').value;
+        // Get the template title element
+        const alertTitle = document.getElementById('template-title');
+        // Update the title or set default if input is empty
+        alertTitle.innerText = titleInput || "Titre de l'alerte par défaut";
+    }
+
+    function toggleUrlSection() {
+        const checkbox = document.getElementById('alert-open');
+        const urlSection = document.getElementById('urlSection');
+        const button = document.getElementById('action-button');
+        urlSection.style.display = checkbox.checked ? 'block' : 'none'; // Affiche ou cache la section URL
+        button.style.display = checkbox.checked ? 'table-cell' : 'none'; // Affiche ou cache le bouton
+    }
+
+    function updateButtonUrl() {
+        const buttonUrl = document.getElementById('alerte-url').value;
+        document.getElementById('action-link').href = buttonUrl || "https://example.com/";
+    }
+
+    function updateButtonText() {
+        const buttonText = document.getElementById('alerte-text').value;
+        document.getElementById('action-link').innerText = buttonText || "Access Your Account"; // Texte par défaut
+    }
+
+    function toggleButtonInput() {
         const checkbox = document.getElementById('addButton');
         const inputSection = document.getElementById('buttonInput');
         inputSection.style.display = checkbox.checked ? 'block' : 'none';
     }
+
+ 
+
+    function updateKPI() {
+    const kpiMap = {
+        total_revenue: { cardId: 'kpi1', valueId: 'kpiValue1' },
+        total_orders: { cardId: 'kpi2', valueId: 'kpiValue2' },
+        total_employees: { cardId: 'kpi3', valueId: 'kpiValue3' }
+    };
+
+    // Clear previous values and hide all cards initially
+    for (const key in kpiMap) {
+        const cardElement = document.getElementById(kpiMap[key].cardId);
+        const valueElement = document.getElementById(kpiMap[key].valueId);
+        if (cardElement) {
+            cardElement.style.display = 'none'; // Hide the card
+            if (valueElement) {
+                valueElement.innerText = "Value will appear here"; // Reset text
+            }
+        }
+    }
+
+    // Get checked checkboxes
+    const checkboxes = document.querySelectorAll('.form-check-input[type="checkbox"]:checked');
+    
+    checkboxes.forEach(checkbox => {
+        const kpiKey = checkbox.value; // Get the KPI key from the checkbox
+        const { cardId, valueId } = kpiMap[kpiKey]; // Get corresponding card and value IDs
+
+        if (cardId) {
+            const cardElement = document.getElementById(cardId); // Get the card element
+            const valueElement = document.getElementById(valueId); // Get the value element
+            if (cardElement) {
+                cardElement.style.display = 'block'; // Show the card
+                if (valueElement) {
+                    valueElement.innerText = `${kpiKey.replace(/_/g, ' ').toUpperCase()}`; // Update value text
+                }
+            }
+        }
+    });
+}
+
+// Call updateKPI when the window loads to set up the initial state
+window.onload = function() {
+    updateKPI();
+};
+    
 </script>
 @endsection
