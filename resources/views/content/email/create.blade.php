@@ -10,72 +10,90 @@
     </div>
 
     <div class="row">
-        <!-- Rapport Section -->
-        <div id="rapportSection" class="col-md-4 section" style="display: none;"> <!-- 30% width -->
+      <!-- Rapport Section -->
+      <div id="rapportSection" class="col-md-4 section" style="display: none;"> <!-- 30% width -->
           <div class="card mb-6">
-                <h5 class="card-header">Formulaire de Rapport</h5>
-                <div class="card-body">
-                    <form action="{{ route('email.store') }}" method="POST">
-                        @csrf
-                        <div class="mb-4">
-                        <label for="alerte-title" class="form-label">Titre</label>
-                        <input type="text" class="form-control" id="alerte-title" name="title" placeholder="Titre de l'alerte" required oninput="updateEmailTemplate()" />
+              <h5 class="card-header">Formulaire de Rapport</h5>
+              <div class="card-body">
+                  <form action="{{ route('email.store') }}" method="POST">
+                      @csrf
+                      <div class="mb-4">
+                        <label for="rapport-email-subject" class="form-label">Sujet</label>
+                        <input type="text" class="form-control" id="rapport-email-subject" name="email_subject" placeholder="Sujet de l'email" required />
                     </div>
-                        <div class="mb-4">
-                            <label for="rapport-email-header" class="form-label">En-tête d'Email</label>
-                            <input type="text" class="form-control" id="rapport-email-header" name="email_header" placeholder="En-tête de l'email" required />
-                        </div>
-                        <div class="mb-4">
-                            <label for="rapport-email-subject" class="form-label">Sujet</label>
-                            <input type="text" class="form-control" id="rapport-email-subject" name="email_subject" placeholder="Sujet de l'email" required />
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="show-header" checked />
-                            <label class="form-check-label" for="show-header">Afficher l'en-tête</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="show-subject" />
-                            <label class="form-check-label" for="show-subject">Afficher le sujet</label>
-                        </div>
-                        <div class="row mb-4">
-                            <div class="col-12">
-                                <h5 class="card-header">Select KPIs to Include</h5>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="total_revenue" id="totalRevenueCheckbox" name="kpis[]" />
-                                    <label class="form-check-label" for="totalRevenueCheckbox">Total Revenue</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="total_clients" id="totalClientsCheckbox" name="kpis[]" />
-                                    <label class="form-check-label" for="totalClientsCheckbox">Total Customers</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="average_sales" id="averageSalesCheckbox" name="kpis[]" />
-                                    <label class="form-check-label" for="averageSalesCheckbox">Average Sales</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="total_orders" id="totalOrdersCheckbox" name="kpis[]" />
-                                    <label class="form-check-label" for="totalOrdersCheckbox">Total Orders</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mb-4">
-                            <button type="submit" class="btn btn-primary">Créer le Rapport</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
+                    <div class="mb-4">
+                      <label for="alerte-title" class="form-label">Titre</label>
+                      <input type="text" class="form-control" id="alerte-title" name="title" placeholder="Titre de l'alerte" required oninput="updateEmailTemplate()" />
+                  </div>
+                      
+                      <div class="mb-4">
+                        <h5>Configurer le Texte de l'Email</h5>
+                        <textarea class="form-control" id="email-content" name="email_content" rows="6" placeholder="Entrez le contenu de l'email ici..."></textarea>
+                    </div>
+
+                      
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" id="show-title" onclick="toggleTitle()" checked />
+                      <label class="form-check-label" for="show-title">Afficher le Titre</label>
+                  </div>
+                  <div class="form-check">
+                      <input class="form-check-input" type="checkbox" id="show-paragraph" onclick="toggleParagraph()" />
+                      <label class="form-check-label" for="show-paragraph">Afficher le Texte de l'Email</label>
+                  </div>
+                      
+                      <div class="row mb-4">
+                          <div class="col-12">
+                              <h5 class="card-header">Sélectionner les KPI</h5>
+                              <div class="form-check">
+                                  <input class="form-check-input" type="checkbox" value="total_revenue" id="totalRevenueCheckbox" name="kpis[]" />
+                                  <label class="form-check-label" for="totalRevenueCheckbox">Total Revenue</label>
+                              </div>
+                              <div class="form-check">
+                                  <input class="form-check-input" type="checkbox" value="total_orders" id="totalOrdersCheckbox" name="kpis[]" />
+                                  <label class="form-check-label" for="totalOrdersCheckbox">Total Orders</label>
+                              </div>
+                              <div class="form-check">
+                                  <input class="form-check-input" type="checkbox" value="total_employees" id="totalEmployeesCheckbox" name="kpis[]" />
+                                  <label class="form-check-label" for="totalEmployeesCheckbox">Total Employees</label>
+                              </div>
+                          </div>
+                      </div>
+  
+                      <div class="mb-4">
+                          <h5>Ajouter un Bouton dans l'Email</h5>
+                          <div class="form-check">
+                              <input class="form-check-input" type="checkbox" id="addButton" onclick="toggleButtonInput()" />
+                              <label class="form-check-label" for="addButton">Ajouter un bouton personnalisé</label>
+                          </div>
+                          <div id="buttonInput" style="display: none;" class="mt-2">
+                              <label for="button-url" class="form-label">URL du Bouton</label>
+                              <input type="url" class="form-control" id="button-url" name="button_url" placeholder="Entrez l'URL" />
+                              
+                              <label for="button-name" class="form-label mt-2">Nom du Bouton</label>
+                              <input type="text" class="form-control" id="button-name" name="button_name" placeholder="Nom du bouton" />
+                              
+                              <label for="button-color" class="form-label mt-2">Couleur du Bouton</label>
+                              <input type="color" class="form-control" id="button-color" name="button_color" value="#007bff" />
+                          </div>
+                      </div>
+                          
+                    <div class="mb-4">
+                      <button type="submit" class="btn btn-primary">Créer le Rapport</button>
+                  </div>
+                    
+                  </form>
+              </div>
+          </div>
+      </div>
+
 
         <!-- Email Template for Rapport -->
         <div id="rapportTemplate" class="col-md-8" style="display: none;"> <!-- 70% width -->
           <div class="card mb-6">
                 <div class="card-body">
-                    
-                    <div>
-                        <!-- Place your email template here -->
-
-                        <html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
+                  <div>
+          <html xmlns="http://www.w3.org/1999/xhtml">
+            <head>
     <title>Preview Fullscreen</title>
     <style type="text/css">
       a {
@@ -233,8 +251,8 @@
         font-family: sans-serif;
       }
     </style>
-  </head>
-  <body>
+             </head>
+         <body>
     <table
       data-module="preview-text"
       data-visible="false"
@@ -455,24 +473,18 @@
                         </tr>
                       </tbody>
                     </table>
-                    <h2
-                      class="o_heading o_text-dark o_mb-xxs"
-                      data-color="Dark"
-                      data-size="Heading 2"
-                      data-min="20"
-                      data-max="40"
-                      style="
-                        font-family: Helvetica, Arial, sans-serif;
-                        font-weight: bold;
-                        margin-top: 0px;
-                        margin-bottom: 4px;
-                        color: #242b3d;
-                        font-size: 30px;
-                        line-height: 39px;
-                      ">
-                      Notification Title
-                    </h2>
-                    <p style="margin-top: 0px; margin-bottom: 0px">That thus much less heron other hello</p>
+                    
+<h2 id="report-title" class="o_heading o_text-dark o_mb-xxs" data-color="Dark" data-size="Heading 2" data-min="20" data-max="40"
+style="
+    font-family: Helvetica, Arial, sans-serif;
+    font-weight: bold;
+    margin-top: 0px;
+    margin-bottom: 4px;
+    color: #242b3d;
+    font-size: 30px;
+    line-height: 39px;">
+Report Title
+</h2>
                   </td>
                 </tr>
               </tbody>
@@ -482,7 +494,6 @@
        
       </tbody>
     </table>
-    <!--mssssssgggiiiii-->
     <table
     data-module="content-lg"
     data-visible="false"
@@ -694,50 +705,13 @@
                                   padding-top: 16px;
                                   padding-bottom: 16px;
                                 ">
-                                <p class="o_mb-xs" style="margin-top: 0px; margin-bottom: 8px">
-                                  <span class="o_text-primary" data-color="Primary" style="color: #126de5">●</span>
-                                  goodness familiarly
-                                </p>
-                                <p class="o_mb-xs" style="margin-top: 0px; margin-bottom: 8px">
-                                  <span class="o_text-primary" data-color="Primary" style="color: #126de5">●</span>
-                                  overpaid kneeled
-                                </p>
+                               
                                 <p class="o_mb-md" style="margin-top: 0px; margin-bottom: 24px"><span>&nbsp; </span></p>
                                 <table align="center" cellspacing="0" cellpadding="0" border="0" role="presentation">
                                   <tbody>
                                     <tr>
-                                      <td
-                                        class="o_btn o_bg-dark o_br o_heading o_text-xs"
-                                        align="center"
-                                        data-bgcolor="Bg Dark"
-                                        data-size="Text XS"
-                                        data-min="10"
-                                        data-max="18"
-                                        style="
-                                          font-family: Helvetica, Arial, sans-serif;
-                                          font-weight: bold;
-                                          margin-top: 0px;
-                                          margin-bottom: 0px;
-                                          font-size: 14px;
-                                          line-height: 21px;
-                                          mso-padding-alt: 12px 24px;
-                                          background-color: #242b3d;
-                                          border-radius: 4px;
-                                        ">
-                                        <a
-                                          class="o_text-white"
-                                          href="https://example.com/"
-                                          data-color="White"
-                                          style="
-                                            text-decoration: none;
-                                            outline: none;
-                                            color: #ffffff;
-                                            display: block;
-                                            padding: 12px 24px;
-                                            mso-text-raise: 3px;
-                                          "
-                                          >Learn More</a
-                                        >
+                                      
+                                     
                                       </td>
                                     </tr>
                                   </tbody>
@@ -834,18 +808,8 @@
                                   padding-top: 16px;
                                   padding-bottom: 16px;
                                 ">
-                                <p class="o_mb-xs" style="margin-top: 0px; margin-bottom: 8px">
-                                  <span class="o_text-primary" data-color="Primary" style="color: #126de5">●</span>
-                                  goodness familiarly
-                                </p>
-                                <p class="o_mb-xs" style="margin-top: 0px; margin-bottom: 8px">
-                                  <span class="o_text-primary" data-color="Primary" style="color: #126de5">●</span>
-                                  overpaid kneeled
-                                </p>
-                                <p class="o_mb-md" style="margin-top: 0px; margin-bottom: 24px">
-                                  <span class="o_text-primary" data-color="Primary" style="color: #126de5">●</span>
-                                  lubberly one
-                                </p>
+                                
+                                
                                 <table align="center" cellspacing="0" cellpadding="0" border="0" role="presentation">
                                   <tbody>
                                     <tr>
@@ -867,20 +831,7 @@
                                           background-color: #242b3d;
                                           border-radius: 4px;
                                         ">
-                                        <a
-                                          class="o_text-white"
-                                          href="https://example.com/"
-                                          data-color="White"
-                                          style="
-                                            text-decoration: none;
-                                            outline: none;
-                                            color: #ffffff;
-                                            display: block;
-                                            padding: 12px 24px;
-                                            mso-text-raise: 3px;
-                                          "
-                                          >Learn More</a
-                                        >
+                                        
                                       </td>
                                     </tr>
                                   </tbody>
@@ -977,18 +928,7 @@
                                   padding-top: 16px;
                                   padding-bottom: 16px;
                                 ">
-                                <p class="o_mb-xs" style="margin-top: 0px; margin-bottom: 8px">
-                                  <span class="o_text-primary" data-color="Primary" style="color: #126de5">●</span>
-                                  goodness familiarly
-                                </p>
-                                <p class="o_mb-xs" style="margin-top: 0px; margin-bottom: 8px">
-                                  <span class="o_text-primary" data-color="Primary" style="color: #126de5">●</span>
-                                  overpaid kneeled
-                                </p>
-                                <p class="o_mb-md" style="margin-top: 0px; margin-bottom: 24px">
-                                  <span class="o_text-primary" data-color="Primary" style="color: #126de5">●</span>
-                                  lubberly one
-                                </p>
+                               
                                 <table align="center" cellspacing="0" cellpadding="0" border="0" role="presentation">
                                   <tbody>
                                     <tr>
@@ -1010,20 +950,8 @@
                                           background-color: #242b3d;
                                           border-radius: 4px;
                                         ">
-                                        <a
-                                          class="o_text-white"
-                                          href="https://example.com/"
-                                          data-color="White"
-                                          style="
-                                            text-decoration: none;
-                                            outline: none;
-                                            color: #ffffff;
-                                            display: block;
-                                            padding: 12px 24px;
-                                            mso-text-raise: 3px;
-                                          "
-                                          >Learn More</a
-                                        >
+                                       
+                                        
                                       </td>
                                     </tr>
                                   </tbody>
@@ -1085,44 +1013,34 @@
         </tr>
       </tbody>
     </table>
-   
-    
             <!--[if mso]></td></tr></table><![endif]-->
           </td>
         </tr>
       </tbody>
     </table>
-    <table
-      data-module="spacer000"
-      data-thumb="http://www.stampready.net/dashboard/editor/user_uploads/zip_uploads/2018/11/19/pcVNfzKjZ3goPqkxr2hYT0ws/service_canceled/thumbnails/spacer.png"
-      width="100%"
-      cellspacing="0"
-      cellpadding="0"
-      border="0"
-      role="presentation">
+ 
+
+
+
+
+
+    <table data-module="order-summary0" data-thumb="http://www.stampready.net/dashboard/editor/user_uploads/zip_uploads/2020/03/13/0D6ItbpLZUSmhj3YORzyfKEg/account_addons/thumbnails/order-summary.png" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
       <tbody>
         <tr>
-          <td
-            class="o_bg-light o_px-xs"
-            align="center"
-            data-bgcolor="Bg Light"
-            style="background-color: #dbe5ea; padding-left: 8px; padding-right: 8px">
+          <td class="o_bg-light o_px-xs" align="center" data-bgcolor="Bg Light" style="background-color: #dbe5ea;padding-left: 8px;padding-right: 8px;">
             <!--[if mso]><table width="632" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
-            <table
-              class="o_block"
-              width="100%"
-              cellspacing="0"
-              cellpadding="0"
-              border="0"
-              role="presentation"
-              style="max-width: 632px; margin: 0 auto">
+            <table class="o_block" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation" style="max-width: 632px;margin: 0 auto;">
               <tbody>
                 <tr>
-                  <td
-                    class="o_bg-white"
-                    style="font-size: 24px; line-height: 24px; height: 24px; background-color: #ffffff"
-                    data-bgcolor="Bg White">
-                    &nbsp;
+                  <td class="o_bg-white o_sans o_text-xs o_text-light o_px-md o_pt-xs" align="center" data-bgcolor="Bg White" data-color="Light" data-size="Text XS" data-min="10" data-max="18" style="font-family: Helvetica, Arial, sans-serif;margin-top: 0px;margin-bottom: 0px;font-size: 14px;line-height: 21px;background-color: #ffffff;color: #82899a;padding-left: 24px;padding-right: 24px;padding-top: 8px;">
+                    <p style="margin-top: 0px;margin-bottom: 0px;">TOP 5 PRODUCTS</p>
+                    <table width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+                      <tbody>
+                        <tr>
+                          <td class="o_re o_bb-light" style="font-size: 8px;line-height: 8px;height: 8px;vertical-align: top;border-bottom: 1px solid #d3dce0;" data-border-bottom-color="Border Light">&nbsp; </td>
+                        </tr>
+                      </tbody>
+                    </table>
                   </td>
                 </tr>
               </tbody>
@@ -1132,12 +1050,315 @@
         </tr>
       </tbody>
     </table>
+    
 
 
 
-
-
-
+    <table data-module="addon-row0" data-thumb="http://www.stampready.net/dashboard/editor/user_uploads/zip_uploads/2020/03/13/0D6ItbpLZUSmhj3YORzyfKEg/account_addons/thumbnails/addon-row.png" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+      <tbody>
+        <tr>
+          <td class="o_bg-light o_px-xs" align="center" data-bgcolor="Bg Light" style="background-color: #dbe5ea;padding-left: 8px;padding-right: 8px;">
+            <!--[if mso]><table width="632" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
+            <table class="o_block" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation" style="max-width: 632px;margin: 0 auto;">
+              <tbody>
+                <tr>
+                  <td class="o_re o_bg-white o_px o_pt" align="center" data-bgcolor="Bg White" style="font-size: 0;vertical-align: top;background-color: #ffffff;padding-left: 16px;padding-right: 16px;padding-top: 16px;">
+                    <!--[if mso]><table cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td width="100" align="center" valign="top" style="padding: 0px 8px;"><![endif]-->
+                    <div class="o_col o_col-1 o_col-full" style="display: inline-block;vertical-align: top;width: 100%;max-width: 100px;">
+                      <div class="o_px-xs o_sans o_text o_center" data-size="Text Default" data-min="12" data-max="20" style="font-family: Helvetica, Arial, sans-serif;margin-top: 0px;margin-bottom: 0px;font-size: 16px;line-height: 24px;text-align: center;padding-left: 8px;padding-right: 8px;">
+                        <p style="margin-top: 0px;margin-bottom: 0px;"><a class="o_text-primary" href="https://example.com/" data-color="Primary" style="text-decoration: none;outline: none;color: #126de5;"><img src="http://www.stampready.net/dashboard/editor/user_uploads/zip_uploads/2020/03/13/0D6ItbpLZUSmhj3YORzyfKEg/account_addons/images/thumb_84_4.jpg" width="84" height="84" alt="" style="max-width: 84px;-ms-interpolation-mode: bicubic;vertical-align: middle;border: 0;line-height: 100%;height: auto;outline: none;text-decoration: none;" data-crop="false"></a></p>
+                      </div>
+                    </div>
+                    <!--[if mso]></td><td width="300" align="left" valign="top" style="padding: 0px 8px;"><![endif]-->
+                    <div class="o_col o_col-3 o_col-full" style="display: inline-block;vertical-align: top;width: 100%;max-width: 300px;">
+                      <div style="font-size: 10px; line-height: 10px; height: 10px;">&nbsp; </div>
+                      <div class="o_px-xs o_sans o_text-xs o_text-secondary o_left o_xs-center" data-color="Secondary" data-size="Text XS" data-min="10" data-max="18" style="font-family: Helvetica, Arial, sans-serif;margin-top: 0px;margin-bottom: 0px;font-size: 14px;line-height: 21px;color: #424651;text-align: left;padding-left: 8px;padding-right: 8px;">
+                        <p class="o_text o_text-dark" data-color="Dark" data-size="Text Default" data-min="12" data-max="20" style="font-size: 16px;line-height: 24px;color: #242b3d;margin-top: 0px;margin-bottom: 0px;"><strong>SuperChat Add-On</strong></p>
+                        <p class="o_mb-xxs" style="margin-top: 0px;margin-bottom: 4px;">Less dear heroically much indignantly</p>
+                        <p class="o_text-primary" data-color="Primary" style="color: #126de5;margin-top: 0px;margin-bottom: 0px;"><strong>$9.00</strong></p>
+                      </div>
+                    </div>
+                    <!--[if mso]></td><td width="200" align="right" valign="top" style="padding: 0px 8px;"><![endif]-->
+                    <div class="o_col o_col-2 o_col-full" style="display: inline-block;vertical-align: top;width: 100%;max-width: 200px;">
+                      <div style="font-size: 10px; line-height: 10px; height: 10px;">&nbsp; </div>
+                      <div class="o_px-xs o_sans o_text-xxs o_text-light o_right o_xs-center" data-color="Light" data-size="Text XXS" data-min="8" data-max="16" style="font-family: Helvetica, Arial, sans-serif;margin-top: 0px;margin-bottom: 0px;font-size: 12px;line-height: 19px;color: #82899a;text-align: right;padding-left: 8px;padding-right: 8px;">
+                        <table class="o_right o_xs-center" cellspacing="0" cellpadding="0" border="0" role="presentation" style="text-align: right;margin-left: auto;margin-right: 0;">
+                          <tbody>
+                            <tr>
+                              <td class="o_btn-xs o_bg-dark o_br o_heading o_text-xs" align="center" data-bgcolor="Bg Dark" data-size="Text XS" data-min="10" data-max="18" style="font-family: Helvetica, Arial, sans-serif;font-weight: bold;margin-top: 0px;margin-bottom: 0px;font-size: 14px;line-height: 21px;mso-padding-alt: 7px 16px;background-color: #242b3d;border-radius: 4px;">
+                                
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                        <div style="font-size: 8px; line-height: 8px; height: 8px;">&nbsp; </div>
+                        <p style="margin-top: 0px;margin-bottom: 0px;"><br></p>
+                      </div>
+                    </div>
+                    <!--[if mso]></td></tr><tr><td colspan="3" style="padding: 0px 8px;"><![endif]-->
+                    <div class="o_px-xs" style="padding-left: 8px;padding-right: 8px;">
+                      <table width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+                        <tbody>
+                          <tr>
+                            <td class="o_re o_bb-light" style="font-size: 16px;line-height: 16px;height: 16px;vertical-align: top;border-bottom: 1px solid #d3dce0;" data-border-bottom-color="Border Light">&nbsp; </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <!--[if mso]></td></tr></table><![endif]-->
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <!--[if mso]></td></tr></table><![endif]-->
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <table data-module="addon-row0" data-thumb="http://www.stampready.net/dashboard/editor/user_uploads/zip_uploads/2020/03/13/0D6ItbpLZUSmhj3YORzyfKEg/account_addons/thumbnails/addon-row.png" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+      <tbody>
+        <tr>
+          <td class="o_bg-light o_px-xs" align="center" data-bgcolor="Bg Light" style="background-color: #dbe5ea;padding-left: 8px;padding-right: 8px;">
+            <!--[if mso]><table width="632" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
+            <table class="o_block" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation" style="max-width: 632px;margin: 0 auto;">
+              <tbody>
+                <tr>
+                  <td class="o_re o_bg-white o_px o_pt" align="center" data-bgcolor="Bg White" style="font-size: 0;vertical-align: top;background-color: #ffffff;padding-left: 16px;padding-right: 16px;padding-top: 16px;">
+                    <!--[if mso]><table cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td width="100" align="center" valign="top" style="padding: 0px 8px;"><![endif]-->
+                    <div class="o_col o_col-1 o_col-full" style="display: inline-block;vertical-align: top;width: 100%;max-width: 100px;">
+                      <div class="o_px-xs o_sans o_text o_center" data-size="Text Default" data-min="12" data-max="20" style="font-family: Helvetica, Arial, sans-serif;margin-top: 0px;margin-bottom: 0px;font-size: 16px;line-height: 24px;text-align: center;padding-left: 8px;padding-right: 8px;">
+                        <p style="margin-top: 0px;margin-bottom: 0px;"><a class="o_text-primary" href="https://example.com/" data-color="Primary" style="text-decoration: none;outline: none;color: #126de5;"><img src="http://www.stampready.net/dashboard/editor/user_uploads/zip_uploads/2020/03/13/0D6ItbpLZUSmhj3YORzyfKEg/account_addons/images/thumb_84_4.jpg" width="84" height="84" alt="" style="max-width: 84px;-ms-interpolation-mode: bicubic;vertical-align: middle;border: 0;line-height: 100%;height: auto;outline: none;text-decoration: none;" data-crop="false"></a></p>
+                      </div>
+                    </div>
+                    <!--[if mso]></td><td width="300" align="left" valign="top" style="padding: 0px 8px;"><![endif]-->
+                    <div class="o_col o_col-3 o_col-full" style="display: inline-block;vertical-align: top;width: 100%;max-width: 300px;">
+                      <div style="font-size: 10px; line-height: 10px; height: 10px;">&nbsp; </div>
+                      <div class="o_px-xs o_sans o_text-xs o_text-secondary o_left o_xs-center" data-color="Secondary" data-size="Text XS" data-min="10" data-max="18" style="font-family: Helvetica, Arial, sans-serif;margin-top: 0px;margin-bottom: 0px;font-size: 14px;line-height: 21px;color: #424651;text-align: left;padding-left: 8px;padding-right: 8px;">
+                        <p class="o_text o_text-dark" data-color="Dark" data-size="Text Default" data-min="12" data-max="20" style="font-size: 16px;line-height: 24px;color: #242b3d;margin-top: 0px;margin-bottom: 0px;"><strong>SuperChat Add-On</strong></p>
+                        <p class="o_mb-xxs" style="margin-top: 0px;margin-bottom: 4px;">Less dear heroically much indignantly</p>
+                        <p class="o_text-primary" data-color="Primary" style="color: #126de5;margin-top: 0px;margin-bottom: 0px;"><strong>$9.00</strong></p>
+                      </div>
+                    </div>
+                    <!--[if mso]></td><td width="200" align="right" valign="top" style="padding: 0px 8px;"><![endif]-->
+                    <div class="o_col o_col-2 o_col-full" style="display: inline-block;vertical-align: top;width: 100%;max-width: 200px;">
+                      <div style="font-size: 10px; line-height: 10px; height: 10px;">&nbsp; </div>
+                      <div class="o_px-xs o_sans o_text-xxs o_text-light o_right o_xs-center" data-color="Light" data-size="Text XXS" data-min="8" data-max="16" style="font-family: Helvetica, Arial, sans-serif;margin-top: 0px;margin-bottom: 0px;font-size: 12px;line-height: 19px;color: #82899a;text-align: right;padding-left: 8px;padding-right: 8px;">
+                        <table class="o_right o_xs-center" cellspacing="0" cellpadding="0" border="0" role="presentation" style="text-align: right;margin-left: auto;margin-right: 0;">
+                          <tbody>
+                            <tr>
+                              <td class="o_btn-xs o_bg-dark o_br o_heading o_text-xs" align="center" data-bgcolor="Bg Dark" data-size="Text XS" data-min="10" data-max="18" style="font-family: Helvetica, Arial, sans-serif;font-weight: bold;margin-top: 0px;margin-bottom: 0px;font-size: 14px;line-height: 21px;mso-padding-alt: 7px 16px;background-color: #242b3d;border-radius: 4px;">
+                                
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                        <div style="font-size: 8px; line-height: 8px; height: 8px;">&nbsp; </div>
+                        <p style="margin-top: 0px;margin-bottom: 0px;"><br></p>
+                      </div>
+                    </div>
+                    <!--[if mso]></td></tr><tr><td colspan="3" style="padding: 0px 8px;"><![endif]-->
+                    <div class="o_px-xs" style="padding-left: 8px;padding-right: 8px;">
+                      <table width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+                        <tbody>
+                          <tr>
+                            <td class="o_re o_bb-light" style="font-size: 16px;line-height: 16px;height: 16px;vertical-align: top;border-bottom: 1px solid #d3dce0;" data-border-bottom-color="Border Light">&nbsp; </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <!--[if mso]></td></tr></table><![endif]-->
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <!--[if mso]></td></tr></table><![endif]-->
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <table data-module="addon-row0" data-thumb="http://www.stampready.net/dashboard/editor/user_uploads/zip_uploads/2020/03/13/0D6ItbpLZUSmhj3YORzyfKEg/account_addons/thumbnails/addon-row.png" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+      <tbody>
+        <tr>
+          <td class="o_bg-light o_px-xs" align="center" data-bgcolor="Bg Light" style="background-color: #dbe5ea;padding-left: 8px;padding-right: 8px;">
+            <!--[if mso]><table width="632" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
+            <table class="o_block" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation" style="max-width: 632px;margin: 0 auto;">
+              <tbody>
+                <tr>
+                  <td class="o_re o_bg-white o_px o_pt" align="center" data-bgcolor="Bg White" style="font-size: 0;vertical-align: top;background-color: #ffffff;padding-left: 16px;padding-right: 16px;padding-top: 16px;">
+                    <!--[if mso]><table cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td width="100" align="center" valign="top" style="padding: 0px 8px;"><![endif]-->
+                    <div class="o_col o_col-1 o_col-full" style="display: inline-block;vertical-align: top;width: 100%;max-width: 100px;">
+                      <div class="o_px-xs o_sans o_text o_center" data-size="Text Default" data-min="12" data-max="20" style="font-family: Helvetica, Arial, sans-serif;margin-top: 0px;margin-bottom: 0px;font-size: 16px;line-height: 24px;text-align: center;padding-left: 8px;padding-right: 8px;">
+                        <p style="margin-top: 0px;margin-bottom: 0px;"><a class="o_text-primary" href="https://example.com/" data-color="Primary" style="text-decoration: none;outline: none;color: #126de5;"><img src="http://www.stampready.net/dashboard/editor/user_uploads/zip_uploads/2020/03/13/0D6ItbpLZUSmhj3YORzyfKEg/account_addons/images/thumb_84_4.jpg" width="84" height="84" alt="" style="max-width: 84px;-ms-interpolation-mode: bicubic;vertical-align: middle;border: 0;line-height: 100%;height: auto;outline: none;text-decoration: none;" data-crop="false"></a></p>
+                      </div>
+                    </div>
+                    <!--[if mso]></td><td width="300" align="left" valign="top" style="padding: 0px 8px;"><![endif]-->
+                    <div class="o_col o_col-3 o_col-full" style="display: inline-block;vertical-align: top;width: 100%;max-width: 300px;">
+                      <div style="font-size: 10px; line-height: 10px; height: 10px;">&nbsp; </div>
+                      <div class="o_px-xs o_sans o_text-xs o_text-secondary o_left o_xs-center" data-color="Secondary" data-size="Text XS" data-min="10" data-max="18" style="font-family: Helvetica, Arial, sans-serif;margin-top: 0px;margin-bottom: 0px;font-size: 14px;line-height: 21px;color: #424651;text-align: left;padding-left: 8px;padding-right: 8px;">
+                        <p class="o_text o_text-dark" data-color="Dark" data-size="Text Default" data-min="12" data-max="20" style="font-size: 16px;line-height: 24px;color: #242b3d;margin-top: 0px;margin-bottom: 0px;"><strong>SuperChat Add-On</strong></p>
+                        <p class="o_mb-xxs" style="margin-top: 0px;margin-bottom: 4px;">Less dear heroically much indignantly</p>
+                        <p class="o_text-primary" data-color="Primary" style="color: #126de5;margin-top: 0px;margin-bottom: 0px;"><strong>$9.00</strong></p>
+                      </div>
+                    </div>
+                    <!--[if mso]></td><td width="200" align="right" valign="top" style="padding: 0px 8px;"><![endif]-->
+                    <div class="o_col o_col-2 o_col-full" style="display: inline-block;vertical-align: top;width: 100%;max-width: 200px;">
+                      <div style="font-size: 10px; line-height: 10px; height: 10px;">&nbsp; </div>
+                      <div class="o_px-xs o_sans o_text-xxs o_text-light o_right o_xs-center" data-color="Light" data-size="Text XXS" data-min="8" data-max="16" style="font-family: Helvetica, Arial, sans-serif;margin-top: 0px;margin-bottom: 0px;font-size: 12px;line-height: 19px;color: #82899a;text-align: right;padding-left: 8px;padding-right: 8px;">
+                        <table class="o_right o_xs-center" cellspacing="0" cellpadding="0" border="0" role="presentation" style="text-align: right;margin-left: auto;margin-right: 0;">
+                          <tbody>
+                            <tr>
+                              <td class="o_btn-xs o_bg-dark o_br o_heading o_text-xs" align="center" data-bgcolor="Bg Dark" data-size="Text XS" data-min="10" data-max="18" style="font-family: Helvetica, Arial, sans-serif;font-weight: bold;margin-top: 0px;margin-bottom: 0px;font-size: 14px;line-height: 21px;mso-padding-alt: 7px 16px;background-color: #242b3d;border-radius: 4px;">
+                                
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                        <div style="font-size: 8px; line-height: 8px; height: 8px;">&nbsp; </div>
+                        <p style="margin-top: 0px;margin-bottom: 0px;"><br></p>
+                      </div>
+                    </div>
+                    <!--[if mso]></td></tr><tr><td colspan="3" style="padding: 0px 8px;"><![endif]-->
+                    <div class="o_px-xs" style="padding-left: 8px;padding-right: 8px;">
+                      <table width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+                        <tbody>
+                          <tr>
+                            <td class="o_re o_bb-light" style="font-size: 16px;line-height: 16px;height: 16px;vertical-align: top;border-bottom: 1px solid #d3dce0;" data-border-bottom-color="Border Light">&nbsp; </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <!--[if mso]></td></tr></table><![endif]-->
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <!--[if mso]></td></tr></table><![endif]-->
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <table data-module="addon-row0" data-thumb="http://www.stampready.net/dashboard/editor/user_uploads/zip_uploads/2020/03/13/0D6ItbpLZUSmhj3YORzyfKEg/account_addons/thumbnails/addon-row.png" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+      <tbody>
+        <tr>
+          <td class="o_bg-light o_px-xs" align="center" data-bgcolor="Bg Light" style="background-color: #dbe5ea;padding-left: 8px;padding-right: 8px;">
+            <!--[if mso]><table width="632" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
+            <table class="o_block" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation" style="max-width: 632px;margin: 0 auto;">
+              <tbody>
+                <tr>
+                  <td class="o_re o_bg-white o_px o_pt" align="center" data-bgcolor="Bg White" style="font-size: 0;vertical-align: top;background-color: #ffffff;padding-left: 16px;padding-right: 16px;padding-top: 16px;">
+                    <!--[if mso]><table cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td width="100" align="center" valign="top" style="padding: 0px 8px;"><![endif]-->
+                    <div class="o_col o_col-1 o_col-full" style="display: inline-block;vertical-align: top;width: 100%;max-width: 100px;">
+                      <div class="o_px-xs o_sans o_text o_center" data-size="Text Default" data-min="12" data-max="20" style="font-family: Helvetica, Arial, sans-serif;margin-top: 0px;margin-bottom: 0px;font-size: 16px;line-height: 24px;text-align: center;padding-left: 8px;padding-right: 8px;">
+                        <p style="margin-top: 0px;margin-bottom: 0px;"><a class="o_text-primary" href="https://example.com/" data-color="Primary" style="text-decoration: none;outline: none;color: #126de5;"><img src="http://www.stampready.net/dashboard/editor/user_uploads/zip_uploads/2020/03/13/0D6ItbpLZUSmhj3YORzyfKEg/account_addons/images/thumb_84_4.jpg" width="84" height="84" alt="" style="max-width: 84px;-ms-interpolation-mode: bicubic;vertical-align: middle;border: 0;line-height: 100%;height: auto;outline: none;text-decoration: none;" data-crop="false"></a></p>
+                      </div>
+                    </div>
+                    <!--[if mso]></td><td width="300" align="left" valign="top" style="padding: 0px 8px;"><![endif]-->
+                    <div class="o_col o_col-3 o_col-full" style="display: inline-block;vertical-align: top;width: 100%;max-width: 300px;">
+                      <div style="font-size: 10px; line-height: 10px; height: 10px;">&nbsp; </div>
+                      <div class="o_px-xs o_sans o_text-xs o_text-secondary o_left o_xs-center" data-color="Secondary" data-size="Text XS" data-min="10" data-max="18" style="font-family: Helvetica, Arial, sans-serif;margin-top: 0px;margin-bottom: 0px;font-size: 14px;line-height: 21px;color: #424651;text-align: left;padding-left: 8px;padding-right: 8px;">
+                        <p class="o_text o_text-dark" data-color="Dark" data-size="Text Default" data-min="12" data-max="20" style="font-size: 16px;line-height: 24px;color: #242b3d;margin-top: 0px;margin-bottom: 0px;"><strong>SuperChat Add-On</strong></p>
+                        <p class="o_mb-xxs" style="margin-top: 0px;margin-bottom: 4px;">Less dear heroically much indignantly</p>
+                        <p class="o_text-primary" data-color="Primary" style="color: #126de5;margin-top: 0px;margin-bottom: 0px;"><strong>$9.00</strong></p>
+                      </div>
+                    </div>
+                    <!--[if mso]></td><td width="200" align="right" valign="top" style="padding: 0px 8px;"><![endif]-->
+                    <div class="o_col o_col-2 o_col-full" style="display: inline-block;vertical-align: top;width: 100%;max-width: 200px;">
+                      <div style="font-size: 10px; line-height: 10px; height: 10px;">&nbsp; </div>
+                      <div class="o_px-xs o_sans o_text-xxs o_text-light o_right o_xs-center" data-color="Light" data-size="Text XXS" data-min="8" data-max="16" style="font-family: Helvetica, Arial, sans-serif;margin-top: 0px;margin-bottom: 0px;font-size: 12px;line-height: 19px;color: #82899a;text-align: right;padding-left: 8px;padding-right: 8px;">
+                        <table class="o_right o_xs-center" cellspacing="0" cellpadding="0" border="0" role="presentation" style="text-align: right;margin-left: auto;margin-right: 0;">
+                          <tbody>
+                            <tr>
+                              <td class="o_btn-xs o_bg-dark o_br o_heading o_text-xs" align="center" data-bgcolor="Bg Dark" data-size="Text XS" data-min="10" data-max="18" style="font-family: Helvetica, Arial, sans-serif;font-weight: bold;margin-top: 0px;margin-bottom: 0px;font-size: 14px;line-height: 21px;mso-padding-alt: 7px 16px;background-color: #242b3d;border-radius: 4px;">
+                                
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                        <div style="font-size: 8px; line-height: 8px; height: 8px;">&nbsp; </div>
+                        <p style="margin-top: 0px;margin-bottom: 0px;"><br></p>
+                      </div>
+                    </div>
+                    <!--[if mso]></td></tr><tr><td colspan="3" style="padding: 0px 8px;"><![endif]-->
+                    <div class="o_px-xs" style="padding-left: 8px;padding-right: 8px;">
+                      <table width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+                        <tbody>
+                          <tr>
+                            <td class="o_re o_bb-light" style="font-size: 16px;line-height: 16px;height: 16px;vertical-align: top;border-bottom: 1px solid #d3dce0;" data-border-bottom-color="Border Light">&nbsp; </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <!--[if mso]></td></tr></table><![endif]-->
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <!--[if mso]></td></tr></table><![endif]-->
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <table data-module="addon-row0" data-thumb="http://www.stampready.net/dashboard/editor/user_uploads/zip_uploads/2020/03/13/0D6ItbpLZUSmhj3YORzyfKEg/account_addons/thumbnails/addon-row.png" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+      <tbody>
+        <tr>
+          <td class="o_bg-light o_px-xs" align="center" data-bgcolor="Bg Light" style="background-color: #dbe5ea;padding-left: 8px;padding-right: 8px;">
+            <!--[if mso]><table width="632" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
+            <table class="o_block" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation" style="max-width: 632px;margin: 0 auto;">
+              <tbody>
+                <tr>
+                  <td class="o_re o_bg-white o_px o_pt" align="center" data-bgcolor="Bg White" style="font-size: 0;vertical-align: top;background-color: #ffffff;padding-left: 16px;padding-right: 16px;padding-top: 16px;">
+                    <!--[if mso]><table cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td width="100" align="center" valign="top" style="padding: 0px 8px;"><![endif]-->
+                    <div class="o_col o_col-1 o_col-full" style="display: inline-block;vertical-align: top;width: 100%;max-width: 100px;">
+                      <div class="o_px-xs o_sans o_text o_center" data-size="Text Default" data-min="12" data-max="20" style="font-family: Helvetica, Arial, sans-serif;margin-top: 0px;margin-bottom: 0px;font-size: 16px;line-height: 24px;text-align: center;padding-left: 8px;padding-right: 8px;">
+                        <p style="margin-top: 0px;margin-bottom: 0px;"><a class="o_text-primary" href="https://example.com/" data-color="Primary" style="text-decoration: none;outline: none;color: #126de5;"><img src="http://www.stampready.net/dashboard/editor/user_uploads/zip_uploads/2020/03/13/0D6ItbpLZUSmhj3YORzyfKEg/account_addons/images/thumb_84_4.jpg" width="84" height="84" alt="" style="max-width: 84px;-ms-interpolation-mode: bicubic;vertical-align: middle;border: 0;line-height: 100%;height: auto;outline: none;text-decoration: none;" data-crop="false"></a></p>
+                      </div>
+                    </div>
+                    <!--[if mso]></td><td width="300" align="left" valign="top" style="padding: 0px 8px;"><![endif]-->
+                    <div class="o_col o_col-3 o_col-full" style="display: inline-block;vertical-align: top;width: 100%;max-width: 300px;">
+                      <div style="font-size: 10px; line-height: 10px; height: 10px;">&nbsp; </div>
+                      <div class="o_px-xs o_sans o_text-xs o_text-secondary o_left o_xs-center" data-color="Secondary" data-size="Text XS" data-min="10" data-max="18" style="font-family: Helvetica, Arial, sans-serif;margin-top: 0px;margin-bottom: 0px;font-size: 14px;line-height: 21px;color: #424651;text-align: left;padding-left: 8px;padding-right: 8px;">
+                        <p class="o_text o_text-dark" data-color="Dark" data-size="Text Default" data-min="12" data-max="20" style="font-size: 16px;line-height: 24px;color: #242b3d;margin-top: 0px;margin-bottom: 0px;"><strong>SuperChat Add-On</strong></p>
+                        <p class="o_mb-xxs" style="margin-top: 0px;margin-bottom: 4px;">Less dear heroically much indignantly</p>
+                        <p class="o_text-primary" data-color="Primary" style="color: #126de5;margin-top: 0px;margin-bottom: 0px;"><strong>$9.00</strong></p>
+                      </div>
+                    </div>
+                    <!--[if mso]></td><td width="200" align="right" valign="top" style="padding: 0px 8px;"><![endif]-->
+                    <div class="o_col o_col-2 o_col-full" style="display: inline-block;vertical-align: top;width: 100%;max-width: 200px;">
+                      <div style="font-size: 10px; line-height: 10px; height: 10px;">&nbsp; </div>
+                      <div class="o_px-xs o_sans o_text-xxs o_text-light o_right o_xs-center" data-color="Light" data-size="Text XXS" data-min="8" data-max="16" style="font-family: Helvetica, Arial, sans-serif;margin-top: 0px;margin-bottom: 0px;font-size: 12px;line-height: 19px;color: #82899a;text-align: right;padding-left: 8px;padding-right: 8px;">
+                        <table class="o_right o_xs-center" cellspacing="0" cellpadding="0" border="0" role="presentation" style="text-align: right;margin-left: auto;margin-right: 0;">
+                          <tbody>
+                            <tr>
+                              <td class="o_btn-xs o_bg-dark o_br o_heading o_text-xs" align="center" data-bgcolor="Bg Dark" data-size="Text XS" data-min="10" data-max="18" style="font-family: Helvetica, Arial, sans-serif;font-weight: bold;margin-top: 0px;margin-bottom: 0px;font-size: 14px;line-height: 21px;mso-padding-alt: 7px 16px;background-color: #242b3d;border-radius: 4px;">
+                                
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                        <div style="font-size: 8px; line-height: 8px; height: 8px;">&nbsp; </div>
+                        <p style="margin-top: 0px;margin-bottom: 0px;"><br></p>
+                      </div>
+                    </div>
+                    <!--[if mso]></td></tr><tr><td colspan="3" style="padding: 0px 8px;"><![endif]-->
+                    <div class="o_px-xs" style="padding-left: 8px;padding-right: 8px;">
+                      <table width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+                        <tbody>
+                          <tr>
+                            <td class="o_re o_bb-light" style="font-size: 16px;line-height: 16px;height: 16px;vertical-align: top;border-bottom: 1px solid #d3dce0;" data-border-bottom-color="Border Light">&nbsp; </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <!--[if mso]></td></tr></table><![endif]-->
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <!--[if mso]></td></tr></table><![endif]-->
+          </td>
+        </tr>
+      </tbody>
+    </table>
 
     <table
     data-module="footer"
@@ -1166,106 +1387,14 @@
             style="max-width: 632px; margin: 0 auto">
             <tbody>
               <tr>
-                <td
-                  class="o_bg-dark o_px-md o_py-lg o_br-b o_sans o_text-xs o_text-dark_light"
-                  align="center"
-                  data-bgcolor="Bg Dark"
-                  data-color="Dark Light"
-                  data-size="Text XS"
-                  data-min="10"
-                  data-max="18"
-                  style="
-                    font-family: Helvetica, Arial, sans-serif;
-                    margin-top: 0px;
-                    margin-bottom: 0px;
-                    font-size: 14px;
-                    line-height: 21px;
-                    background-color: #242b3d;
-                    color: #a0a3ab;
-                    border-radius: 0px 0px 4px 4px;
-                    padding-left: 24px;
-                    padding-right: 24px;
-                    padding-top: 32px;
-                    padding-bottom: 32px;
-                  ">
-                  <p class="o_mb" style="margin-top: 0px; margin-bottom: 16px">
-                    <a
-                      class="o_text-dark_light"
-                      href="https://example.com/"
-                      data-color="Dark Light"
-                      style="text-decoration: none; outline: none; color: #a0a3ab"
-                      ><img
-                        src="http://www.stampready.net/dashboard/editor/user_uploads/zip_uploads/2018/11/19/pcVNfzKjZ3goPqkxr2hYT0ws/service_canceled/images/logo_icon-white.png"
-                        width="36"
-                        height="36"
-                        alt="SimpleApp"
-                        style="
-                          max-width: 36px;
-                          -ms-interpolation-mode: bicubic;
-                          vertical-align: middle;
-                          border: 0;
-                          line-height: 100%;
-                          height: auto;
-                          outline: none;
-                          text-decoration: none;
-                        "
-                        data-crop="false"
-                    /></a>
-                  </p>
-                  <p class="o_mb" style="margin-top: 0px; margin-bottom: 16px">©2018 SimpleApp Inc</p>
-                  <p class="o_mb" style="margin-top: 0px; margin-bottom: 16px">
-                    2603 Woodridge Lane,<br />
-                    Memphis, TN 38104, USA
-                  </p>
-                  <p style="margin-top: 0px; margin-bottom: 0px">
-                    <a
-                      class="o_text-dark_light o_underline"
-                      href="https://example.com/"
-                      data-color="Dark Light"
-                      style="text-decoration: underline; outline: none; color: #a0a3ab"
-                      >Help Center</a
-                    >
-                    <span class="o_hide-xs">&nbsp; • &nbsp;</span
-                    ><br
-                      class="o_hide-lg"
-                      style="
-                        display: none;
-                        font-size: 0;
-                        max-height: 0;
-                        width: 0;
-                        line-height: 0;
-                        overflow: hidden;
-                        mso-hide: all;
-                        visibility: hidden;
-                      " />
-                    <a
-                      class="o_text-dark_light o_underline"
-                      href="https://example.com/"
-                      data-color="Dark Light"
-                      style="text-decoration: underline; outline: none; color: #a0a3ab"
-                      >Preferences</a
-                    >
-                    <span class="o_hide-xs">&nbsp; • &nbsp;</span
-                    ><br
-                      class="o_hide-lg"
-                      style="
-                        display: none;
-                        font-size: 0;
-                        max-height: 0;
-                        width: 0;
-                        line-height: 0;
-                        overflow: hidden;
-                        mso-hide: all;
-                        visibility: hidden;
-                      " />
-                    <a
-                      class="o_text-dark_light o_underline"
-                      href="https://example.com/"
-                      data-color="Dark Light"
-                      style="text-decoration: underline; outline: none; color: #a0a3ab"
-                      >Unsubscribe</a
-                    >
-                  </p>
+                
+                  
+  <td class="o_bg-white o_px-md o_py-lg o_bt-light o_br-b o_sans o_text-xs o_text-light" align="center"  data-color="Light" data-size="Text XS" data-min="10" data-max="18" data-border-top-color="Border Light" style="font-family: Helvetica, Arial, sans-serif;margin-top: 0px;margin-bottom: 0px;font-size: 14px;line-height: 21px;background-color: #ffffff;color: #82899a;border-top: 1px solid #d3dce0;border-radius: 0px 0px 4px 4px;padding-left: 50px;padding-right: 50px;padding-top: 32px;padding-bottom: 32px;">
+                   
+    <p class="o_mb" style="margin-top: 0px;margin-bottom: 16px;">©2025 Valomnia</p>
+  
+  </td></td>
+
                 </td>
               </tr>
             </tbody>
@@ -1276,8 +1405,6 @@
       </tr>
     </tbody>
   </table>
-
-
 
 
 
@@ -1626,9 +1753,11 @@
     }
 
     function updateEmailTemplate() {
-    const title = document.getElementById('alerte-title').value;
-    document.getElementById('template-title').innerText = title || "Welcome to B2B Valomnia"; // Default title
-}
+        const titleInput = document.getElementById('alerte-title').value;
+        const reportTitle = document.getElementById('report-title');
+        reportTitle.textContent = titleInput || 'Report Title';
+    }
+
 
 
 function toggleUrlSection() {
@@ -1636,5 +1765,12 @@ function toggleUrlSection() {
     const checkbox = document.getElementById('alert-open');
     urlSection.style.display = checkbox.checked ? 'block' : 'none';
 }
+
+
+function toggleButtonInput() {
+        const checkbox = document.getElementById('addButton');
+        const inputSection = document.getElementById('buttonInput');
+        inputSection.style.display = checkbox.checked ? 'block' : 'none';
+    }
 </script>
 @endsection
