@@ -70,7 +70,7 @@
         <div id="rapportTemplate" class="col-md-8" style="display: none;"> <!-- 70% width -->
           <div class="card mb-6">
                 <div class="card-body">
-                    
+
                     <div>
                         <!-- Place your email template here -->
 
@@ -479,7 +479,7 @@
             </table>
             <!--[if mso]></td></tr></table><![endif]-->
           </td>
-       
+
       </tbody>
     </table>
     <!--mssssssgggiiiii-->
@@ -561,14 +561,14 @@
       </tr>
     </tbody>
   </table>
-  
 
 
 
 
 
 
-  
+
+
     <table
       data-module="pricing-3cols"
       data-visible="false"
@@ -1044,7 +1044,7 @@
         </tr>
       </tbody>
     </table>
-    
+
     <table
       data-module="spacer0"
       data-thumb="http://www.stampready.net/dashboard/editor/user_uploads/zip_uploads/2018/11/19/pcVNfzKjZ3goPqkxr2hYT0ws/service_canceled/thumbnails/spacer.png"
@@ -1085,8 +1085,8 @@
         </tr>
       </tbody>
     </table>
-   
-    
+
+
             <!--[if mso]></td></tr></table><![endif]-->
           </td>
         </tr>
@@ -1284,7 +1284,7 @@
   </body>
 </html>
 
-                        
+
                     </div>
                 </div>
             </div>
@@ -1298,28 +1298,40 @@
                     <form >
                         @csrf
                         <div class="mb-4">
-                            <label for="alerte-type" class="form-label">Type d'Alerte</label>
+                          <label for="alerte-type" class="form-label">Type d'Alerte</label>
                             <select class="form-select" id="alerte-type" name="alert_type" required>
-                                <option value="" disabled selected>Choisir un type d'alerte</option>
-                                <option value="stock">Stock</option>
-                                <option value="chiffre">Chiffre</option>
-                            </select>
-                        </div>
-                        <div class="mb-4">
-                            <label for="alerte-title" class="form-label">Titre</label>
-                            <input type="text" class="form-control" id="alerte-title" name="title" placeholder="Titre de l'alerte" required oninput="updateEmailTemplate()" />                        </div>
-                        <div class="mb-4">
-                            <label for="alerte-email-subject" class="form-label">Sujet d'Email</label>
-                            <input type="text" class="form-control" id="alerte-email-subject" name="email_subject" placeholder="Sujet de l'email" required />
+                              <option value="">Sélectionnez un type</option>
+                              <option value="stock">Stock</option>
+                                <option value="prix">Prix</option>
+                             </select>
                         </div>
 
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="alert-open" onclick="toggleUrlSection()" />
-                            <label class="form-check-label" for="alert-open">Afficher Bouton</label>
-                        </div>
-                        <div id="urlSection" class="mb-4" style="display: none;">
-                            <label for="alerte-url" class="form-label">URL Spécifique</label>
-                            <input type="url" class="form-control" id="alerte-url" name="alert_url" placeholder="URL spécifique" required />
+                 <div class="mb-4">
+    <label for="alerte-title" class="form-label">Titre</label>
+    <input type="text" class="form-control" id="alerte-title" name="alert_title" placeholder="Titre de l'alerte" required oninput="updateTemplateTitle()" />
+</div>
+
+    <div class="mb-4">
+        <label for="alerte-email-subject" class="form-label">Sujet d'Email</label>
+        <input type="text" class="form-control" id="alerte-email-subject" name="email_subject" placeholder="Sujet de l'email" required />
+    </div>
+
+    <div class="mb-4">
+    <label for="alerte-text" class="form-label">Texte</label>
+    <textarea class="form-control" id="alerte-text" name="alert_text" rows="3" placeholder="Entrez votre texte ici" oninput="updateTemplateText()"></textarea>
+</div>
+<div class="form-check">
+        <input class="form-check-input" type="checkbox" id="alert-open" onclick="toggleUrlSection()" />
+        <label class="form-check-label" for="alert-open">Afficher Bouton</label>
+    </div>
+
+    <div id="urlSection" class="mb-4" style="display: none;">
+        <label for="alerte-url" class="form-label">URL Spécifique</label>
+        <input type="url" class="form-control" id="alerte-url" name="alert_url" placeholder="URL spécifique" required oninput="updateButtonUrl()" />
+        <div class="mb-4">
+            <label for="alerte-text" class="form-label">Texte</label>
+            <textarea class="form-control" id="alerte-text" name="alert_text" rows="3" placeholder="Entrez votre texte ici" oninput="updateTemplateText()"></textarea>
+        </div>
                         </div>
                         <div class="mb-4">
                             <button type="submit" class="btn btn-warning">Créer l'Alerte</button>
@@ -1478,9 +1490,8 @@
                                 <tbody>
                                   <tr>
                                     <td class="o_bg-white o_px-md o_py o_sans o_text o_text-secondary" align="left" data-bgcolor="Bg White" data-color="Secondary" data-size="Text Default" data-min="12" data-max="20" style="text-align: left;font-family: Helvetica, Arial, sans-serif;margin-top: 0px;margin-bottom: 0px;font-size: 16px;line-height: 24px;background-color: #ffffff;color: #424651;padding-left: 24px;padding-right: 24px;padding-top: 16px;padding-bottom: 16px;">
-                                      <p style="margin-top: 0px;margin-bottom: 0px;">Welcome to B2B Valomnia! We're excited to have you on board.</p>
+                                      <p id="template-text" style="margin-top: 0px;margin-bottom: 0px;">Welcome to B2B Valomnia! We're excited to have you on board.</p>
 
-                                      <p style="margin-top: 0px;margin-bottom: 0px;">Below are your login credentials to get started:</p>
                                     </td>
                                   </tr>
                                 </tbody>
@@ -1523,22 +1534,22 @@
                             <td class="o_bg-light o_px-xs" align="center" data-bgcolor="Bg Light" style="background-color: #dbe5ea;padding-left: 8px;padding-right: 8px;">
                               <!--[if mso]><table width="432" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
                               <table class="o_block-xs" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation" style="max-width: 432px;margin: 0 auto;">
-                                <tbody>
-                                  <tr>
-                                    <td class="o_bg-white o_px-md o_py-xs" align="center" data-bgcolor="Bg White" style="background-color: #ffffff;padding-left: 24px;padding-right: 24px;padding-top: 8px;padding-bottom: 8px;">
-                                      <table align="center" cellspacing="0" cellpadding="0" border="0" role="presentation">
-                                        <tbody>
-                                          <tr>
-                                            <td width="300" class="o_btn o_bg-success o_br o_heading o_text" align="center" data-bgcolor="Bg Success" data-size="Text Default" data-min="12" data-max="20" style="font-family: Helvetica, Arial, sans-serif;font-weight: bold;margin-top: 0px;margin-bottom: 0px;font-size: 16px;line-height: 24px;mso-padding-alt: 12px 24px;background-color: #0ec06e;border-radius: 4px;">
-                                              <a class="o_text-white" href="https://example.com/" data-color="White" style="text-decoration: none;outline: none;color: #ffffff;display: block;padding: 12px 24px;mso-text-raise: 3px;">Access Your Account</a>
-                                            </td>
-                                          </tr>
-                                        </tbody>
-                                      </table>
-                                    </td>
-                                  </tr>
-                                </tbody>
-                              </table>
+        <tbody>
+            <tr>
+                <td class="o_bg-white o_px-md o_py-xs" align="center" data-bgcolor="Bg White" style="background-color: #ffffff;padding-left: 24px;padding-right: 24px;padding-top: 8px;padding-bottom: 8px;">
+                    <table align="center" cellspacing="0" cellpadding="0" border="0" role="presentation">
+                        <tbody>
+                            <tr>
+                                <td width="300" class="o_btn o_bg-success o_br o_heading o_text" id="action-button" align="center" data-bgcolor="Bg Success" data-size="Text Default" data-min="12" data-max="20" style="font-family: Helvetica, Arial, sans-serif;font-weight: bold;margin-top: 0px;margin-bottom: 0px;font-size: 16px;line-height: 24px;mso-padding-alt: 12px 24px;background-color: #0ec06e;border-radius: 4px; display: none;">
+                                    <a class="o_text-white" id="action-link" href="https://example.com/" data-color="White" style="text-decoration: none;outline: none;color: #ffffff;display: block;padding: 12px 24px;mso-text-raise: 3px;">Access Your Account</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+        </tbody>
+    </table>
                               <!--[if mso]></td></tr></table><![endif]-->
                             </td>
                           </tr>
@@ -1581,7 +1592,7 @@
                                   <tr>
                                     <td class="o_bg-white o_px-md o_py-lg o_bt-light o_br-b o_sans o_text-xs o_text-light" align="center" data-bgcolor="Bg White" data-color="Light" data-size="Text XS" data-min="10" data-max="18" data-border-top-color="Border Light" style="font-family: Helvetica, Arial, sans-serif;margin-top: 0px;margin-bottom: 0px;font-size: 14px;line-height: 21px;background-color: #ffffff;color: #82899a;border-top: 1px solid #d3dce0;border-radius: 0px 0px 4px 4px;padding-left: 24px;padding-right: 24px;padding-top: 32px;padding-bottom: 32px;">
 
-                                      <p class="o_mb" style="margin-top: 0px;margin-bottom: 16px;">©2025 Valomnia</p>
+                                      <p class="o_mb" style="margin-top: 0px;margin-bottom: 16px;">©2006 Valomnia</p>
 
                                     </td>
                                   </tr>
@@ -1625,16 +1636,32 @@
         }
     }
 
-    function updateEmailTemplate() {
+    function updateTemplateTitle() {
     const title = document.getElementById('alerte-title').value;
-    document.getElementById('template-title').innerText = title || "Welcome to B2B Valomnia"; // Default title
+    document.getElementById('template-title').innerText = title || "Titre de l'alerte par défaut"; // Met à jour le titre dans le template
 }
-
-
+function updateTemplateText() {
+    const text = document.getElementById('alerte-text').value;
+    document.getElementById('template-text').innerText = text || "Welcome to B2B Valomnia! We're excited to have you on board."; // Texte par défaut
+}
 function toggleUrlSection() {
-    const urlSection = document.getElementById('urlSection');
-    const checkbox = document.getElementById('alert-open');
-    urlSection.style.display = checkbox.checked ? 'block' : 'none';
-}
+            const checkbox = document.getElementById('alert-open');
+            const urlSection = document.getElementById('urlSection');
+            const button = document.getElementById('action-button');
+            urlSection.style.display = checkbox.checked ? 'block' : 'none'; // Affiche ou cache la section URL
+            button.style.display = checkbox.checked ? 'table-cell' : 'none'; // Affiche ou cache le bouton
+        }
+
+        function updateButtonUrl() {
+            const buttonUrl = document.getElementById('alerte-url').value;
+            document.getElementById('action-link').href = buttonUrl || "https://example.com/";
+        }
+
+        function updateTemplateText() {
+            const buttonText = document.getElementById('alerte-text').value;
+            document.getElementById('action-link').innerText = buttonText || "Access Your Account";
+        }
+
+        updateTemplateTitle();
 </script>
 @endsection
