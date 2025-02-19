@@ -30,27 +30,37 @@ class EmailTemplateController extends Controller
     $template = EmailTemplate::findOrFail($id); // Fetch the template by ID
     return view('content.email.show', compact('template')); // Return the view with the template data
 }
-    public function store(Request $request)
+
+public function store(Request $request)
 {
+    // Validation des données
     $request->validate([
-        'title' => 'required|string|max:255',
-        'email_header' => 'required|string|max:255',
-        'email_subject' => 'required|string|max:255',
-        'content' => 'required|string', // Ensure content is validated
+        'name' => 'required|string|max:255',
+        'subject' => 'required|string|max:255',
+        'total_revenue' => 'nullable|boolean',
+        'total_orders' => 'nullable|boolean',
+        'total_employees' => 'nullable|boolean',
+        'top_selling_items' => 'nullable|string',
+        'btn_name' => 'nullable|string|max:255',
+        'btn_link' => 'nullable|url',
+        'template_type' => 'required|string|in:report,alert', // Validation du type
     ]);
 
-    // Create a new email template
+    // Créer une nouvelle entrée dans la base de données
     EmailTemplate::create([
-        'user_id' => auth()->id(), // Assuming the user is authenticated
-        'name' => $request->title,
-        'subject' => $request->email_subject,
-        'content' => $request->content, // Save the content
-        'template_type' => 'report',
-        'is_active' => true, // Set active status
+        'user_id' => auth()->id(),
+        'name' => $request->name,
+        'subject' => $request->subject,
+        'total_revenue' => $request->input('total_revenue', false),
+        'total_orders' => $request->input('total_orders', false),
+        'total_employees' => $request->input('total_employees', false),
+        'top_selling_items' => $request->input('top_selling_items'),
+        'btn_name' => $request->btn_name,
+        'btn_link' => $request->btn_link,
+        'has_btn' => !empty($request->btn_name),
+        'template_type' => 'report', // Assurez-vous d'assigner un type approprié
     ]);
-    
 
-    // Redirect back to the email list with a success message
- // Redirect back to the email list with a success message
- return redirect()->route('email-templates.index')->with('success', 'Template created successfully.');}
-}
+    // Rediriger vers la même page avec un message de succès
+    return redirect()->back()->with('success', 'Template créé avec succès !');
+}}

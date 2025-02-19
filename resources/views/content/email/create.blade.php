@@ -3,11 +3,34 @@
 @section('title', 'Créer un Nouveau Template')
 
 @section('content')
-
-    <div class="text-center mb-4">
-        <button class="btn btn-primary me-1" onclick="toggleSections('rapport')">Rapport</button>
-        <button class="btn btn-warning me-1" onclick="toggleSections('alerte')">Alerte</button>
-    </div>
+<div class="row">
+  <div class="col-md-12">
+      <div class="nav-align-top">
+          <ul class="nav nav-pills flex-column flex-md-row mb-6">
+              <li class="nav-item">
+                  <a class="nav-link" href="{{ url('pages/account-settings-account') }}">
+                      <i class="bx bx-sm bx-user me-1_5"></i> Account
+                  </a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link " href="{{ url('pages/account-settings-notifications') }}">
+                      <i class="bx bx-sm bx-bell me-1_5"></i> Notifications
+                  </a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link" href="{{ url('email/liste') }}">
+                      <i class="bx bx-sm bx-envelope me-1_5"></i> Email Template Manager
+                  </a>
+              </li>
+             
+          </ul>
+      </div>
+  </div>
+</div>
+<div class="text-center mb-4">
+  <button id="rapportBtn" class="btn rounded-pill btn-primary" onclick="toggleSections('rapport', this)">Rapport</button>
+  <button id="alerteBtn" class="btn rounded-pill btn-label-primary" onclick="toggleSections('alerte', this)">Alerte</button>
+</div>
 
     <div class="row">
       <!-- Rapport Section -->
@@ -15,8 +38,8 @@
           <div class="card mb-6">
               <h5 class="card-header">Formulaire de Rapport</h5>
               <div class="card-body">
-                  <form action="{{ route('email.store') }}" method="POST">
-                      @csrf
+                <form action="{{ route('email.store') }}" method="POST">
+                  @csrf
                       <div class="mb-4">
                         <label for="rapport-email-subject" class="form-label">Sujet</label>
                         <input type="text" class="form-control" id="rapport-email-subject" name="email_subject" placeholder="Sujet de l'email" required />
@@ -34,58 +57,52 @@
 
                       
                 <div class="form-check">
-                  <input class="form-check-input" type="checkbox" id="show-title" onclick="toggleTitle()" checked />
-                  <label class="form-check-label" for="show-title">Afficher le Titre</label>
+                  <input class="form-check-input" type="checkbox" id="report-open" onclick="toggleReportSection()" />
+                  <label class="form-check-label" for="report-open">Afficher Bouton de Rapport</label>
               </div>
-              <div class="form-check">
-                  <input class="form-check-input" type="checkbox" id="show-paragraph" onclick="toggleParagraph()" checked />
-                  <label class="form-check-label" for="show-paragraph">Afficher le Texte de l'Email</label>
+              
+              <div id="urlSection" class="mb-4" style="display: none;">
+                  <label for="report-url" class="form-label">URL Spécifique</label>
+                  <input type="url" class="form-control" id="report-url" name="report_url" placeholder="URL spécifique" oninput="updateReportButtonUrl()">              </div>
+              
+              <div class="mb-4" id="buttonTitleSection" style="display: none;">
+                  <label for="button-title" class="form-label">Titre du Bouton</label>
+                  <input type="text" class="form-control" id="button-title" placeholder="Entrez le titre du bouton" oninput="updateReportButtonText()" />
               </div>
-                        <!-- KPI Selection Form -->
-              <div class="row mb-4">
-                <div class="col-12">
-                    <h5 class="card-header">Sélectionner les KPI</h5>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="total_revenue" id="totalRevenueCheckbox" name="kpis[]" checked onclick="updateKPI()" />
-                        <label class="form-check-label" for="totalRevenueCheckbox">Total Revenue</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="total_orders" id="totalOrdersCheckbox" name="kpis[]" checked onclick="updateKPI()" />
-                        <label class="form-check-label" for="totalOrdersCheckbox">Total Orders</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="total_employees" id="totalEmployeesCheckbox" name="kpis[]" checked onclick="updateKPI()" />
-                        <label class="form-check-label" for="totalEmployeesCheckbox">Total Employees</label>
-                    </div>
-                </div>
-              </div>
-  
-                      <div class="mb-4">
-                          <h5>Ajouter un Bouton dans l'Email</h5>
-                          <div class="form-check">
-                              <input class="form-check-input" type="checkbox" id="addButton" onclick="toggleButtonInput()" />
-                              <label class="form-check-label" for="addButton">Ajouter un bouton personnalisé</label>
-                          </div>
-                          <div id="buttonInput" style="display: none;" class="mt-2">
-                              <label for="button-url" class="form-label">URL du Bouton</label>
-                              <input type="url" class="form-control" id="button-url" name="button_url" placeholder="Entrez l'URL" />
-                              
-                              <label for="button-name" class="form-label mt-2">Nom du Bouton</label>
-                              <input type="text" class="form-control" id="button-name" name="button_name" placeholder="Nom du bouton" />
-                              
-                              <label for="button-color" class="form-label mt-2">Couleur du Bouton</label>
-                              <input type="color" class="form-control" id="button-color" name="button_color" value="#007bff" />
-                          </div>
-                      </div>
-                          
-                    <div class="mb-4">
-                      <button type="submit" class="btn btn-primary">Créer le Rapport</button>
+              
+             
+
+
+              <h5>Sélectionner les KPI</h5>
+              <div>
+                  <div class="form-check">
+                      <input class="form-check-input" type="checkbox" value="total_revenue" id="totalRevenueCheckbox" onchange="toggleKPI('kpi1', this.checked)" checked />
+                      <label class="form-check-label" for="totalRevenueCheckbox">Total Revenue</label>
                   </div>
+                  <div class="form-check">
+                      <input class="form-check-input" type="checkbox" value="total_orders" id="totalOrdersCheckbox" onchange="toggleKPI('kpi2', this.checked)" checked />
+                      <label class="form-check-label" for="totalOrdersCheckbox">Total Orders</label>
+                  </div>
+                  <div class="form-check">
+                      <input class="form-check-input" type="checkbox" value="total_employees" id="totalEmployeesCheckbox" onchange="toggleKPI('kpi3', this.checked)" checked />
+                      <label class="form-check-label" for="totalEmployeesCheckbox">Total Employees</label>
+                  </div>
+              </div>
+                <div class="mb-4">
+                  <button type="submit" class="btn btn-primary">Créer le Rapport</button>
+                                </div>
                     
                   </form>
               </div>
           </div>
       </div>
+    
+    
+
+
+
+
+
 
 
         <!-- Email Template for Rapport -->
@@ -496,6 +513,97 @@
       </tbody>
     </table>
     <table
+      data-module="spacer0"
+      data-thumb="http://www.stampready.net/dashboard/editor/user_uploads/zip_uploads/2018/11/19/pcVNfzKjZ3goPqkxr2hYT0ws/service_canceled/thumbnails/spacer.png"
+      width="100%"
+      cellspacing="0"
+      cellpadding="0"
+      border="0"
+      role="presentation">
+      <tbody>
+        <tr>
+          <td
+            class="o_bg-light o_px-xs"
+            align="center"
+            data-bgcolor="Bg Light"
+            style="background-color: #dbe5ea; padding-left: 8px; padding-right: 8px">
+            <!--[if mso]><table width="632" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
+            <table
+              class="o_block"
+              width="100%"
+              cellspacing="0"
+              cellpadding="0"
+              border="0"
+              role="presentation"
+              style="max-width: 632px; margin: 0 auto">
+              <tbody>
+                <tr>
+                  <td
+                    class="o_bg-white"
+                    style="font-size: 24px; line-height: 24px; height: 24px; background-color: #ffffff"
+                    data-bgcolor="Bg White">
+                    &nbsp;
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <!--[if mso]></td></tr></table><![endif]-->
+          </td>
+        </tr>
+      </tbody>
+    </table>
+            <!--[if mso]></td></tr></table><![endif]-->
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <table
+    data-module="spacer0"
+    data-thumb="http://www.stampready.net/dashboard/editor/user_uploads/zip_uploads/2018/11/19/pcVNfzKjZ3goPqkxr2hYT0ws/service_canceled/thumbnails/spacer.png"
+    width="100%"
+    cellspacing="0"
+    cellpadding="0"
+    border="0"
+    role="presentation">
+    <tbody>
+      <tr>
+        <td
+          class="o_bg-light o_px-xs"
+          align="center"
+          data-bgcolor="Bg Light"
+          style="background-color: #dbe5ea; padding-left: 8px; padding-right: 8px">
+          <!--[if mso]><table width="632" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
+          <table
+            class="o_block"
+            width="100%"
+            cellspacing="0"
+            cellpadding="0"
+            border="0"
+            role="presentation"
+            style="max-width: 632px; margin: 0 auto">
+            <tbody>
+              <tr>
+                <td
+                  class="o_bg-white"
+                  style="font-size: 24px; line-height: 24px; height: 24px; background-color: #ffffff"
+                  data-bgcolor="Bg White">
+                  &nbsp;
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <!--[if mso]></td></tr></table><![endif]-->
+        </td>
+      </tr>
+    </tbody>
+  </table>
+          <!--[if mso]></td></tr></table><![endif]-->
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+    <table
     data-module="content-lg"
     data-visible="false"
     data-thumb="http://www.stampready.net/dashboard/editor/user_uploads/zip_uploads/2018/11/19/pcVNfzKjZ3goPqkxr2hYT0ws/service_canceled/thumbnails/content-lg.png"
@@ -558,12 +666,282 @@
     </tbody>
   </table>
 
-  
+  <table
+  data-module="spacer0"
+  data-thumb="http://www.stampready.net/dashboard/editor/user_uploads/zip_uploads/2018/11/19/pcVNfzKjZ3goPqkxr2hYT0ws/service_canceled/thumbnails/spacer.png"
+  width="100%"
+  cellspacing="0"
+  cellpadding="0"
+  border="0"
+  role="presentation">
+  <tbody>
+    <tr>
+      <td
+        class="o_bg-light o_px-xs"
+        align="center"
+        data-bgcolor="Bg Light"
+        style="background-color: #dbe5ea; padding-left: 8px; padding-right: 8px">
+        <!--[if mso]><table width="632" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
+        <table
+          class="o_block"
+          width="100%"
+          cellspacing="0"
+          cellpadding="0"
+          border="0"
+          role="presentation"
+          style="max-width: 632px; margin: 0 auto">
+          <tbody>
+            <tr>
+              <td
+                class="o_bg-white"
+                style="font-size: 24px; line-height: 24px; height: 24px; background-color: #ffffff"
+                data-bgcolor="Bg White">
+                &nbsp;
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <!--[if mso]></td></tr></table><![endif]-->
+      </td>
+    </tr>
+  </tbody>
+</table>
+        <!--[if mso]></td></tr></table><![endif]-->
+      </td>
+    </tr>
+  </tbody>
+</table>
+<table
 
+data-module="button-dark"
+data-visible="false"
+data-thumb="http://www.stampready.net/dashboard/editor/user_uploads/zip_uploads/2018/11/19/pcVNfzKjZ3goPqkxr2hYT0ws/service_canceled/thumbnails/button-dark.png"
+width="100%"
+cellspacing="0"
+cellpadding="0"
+border="0"
+role="presentation">
+<tbody>
+  <tr>
+    <td
+    id="reportTemplate"
+      class="o_bg-light o_px-xs"
+      align="center"
+      data-bgcolor="Bg Light"
+      style="background-color: #dbe5ea; padding-left: 8px; padding-right: 8px">
+      <!--[if mso]><table width="632" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
+      <table
+      
+        class="o_block"
+        width="100%"
+        cellspacing="0"
+        cellpadding="0"
+        border="0"
+        role="presentation"
+        style="max-width: 632px; margin: 0 auto">
+        <tbody>
+          <tr>
+            <td
+              class="o_bg-white o_px-md o_py-xs"
+              align="center"
+              data-bgcolor="Bg White"
+              style="
+                background-color: #ffffff;
+                padding-left: 24px;
+                padding-right: 24px;
+                padding-top: 8px;
+                padding-bottom: 8px;
+              ">
+              <table align="center" cellspacing="0" cellpadding="0" border="0" role="presentation">
+                <tbody>
+                  <tr>
+                    <td
+                      width="300"
+                      class="o_btn o_bg-dark o_br o_heading o_text"
+                      align="center"
+                      data-bgcolor="Bg Dark"
+                      data-size="Text Default"
+                      data-min="12"
+                      data-max="20"
+                      style="
+                        font-family: Helvetica, Arial, sans-serif;
+                        font-weight: bold;
+                        margin-top: 0px;
+                        margin-bottom: 0px;
+                        font-size: 16px;
+                        line-height: 24px;
+                        mso-padding-alt: 12px 24px;
+                        background-color: #242b3d;
+                        border-radius: 4px;
+                      ">
+                      <a
+                       id="action-link"
+                        class="o_text-white"
+                        href="https://example.com/"
+                        data-color="White"
+                        style="
+                          text-decoration: none;
+                          outline: none;
+                          color: #ffffff;
+                          display: block;
+                          padding: 12px 24px;
+                          mso-text-raise: 3px;
+                        "
+                        >Contact Support</a
+                      >
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <!--[if mso]></td></tr></table><![endif]-->
+    </td>
+  </tr>
+</tbody>
+</table>
 
+  <table
+      data-module="spacer0"
+      data-thumb="http://www.stampready.net/dashboard/editor/user_uploads/zip_uploads/2018/11/19/pcVNfzKjZ3goPqkxr2hYT0ws/service_canceled/thumbnails/spacer.png"
+      width="100%"
+      cellspacing="0"
+      cellpadding="0"
+      border="0"
+      role="presentation">
+      <tbody>
+        <tr>
+          <td
+            class="o_bg-light o_px-xs"
+            align="center"
+            data-bgcolor="Bg Light"
+            style="background-color: #dbe5ea; padding-left: 8px; padding-right: 8px">
+            <!--[if mso]><table width="632" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
+            <table
+              class="o_block"
+              width="100%"
+              cellspacing="0"
+              cellpadding="0"
+              border="0"
+              role="presentation"
+              style="max-width: 632px; margin: 0 auto">
+              <tbody>
+                <tr>
+                  <td
+                    class="o_bg-white"
+                    style="font-size: 24px; line-height: 24px; height: 24px; background-color: #ffffff"
+                    data-bgcolor="Bg White">
+                    &nbsp;
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <!--[if mso]></td></tr></table><![endif]-->
+          </td>
+        </tr>
+      </tbody>
+    </table>
+            <!--[if mso]></td></tr></table><![endif]-->
+          </td>
+        </tr>
+      </tbody>
+    </table>
     <table
+    data-module="spacer0"
+    data-thumb="http://www.stampready.net/dashboard/editor/user_uploads/zip_uploads/2018/11/19/pcVNfzKjZ3goPqkxr2hYT0ws/service_canceled/thumbnails/spacer.png"
+    width="100%"
+    cellspacing="0"
+    cellpadding="0"
+    border="0"
+    role="presentation">
+    <tbody>
+      <tr>
+        <td
+          class="o_bg-light o_px-xs"
+          align="center"
+          data-bgcolor="Bg Light"
+          style="background-color: #dbe5ea; padding-left: 8px; padding-right: 8px">
+          <!--[if mso]><table width="632" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
+          <table
+            class="o_block"
+            width="100%"
+            cellspacing="0"
+            cellpadding="0"
+            border="0"
+            role="presentation"
+            style="max-width: 632px; margin: 0 auto">
+            <tbody>
+              <tr>
+                <td
+                  class="o_bg-white"
+                  style="font-size: 24px; line-height: 24px; height: 24px; background-color: #ffffff"
+                  data-bgcolor="Bg White">
+                  &nbsp;
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <!--[if mso]></td></tr></table><![endif]-->
+        </td>
+      </tr>
+    </tbody>
+  </table>
+          <!--[if mso]></td></tr></table><![endif]-->
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <table
+  data-module="spacer0"
+  data-thumb="http://www.stampready.net/dashboard/editor/user_uploads/zip_uploads/2018/11/19/pcVNfzKjZ3goPqkxr2hYT0ws/service_canceled/thumbnails/spacer.png"
+  width="100%"
+  cellspacing="0"
+  cellpadding="0"
+  border="0"
+  role="presentation">
+  <tbody>
+    <tr>
+      <td
+        class="o_bg-light o_px-xs"
+        align="center"
+        data-bgcolor="Bg Light"
+        style="background-color: #dbe5ea; padding-left: 8px; padding-right: 8px">
+        <!--[if mso]><table width="632" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
+        <table
+          class="o_block"
+          width="100%"
+          cellspacing="0"
+          cellpadding="0"
+          border="0"
+          role="presentation"
+          style="max-width: 632px; margin: 0 auto">
+          <tbody>
+            <tr>
+              <td
+                class="o_bg-white"
+                style="font-size: 24px; line-height: 24px; height: 24px; background-color: #ffffff"
+                data-bgcolor="Bg White">
+                &nbsp;
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <!--[if mso]></td></tr></table><![endif]-->
+      </td>
+    </tr>
+  </tbody>
+</table>
+        <!--[if mso]></td></tr></table><![endif]-->
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table
     
-      data-module="pricing-3cols"
+  data-module="pricing-3cols"
       data-visible="false"
       data-thumb="http://www.stampready.net/dashboard/editor/user_uploads/zip_uploads/2018/11/19/pcVNfzKjZ3goPqkxr2hYT0ws/service_canceled/thumbnails/pricing-3cols.png"
       width="100%"
@@ -657,7 +1035,7 @@
                                   <strong>Basic</strong>
                                 </p>
                                 <h2
-                                id="kpiValue1"
+                                  id="kpiValue1"
                                   class="o_heading o_text-primary"
                                   data-size="Heading 2"
                                   data-min="20"
@@ -674,21 +1052,7 @@
                                   ">
                                   $46
                                 </h2>
-                                <p
-                                  class="o_text-xxs o_text-light"
-                                  data-size="Text XXS"
-                                  data-min="8"
-                                  data-max="16"
-                                  data-color="Light"
-                                  style="
-                                    font-size: 12px;
-                                    line-height: 19px;
-                                    color: #82899a;
-                                    margin-top: 0px;
-                                    margin-bottom: 0px;
-                                  ">
-                                  monthly
-                                </p>
+                                
                               </td>
                             </tr>
                             <tr>
@@ -779,21 +1143,7 @@
                                   ">
                                   $76
                                 </h2>
-                                <p
-                                  class="o_text-xxs o_text-light"
-                                  data-size="Text XXS"
-                                  data-min="8"
-                                  data-max="16"
-                                  data-color="Light"
-                                  style="
-                                    font-size: 12px;
-                                    line-height: 19px;
-                                    color: #82899a;
-                                    margin-top: 0px;
-                                    margin-bottom: 0px;
-                                  ">
-                                  monthly
-                                </p>
+                                
                               </td>
                             </tr>
                             <tr>
@@ -901,21 +1251,7 @@
                                   ">
                                   $156
                                 </h2>
-                                <p
-                                  class="o_text-xxs o_text-light"
-                                  data-size="Text XXS"
-                                  data-min="8"
-                                  data-max="16"
-                                  data-color="Light"
-                                  style="
-                                    font-size: 12px;
-                                    line-height: 19px;
-                                    color: #82899a;
-                                    margin-top: 0px;
-                                    margin-bottom: 0px;
-                                  ">
-                                  monthly
-                                </p>
+                                
                               </td>
                             </tr>
                             <tr>
@@ -980,56 +1316,6 @@
         </tr>
       </tbody>
     </table>
-
-    <table
-      data-module="spacer0"
-      data-thumb="http://www.stampready.net/dashboard/editor/user_uploads/zip_uploads/2018/11/19/pcVNfzKjZ3goPqkxr2hYT0ws/service_canceled/thumbnails/spacer.png"
-      width="100%"
-      cellspacing="0"
-      cellpadding="0"
-      border="0"
-      role="presentation">
-      <tbody>
-        <tr>
-          <td
-            class="o_bg-light o_px-xs"
-            align="center"
-            data-bgcolor="Bg Light"
-            style="background-color: #dbe5ea; padding-left: 8px; padding-right: 8px">
-            <!--[if mso]><table width="632" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
-            <table
-              class="o_block"
-              width="100%"
-              cellspacing="0"
-              cellpadding="0"
-              border="0"
-              role="presentation"
-              style="max-width: 632px; margin: 0 auto">
-              <tbody>
-                <tr>
-                  <td
-                    class="o_bg-white"
-                    style="font-size: 24px; line-height: 24px; height: 24px; background-color: #ffffff"
-                    data-bgcolor="Bg White">
-                    &nbsp;
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-            <!--[if mso]></td></tr></table><![endif]-->
-          </td>
-        </tr>
-      </tbody>
-    </table>
-            <!--[if mso]></td></tr></table><![endif]-->
-          </td>
-        </tr>
-      </tbody>
-    </table>
- 
-
-
-
 
 
     <table data-module="order-summary0" data-thumb="http://www.stampready.net/dashboard/editor/user_uploads/zip_uploads/2020/03/13/0D6ItbpLZUSmhj3YORzyfKEg/account_addons/thumbnails/order-summary.png" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
@@ -1426,57 +1712,53 @@
         </div>
 
         <!-- Alerte Section -->
-        <div id="alerteSection"class="col-md-4 section" style="display: none;">
-            <div class="card mb-6">
-                <h5 class="card-header">Formulaire d'Alerte</h5>
-                <div class="card-body">
-                    <form >
-                        @csrf
-                        <div class="mb-4">
+        <div id="alerteSection" class="col-md-4 section" style="display: none;">
+          <div class="card mb-6">
+              <h5 class="card-header">Formulaire d'Alerte</h5>
+              <div class="card-body">
+                  <form action="{{ route('email.store') }}" method="POST">
+                      @csrf
+                      <div class="mb-4">
                           <label for="alerte-type" class="form-label">Type d'Alerte</label>
-                            <select class="form-select" id="alerte-type" name="alert_type" required>
+                          <select class="form-select" id="alerte-type" name="alert_type" required>
                               <option value="">Sélectionnez un type</option>
                               <option value="stock">Stock</option>
-                                <option value="prix">Prix</option>
-
-                             </select>
-                        </div>
-
-                 <div class="mb-4">
-    <label for="alerte-title" class="form-label">Titre</label>
-    <input type="text" class="form-control" id="alerte-title" name="alert_title" placeholder="Titre de l'alerte" required oninput="updateAlertTitle() " />
-</div>
-
-    <div class="mb-4">
-        <label for="alerte-email-subject" class="form-label">Sujet d'Email</label>
-        <input type="text" class="form-control" id="alerte-email-subject"  name="email_subject" placeholder="Sujet de l'email" required />
-    </div>
-
-    <div class="mb-4">
-      <label for="alerte-title" class="form-label">Titre de l'alerte</label>
-      <input type="text" id="alerte-title" class="form-control" oninput="updateAlertContent()" placeholder="Titre de l'alerte" />
-  </div>
-<div class="form-check">
-        <input class="form-check-input" type="checkbox" id="alert-open" onclick="toggleUrlSection()" />
-        <label class="form-check-label" for="alert-open">Afficher Bouton</label>
-    </div>
-
-    <div id="urlSection" class="mb-4" style="display: none;">
-        <label for="alerte-url" class="form-label">URL Spécifique</label>
-        <input type="url" class="form-control" id="alerte-url" name="alert_url" placeholder="URL spécifique" required oninput="updateButtonUrl()" />
-        <div class="mb-4">
-            <label for="alerte-text" class="form-label">Texte</label>
-            <textarea class="form-control" id="alerte-text" name="alert_text" rows="3" placeholder="Entrez votre texte ici" oninput="updateTemplateText()"></textarea>
-        </div>
-                        </div>
-                        <div class="mb-4">
-                            <button type="submit" class="btn btn-warning">Créer l'Alerte</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-
+                              <option value="prix">Prix</option>
+                          </select>
+                      </div>
+      
+                      <div class="mb-4">
+                          <label for="alerte-title" class="form-label">Titre</label>
+                          <input type="text" class="form-control" id="alerte-title" name="alert_title" placeholder="Titre de l'alerte" required />
+                      </div>
+      
+                      <div class="mb-4">
+                          <label for="alerte-email-subject" class="form-label">Sujet d'Email</label>
+                          <input type="text" class="form-control" id="alerte-email-subject" name="email_subject" placeholder="Sujet de l'email" required />
+                      </div>
+      
+                      <div class="form-check">
+                          <input class="form-check-input" type="checkbox" id="alert-open" onclick="toggleUrlSection()" />
+                          <label class="form-check-label" for="alert-open">Afficher Bouton</label>
+                      </div>
+      
+                      <div id="urlSection" class="mb-4" style="display: none;">
+                          <label for="alerte-url" class="form-label">URL Spécifique</label>
+                          <input type="url" class="form-control" id="alerte-url" name="alert_url" placeholder="URL spécifique" />
+                      </div>
+      
+                      <div class="mb-4">
+                          <label for="alerte-text" class="form-label">Texte</label>
+                          <textarea class="form-control" id="alerte-text" name="alert_text" rows="3" placeholder="Entrez votre texte ici"></textarea>
+                      </div>
+      
+                      <div class="mb-4">
+                          <button type="submit" class="btn btn-warning">Créer l'Alerte</button>
+                      </div>
+                  </form>
+              </div>
+          </div>
+      </div>
         <!-- Email Template for Alerte -->
         <div id="alerteTemplate"  class="col-md-8" style="display: none;"> <!-- 70% width -->
             <div class="card mb-6">
@@ -1752,24 +2034,76 @@
 @endsection
 @section('page-script')
 <script>
-    function toggleSections(section) {
-        const rapportSection = document.getElementById('rapportSection');
-        const rapportTemplate = document.getElementById('rapportTemplate');
-        const alerteSection = document.getElementById('alerteSection');
-        const alerteTemplate = document.getElementById('alerteTemplate');
+ function toggleSections(section) {
+    const rapportSection = document.getElementById('rapportSection');
+    const rapportTemplate = document.getElementById('rapportTemplate');
+    const alerteSection = document.getElementById('alerteSection');
+    const alerteTemplate = document.getElementById('alerteTemplate');
 
-        if (section === 'rapport') {
-            rapportSection.style.display = 'block';
-            rapportTemplate.style.display = 'block';
-            alerteSection.style.display = 'none';
-            alerteTemplate.style.display = 'none';
-        } else if (section === 'alerte') {
-            rapportSection.style.display = 'none';
-            rapportTemplate.style.display = 'none';
-            alerteSection.style.display = 'block';
-            alerteTemplate.style.display = 'block';
-        }
+    // Réinitialiser l'affichage des sections
+    rapportSection.style.display = 'none';
+    rapportTemplate.style.display = 'none';
+    alerteSection.style.display = 'none';
+    alerteTemplate.style.display = 'none';
+
+    // Afficher la section et le modèle sélectionnés
+    if (section === 'rapport') {
+        rapportSection.style.display = 'block';
+        rapportTemplate.style.display = 'block';
+        document.getElementById('rapportBtn').classList.remove('btn-label-primary');
+        document.getElementById('rapportBtn').classList.add('btn-primary');
+        document.getElementById('alerteBtn').classList.remove('btn-primary');
+        document.getElementById('alerteBtn').classList.add('btn-label-primary');
+    } else if (section === 'alerte') {
+        alerteSection.style.display = 'block';
+        alerteTemplate.style.display = 'block';
+        document.getElementById('alerteBtn').classList.remove('btn-label-primary');
+        document.getElementById('alerteBtn').classList.add('btn-primary');
+        document.getElementById('rapportBtn').classList.remove('btn-primary');
+        document.getElementById('rapportBtn').classList.add('btn-label-primary');
     }
+}
+
+// Initialisation : afficher la section Rapport par défaut
+document.addEventListener('DOMContentLoaded', function() {
+    toggleSections('rapport'); // Affiche par défaut la section Rapport
+});
+   
+    function toggleReportSection() {
+    const checkbox = document.getElementById('report-open');
+    const urlSection = document.getElementById('urlSection');
+    const buttonTitleSection = document.getElementById('buttonTitleSection');
+    const reportTemplate = document.getElementById('reportTemplate');
+
+    // Affiche ou masque la section d'URL de rapport, le titre et le bouton
+    urlSection.style.display = checkbox.checked ? 'block' : 'none';
+    buttonTitleSection.style.display = checkbox.checked ? 'block' : 'none';
+    reportTemplate.style.display = checkbox.checked ? 'block' : 'none';
+
+    console.log(checkbox.checked ? 'URL section, button title, and button displayed' : 'Sections hidden');
+}
+
+function updateReportButtonText() {
+    const buttonText = document.getElementById('button-title').value;
+    const actionLink = document.getElementById('action-link');
+    actionLink.innerText = buttonText || "Voir le Rapport"; // Texte par défaut
+    console.log('Button text updated to:', actionLink.innerText);
+}
+
+function updateReportButtonUrl() {
+    const reportUrl = document.getElementById('report-url').value;
+    console.log('Report URL updated to:', reportUrl);
+}
+
+
+
+
+
+
+
+
+
+
 
     function updateReportTitle() {
         // Get the value from the input field
@@ -1824,18 +2158,22 @@
         const checkbox = document.getElementById('alert-open');
         const urlSection = document.getElementById('urlSection');
         const button = document.getElementById('action-button');
-        urlSection.style.display = checkbox.checked ? 'block' : 'none'; // Affiche ou cache la section URL
-        button.style.display = checkbox.checked ? 'table-cell' : 'none'; // Affiche ou cache le bouton
+        urlSection.style.display = checkbox.checked ? 'block' : 'none';
+    console.log(checkbox.checked ? 'URL section displayed' : 'URL section hidden');
     }
 
     function updateButtonUrl() {
         const buttonUrl = document.getElementById('alerte-url').value;
         document.getElementById('action-link').href = buttonUrl || "https://example.com/";
+        document.getElementById('report-link').href = buttonUrl || "https://example.com/"; // Update report link
+
     }
 
     function updateButtonText() {
         const buttonText = document.getElementById('alerte-text').value;
         document.getElementById('action-link').innerText = buttonText || "Access Your Account"; // Texte par défaut
+            document.getElementById('report-link').innerText = buttonText || "Voir le Rapport"; // Update button text
+
     }
 
     function toggleButtonInput() {
@@ -1846,49 +2184,14 @@
 
  
 
-    function updateKPI() {
-    const kpiMap = {
-        total_revenue: { cardId: 'kpi1', valueId: 'kpiValue1' },
-        total_orders: { cardId: 'kpi2', valueId: 'kpiValue2' },
-        total_employees: { cardId: 'kpi3', valueId: 'kpiValue3' }
-    };
-
-    // Clear previous values and hide all cards initially
-    for (const key in kpiMap) {
-        const cardElement = document.getElementById(kpiMap[key].cardId);
-        const valueElement = document.getElementById(kpiMap[key].valueId);
-        if (cardElement) {
-            cardElement.style.display = 'none'; // Hide the card
-            if (valueElement) {
-                valueElement.innerText = "Value will appear here"; // Reset text
-            }
-        }
+    function toggleKPI(kpiId, isChecked) {
+    const kpiElement = document.getElementById(kpiId);
+    if (isChecked) {
+        kpiElement.style.display = "block"; 
+    } else {
+        kpiElement.style.display = "none"; // Hide the KPI when unchecked
     }
-
-    // Get checked checkboxes
-    const checkboxes = document.querySelectorAll('.form-check-input[type="checkbox"]:checked');
-    
-    checkboxes.forEach(checkbox => {
-        const kpiKey = checkbox.value; // Get the KPI key from the checkbox
-        const { cardId, valueId } = kpiMap[kpiKey]; // Get corresponding card and value IDs
-
-        if (cardId) {
-            const cardElement = document.getElementById(cardId); // Get the card element
-            const valueElement = document.getElementById(valueId); // Get the value element
-            if (cardElement) {
-                cardElement.style.display = 'block'; // Show the card
-                if (valueElement) {
-                    valueElement.innerText = `${kpiKey.replace(/_/g, ' ').toUpperCase()}`; // Update value text
-                }
-            }
-        }
-    });
 }
-
-// Call updateKPI when the window loads to set up the initial state
-window.onload = function() {
-    updateKPI();
-};
     
 </script>
 @endsection
