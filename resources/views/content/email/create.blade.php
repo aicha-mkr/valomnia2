@@ -3,79 +3,115 @@
 @section('title', 'Créer un Nouveau Template')
 
 @section('content')
+<div class="row">
+  <div class="col-md-12">
+      <div class="nav-align-top">
+          <ul class="nav nav-pills flex-column flex-md-row mb-6">
+              <li class="nav-item">
+                  <a class="nav-link" href="{{ url('pages/account-settings-account') }}">
+                      <i class="bx bx-sm bx-user me-1_5"></i> Account
+                  </a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link " href="{{ url('pages/account-settings-notifications') }}">
+                      <i class="bx bx-sm bx-bell me-1_5"></i> Notifications
+                  </a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link" href="{{ url('email/liste') }}">
+                      <i class="bx bx-sm bx-envelope me-1_5"></i> Email Template Manager
+                  </a>
+              </li>
 
-    <div class="text-center mb-4">
-        <button class="btn btn-primary me-1" onclick="toggleSections('rapport')">Rapport</button>
-        <button class="btn btn-warning me-1" onclick="toggleSections('alerte')">Alerte</button>
-    </div>
+          </ul>
+      </div>
+  </div>
+</div>
+<div class="text-center mb-4">
+  <button id="rapportBtn" class="btn rounded-pill btn-primary" onclick="toggleSections('rapport', this)">Rapport</button>
+  <button id="alerteBtn" class="btn rounded-pill btn-label-primary" onclick="toggleSections('alerte', this)">Alerte</button>
+</div>
 
     <div class="row">
-        <!-- Rapport Section -->
-        <div id="rapportSection" class="col-md-4 section" style="display: none;"> <!-- 30% width -->
+      <!-- Rapport Section -->
+      <div id="rapportSection" class="col-md-4 section" style="display: none;"> <!-- 30% width -->
           <div class="card mb-6">
-                <h5 class="card-header">Formulaire de Rapport</h5>
-                <div class="card-body">
-                    <form action="{{ route('email.store') }}" method="POST">
-                        @csrf
-                        <div class="mb-4">
-                        <label for="alerte-title" class="form-label">Titre</label>
-                        <input type="text" class="form-control" id="alerte-title" name="title" placeholder="Titre de l'alerte" required oninput="updateEmailTemplate()" />
+              <h5 class="card-header">Formulaire de Rapport</h5>
+              <div class="card-body">
+                <form action="{{ route('email.store') }}" method="POST">
+                  @csrf
+                      <div class="mb-4">
+                        <label for="rapport-email-subject" class="form-label">Sujet</label>
+                        <input type="text" class="form-control" id="rapport-email-subject" name="email_subject" placeholder="Sujet de l'email" required />
                     </div>
-                        <div class="mb-4">
-                            <label for="rapport-email-header" class="form-label">En-tête d'Email</label>
-                            <input type="text" class="form-control" id="rapport-email-header" name="email_header" placeholder="En-tête de l'email" required />
-                        </div>
-                        <div class="mb-4">
-                            <label for="rapport-email-subject" class="form-label">Sujet</label>
-                            <input type="text" class="form-control" id="rapport-email-subject" name="email_subject" placeholder="Sujet de l'email" required />
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="show-header" checked />
-                            <label class="form-check-label" for="show-header">Afficher l'en-tête</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="show-subject" />
-                            <label class="form-check-label" for="show-subject">Afficher le sujet</label>
-                        </div>
-                        <div class="row mb-4">
-                            <div class="col-12">
-                                <h5 class="card-header">Select KPIs to Include</h5>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="total_revenue" id="totalRevenueCheckbox" name="kpis[]" />
-                                    <label class="form-check-label" for="totalRevenueCheckbox">Total Revenue</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="total_clients" id="totalClientsCheckbox" name="kpis[]" />
-                                    <label class="form-check-label" for="totalClientsCheckbox">Total Customers</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="average_sales" id="averageSalesCheckbox" name="kpis[]" />
-                                    <label class="form-check-label" for="averageSalesCheckbox">Average Sales</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="total_orders" id="totalOrdersCheckbox" name="kpis[]" />
-                                    <label class="form-check-label" for="totalOrdersCheckbox">Total Orders</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mb-4">
-                            <button type="submit" class="btn btn-primary">Créer le Rapport</button>
-                        </div>
-                    </form>
+                    <div class="mb-4">
+                      <label for="alerte-title" class="form-label">Titre</label>
+                      <input type="text" class="form-control" id="rapport-title" name="title" placeholder="Titre de l'alerte" required oninput="updateReportTitle()" />
+                  </div>
+
+                  <div class="mb-4">
+                    <h5>Configurer le Texte du Rapport</h5>
+                    <textarea class="form-control" id="rapport-content" name="rapport_content" rows="6"
+                              placeholder="Entrez le contenu du rapport ici..." oninput="updateRapportContent()"></textarea>
                 </div>
-            </div>
-        </div>
+
+
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="report-open" onclick="toggleReportSection()" />
+                  <label class="form-check-label" for="report-open">Afficher Bouton de Rapport</label>
+              </div>
+
+              <div id="urlSection" class="mb-4" style="display: none;">
+                  <label for="report-url" class="form-label">URL Spécifique</label>
+                  <input type="url" class="form-control" id="report-url" name="report_url" placeholder="URL spécifique" oninput="updateReportButtonUrl()">              </div>
+
+              <div class="mb-4" id="buttonTitleSection" style="display: none;">
+                  <label for="button-title" class="form-label">Titre du Bouton</label>
+                  <input type="text" class="form-control" id="button-title" placeholder="Entrez le titre du bouton" oninput="updateReportButtonText()" />
+              </div>
+
+
+
+
+              <h5>Sélectionner les KPI</h5>
+              <div>
+                  <div class="form-check">
+                      <input class="form-check-input" type="checkbox" value="total_revenue" id="totalRevenueCheckbox" onchange="toggleKPI('kpi1', this.checked)" checked />
+                      <label class="form-check-label" for="totalRevenueCheckbox">Total Revenue</label>
+                  </div>
+                  <div class="form-check">
+                      <input class="form-check-input" type="checkbox" value="total_orders" id="totalOrdersCheckbox" onchange="toggleKPI('kpi2', this.checked)" checked />
+                      <label class="form-check-label" for="totalOrdersCheckbox">Total Orders</label>
+                  </div>
+                  <div class="form-check">
+                      <input class="form-check-input" type="checkbox" value="total_employees" id="totalEmployeesCheckbox" onchange="toggleKPI('kpi3', this.checked)" checked />
+                      <label class="form-check-label" for="totalEmployeesCheckbox">Total Employees</label>
+                  </div>
+              </div>
+                <div class="mb-4">
+                  <button type="submit" class="btn btn-primary">Créer le Rapport</button>
+                                </div>
+
+                  </form>
+              </div>
+          </div>
+      </div>
+
+
+
+
+
+
+
+
 
         <!-- Email Template for Rapport -->
         <div id="rapportTemplate" class="col-md-8" style="display: none;"> <!-- 70% width -->
           <div class="card mb-6">
                 <div class="card-body">
-
-                    <div>
-                        <!-- Place your email template here -->
-
-                        <html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
+                  <div>
+          <html xmlns="http://www.w3.org/1999/xhtml">
+            <head>
     <title>Preview Fullscreen</title>
     <style type="text/css">
       a {
@@ -233,8 +269,8 @@
         font-family: sans-serif;
       }
     </style>
-  </head>
-  <body>
+             </head>
+         <body>
     <table
       data-module="preview-text"
       data-visible="false"
@@ -455,24 +491,18 @@
                         </tr>
                       </tbody>
                     </table>
-                    <h2
-                      class="o_heading o_text-dark o_mb-xxs"
-                      data-color="Dark"
-                      data-size="Heading 2"
-                      data-min="20"
-                      data-max="40"
-                      style="
+
+                    <h2 id="report-title" class="o_heading o_text-dark o_mb-xxs" data-color="Dark" data-size="Heading 2" data-min="20" data-max="40"
+                    style="
                         font-family: Helvetica, Arial, sans-serif;
                         font-weight: bold;
                         margin-top: 0px;
                         margin-bottom: 4px;
                         color: #242b3d;
                         font-size: 30px;
-                        line-height: 39px;
-                      ">
-                      Notification Title
+                        line-height: 39px;">
+                    Report Title
                     </h2>
-                    <p style="margin-top: 0px; margin-bottom: 0px">That thus much less heron other hello</p>
                   </td>
                 </tr>
               </tbody>
@@ -482,7 +512,97 @@
 
       </tbody>
     </table>
-    <!--mssssssgggiiiii-->
+    <table
+      data-module="spacer0"
+      data-thumb="http://www.stampready.net/dashboard/editor/user_uploads/zip_uploads/2018/11/19/pcVNfzKjZ3goPqkxr2hYT0ws/service_canceled/thumbnails/spacer.png"
+      width="100%"
+      cellspacing="0"
+      cellpadding="0"
+      border="0"
+      role="presentation">
+      <tbody>
+        <tr>
+          <td
+            class="o_bg-light o_px-xs"
+            align="center"
+            data-bgcolor="Bg Light"
+            style="background-color: #dbe5ea; padding-left: 8px; padding-right: 8px">
+            <!--[if mso]><table width="632" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
+            <table
+              class="o_block"
+              width="100%"
+              cellspacing="0"
+              cellpadding="0"
+              border="0"
+              role="presentation"
+              style="max-width: 632px; margin: 0 auto">
+              <tbody>
+                <tr>
+                  <td
+                    class="o_bg-white"
+                    style="font-size: 24px; line-height: 24px; height: 24px; background-color: #ffffff"
+                    data-bgcolor="Bg White">
+                    &nbsp;
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <!--[if mso]></td></tr></table><![endif]-->
+          </td>
+        </tr>
+      </tbody>
+    </table>
+            <!--[if mso]></td></tr></table><![endif]-->
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <table
+    data-module="spacer0"
+    data-thumb="http://www.stampready.net/dashboard/editor/user_uploads/zip_uploads/2018/11/19/pcVNfzKjZ3goPqkxr2hYT0ws/service_canceled/thumbnails/spacer.png"
+    width="100%"
+    cellspacing="0"
+    cellpadding="0"
+    border="0"
+    role="presentation">
+    <tbody>
+      <tr>
+        <td
+          class="o_bg-light o_px-xs"
+          align="center"
+          data-bgcolor="Bg Light"
+          style="background-color: #dbe5ea; padding-left: 8px; padding-right: 8px">
+          <!--[if mso]><table width="632" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
+          <table
+            class="o_block"
+            width="100%"
+            cellspacing="0"
+            cellpadding="0"
+            border="0"
+            role="presentation"
+            style="max-width: 632px; margin: 0 auto">
+            <tbody>
+              <tr>
+                <td
+                  class="o_bg-white"
+                  style="font-size: 24px; line-height: 24px; height: 24px; background-color: #ffffff"
+                  data-bgcolor="Bg White">
+                  &nbsp;
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <!--[if mso]></td></tr></table><![endif]-->
+        </td>
+      </tr>
+    </tbody>
+  </table>
+          <!--[if mso]></td></tr></table><![endif]-->
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
     <table
     data-module="content-lg"
     data-visible="false"
@@ -531,24 +651,8 @@
                     padding-top: 16px;
                     padding-bottom: 16px;
                   ">
-                  <h4
-                    class="o_heading o_text-dark o_mb-xs"
-                    data-color="Dark"
-                    data-size="Heading 4"
-                    data-min="10"
-                    data-max="26"
-                    style="
-                      font-family: Helvetica, Arial, sans-serif;
-                      font-weight: bold;
-                      margin-top: 0px;
-                      margin-bottom: 8px;
-                      color: #242b3d;
-                      font-size: 18px;
-                      line-height: 23px;
-                    ">
-                    Your Account Details
-                  </h4>
-                  <p style="margin-top: 0px; margin-bottom: 0px">
+
+                  <p id="rapport-template-text" style="margin-top: 0px; margin-bottom: 0px">
                     Callously piranha however moronic selfless more because spitefully dear some far forward where
                     mounted underneath however feeling out less alas.
                   </p>
@@ -562,490 +666,144 @@
     </tbody>
   </table>
 
+  <table
+  data-module="spacer0"
+  data-thumb="http://www.stampready.net/dashboard/editor/user_uploads/zip_uploads/2018/11/19/pcVNfzKjZ3goPqkxr2hYT0ws/service_canceled/thumbnails/spacer.png"
+  width="100%"
+  cellspacing="0"
+  cellpadding="0"
+  border="0"
+  role="presentation">
+  <tbody>
+    <tr>
+      <td
+        class="o_bg-light o_px-xs"
+        align="center"
+        data-bgcolor="Bg Light"
+        style="background-color: #dbe5ea; padding-left: 8px; padding-right: 8px">
+        <!--[if mso]><table width="632" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
+        <table
+          class="o_block"
+          width="100%"
+          cellspacing="0"
+          cellpadding="0"
+          border="0"
+          role="presentation"
+          style="max-width: 632px; margin: 0 auto">
+          <tbody>
+            <tr>
+              <td
+                class="o_bg-white"
+                style="font-size: 24px; line-height: 24px; height: 24px; background-color: #ffffff"
+                data-bgcolor="Bg White">
+                &nbsp;
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <!--[if mso]></td></tr></table><![endif]-->
+      </td>
+    </tr>
+  </tbody>
+</table>
+        <!--[if mso]></td></tr></table><![endif]-->
+      </td>
+    </tr>
+  </tbody>
+</table>
+<table
 
+data-module="button-dark"
+data-visible="false"
+data-thumb="http://www.stampready.net/dashboard/editor/user_uploads/zip_uploads/2018/11/19/pcVNfzKjZ3goPqkxr2hYT0ws/service_canceled/thumbnails/button-dark.png"
+width="100%"
+cellspacing="0"
+cellpadding="0"
+border="0"
+role="presentation">
+<tbody>
+  <tr>
+    <td
+    id="reportTemplate"
+      class="o_bg-light o_px-xs"
+      align="center"
+      data-bgcolor="Bg Light"
+      style="background-color: #dbe5ea; padding-left: 8px; padding-right: 8px">
+      <!--[if mso]><table width="632" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
+      <table
 
+        class="o_block"
+        width="100%"
+        cellspacing="0"
+        cellpadding="0"
+        border="0"
+        role="presentation"
+        style="max-width: 632px; margin: 0 auto">
+        <tbody>
+          <tr>
+            <td
+              class="o_bg-white o_px-md o_py-xs"
+              align="center"
+              data-bgcolor="Bg White"
+              style="
+                background-color: #ffffff;
+                padding-left: 24px;
+                padding-right: 24px;
+                padding-top: 8px;
+                padding-bottom: 8px;
+              ">
+              <table align="center" cellspacing="0" cellpadding="0" border="0" role="presentation">
+                <tbody>
+                  <tr>
+                    <td
+                      width="300"
+                      class="o_btn o_bg-dark o_br o_heading o_text"
+                      align="center"
+                      data-bgcolor="Bg Dark"
+                      data-size="Text Default"
+                      data-min="12"
+                      data-max="20"
+                      style="
+                        font-family: Helvetica, Arial, sans-serif;
+                        font-weight: bold;
+                        margin-top: 0px;
+                        margin-bottom: 0px;
+                        font-size: 16px;
+                        line-height: 24px;
+                        mso-padding-alt: 12px 24px;
+                        background-color: #242b3d;
+                        border-radius: 4px;
+                      ">
+                      <a
+                       id="action-link"
+                        class="o_text-white"
+                        href="https://example.com/"
+                        data-color="White"
+                        style="
+                          text-decoration: none;
+                          outline: none;
+                          color: #ffffff;
+                          display: block;
+                          padding: 12px 24px;
+                          mso-text-raise: 3px;
+                        "
+                        >Contact Support</a
+                      >
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <!--[if mso]></td></tr></table><![endif]-->
+    </td>
+  </tr>
+</tbody>
+</table>
 
-
-
-
-
-    <table
-      data-module="pricing-3cols"
-      data-visible="false"
-      data-thumb="http://www.stampready.net/dashboard/editor/user_uploads/zip_uploads/2018/11/19/pcVNfzKjZ3goPqkxr2hYT0ws/service_canceled/thumbnails/pricing-3cols.png"
-      width="100%"
-      cellspacing="0"
-      cellpadding="0"
-      border="0"
-      role="presentation">
-      <tbody>
-        <tr>
-          <td
-            class="o_bg-light o_px-xs"
-            align="center"
-            data-bgcolor="Bg Light"
-            style="background-color: #dbe5ea; padding-left: 8px; padding-right: 8px">
-            <!--[if mso]><table width="632" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
-            <table
-              class="o_block"
-              width="100%"
-              cellspacing="0"
-              cellpadding="0"
-              border="0"
-              role="presentation"
-              style="max-width: 632px; margin: 0 auto">
-              <tbody>
-                <tr>
-                  <td
-                    class="o_re o_bg-white o_px o_pb-md"
-                    align="center"
-                    data-bgcolor="Bg White"
-                    style="
-                      font-size: 0;
-                      vertical-align: top;
-                      background-color: #ffffff;
-                      padding-left: 16px;
-                      padding-right: 16px;
-                      padding-bottom: 24px;
-                    ">
-                    <!--[if mso]><table cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td width="200" align="center" valign="top" style="padding: 0px 8px;"><![endif]-->
-                    <div
-                      class="o_col o_col-2 o_col-full"
-                      style="display: inline-block; vertical-align: top; width: 100%; max-width: 180px">
-                      <div style="font-size: 24px; line-height: 24px; height: 24px">&nbsp;</div>
-                      <div class="o_px-xs" style="padding-left: 8px; padding-right: 8px">
-                        <table width="100%" role="presentation" cellspacing="0" cellpadding="0" border="0">
-                          <tbody>
-                            <tr>
-                              <td
-                                class="o_bg-ultra_light o_br o_px o_py-md o_sans o_text o_text-secondary"
-                                align="center"
-                                data-bgcolor="Bg Ultra Light"
-                                data-size="Text Default"
-                                data-min="12"
-                                data-max="20"
-                                data-color="Secondary"
-                                style="
-                                  font-family: Helvetica, Arial, sans-serif;
-                                  margin-top: 0px;
-                                  margin-bottom: 0px;
-                                  font-size: 16px;
-                                  line-height: 24px;
-                                  background-color: #ebf5fa;
-                                  color: #424651;
-                                  border-radius: 4px;
-                                  padding-left: 16px;
-                                  padding-right: 16px;
-                                  padding-top: 24px;
-                                  padding-bottom: 24px;
-                                ">
-                                <p class="o_mb-xxs" style="margin-top: 0px; margin-bottom: 4px">
-                                  <strong>Basic</strong>
-                                </p>
-                                <h2
-                                  class="o_heading o_text-primary"
-                                  data-size="Heading 2"
-                                  data-min="20"
-                                  data-max="40"
-                                  data-color="Primary"
-                                  style="
-                                    font-family: Helvetica, Arial, sans-serif;
-                                    font-weight: bold;
-                                    margin-top: 0px;
-                                    margin-bottom: 0px;
-                                    color: #126de5;
-                                    font-size: 30px;
-                                    line-height: 39px;
-                                  ">
-                                  $46
-                                </h2>
-                                <p
-                                  class="o_text-xxs o_text-light"
-                                  data-size="Text XXS"
-                                  data-min="8"
-                                  data-max="16"
-                                  data-color="Light"
-                                  style="
-                                    font-size: 12px;
-                                    line-height: 19px;
-                                    color: #82899a;
-                                    margin-top: 0px;
-                                    margin-bottom: 0px;
-                                  ">
-                                  monthly
-                                </p>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td
-                                class="o_py o_sans o_text-xs o_text-secondary"
-                                align="center"
-                                data-color="Secondary"
-                                data-size="Text XS"
-                                data-min="10"
-                                data-max="18"
-                                style="
-                                  font-family: Helvetica, Arial, sans-serif;
-                                  margin-top: 0px;
-                                  margin-bottom: 0px;
-                                  font-size: 14px;
-                                  line-height: 21px;
-                                  color: #424651;
-                                  padding-top: 16px;
-                                  padding-bottom: 16px;
-                                ">
-                                <p class="o_mb-xs" style="margin-top: 0px; margin-bottom: 8px">
-                                  <span class="o_text-primary" data-color="Primary" style="color: #126de5">●</span>
-                                  goodness familiarly
-                                </p>
-                                <p class="o_mb-xs" style="margin-top: 0px; margin-bottom: 8px">
-                                  <span class="o_text-primary" data-color="Primary" style="color: #126de5">●</span>
-                                  overpaid kneeled
-                                </p>
-                                <p class="o_mb-md" style="margin-top: 0px; margin-bottom: 24px"><span>&nbsp; </span></p>
-                                <table align="center" cellspacing="0" cellpadding="0" border="0" role="presentation">
-                                  <tbody>
-                                    <tr>
-                                      <td
-                                        class="o_btn o_bg-dark o_br o_heading o_text-xs"
-                                        align="center"
-                                        data-bgcolor="Bg Dark"
-                                        data-size="Text XS"
-                                        data-min="10"
-                                        data-max="18"
-                                        style="
-                                          font-family: Helvetica, Arial, sans-serif;
-                                          font-weight: bold;
-                                          margin-top: 0px;
-                                          margin-bottom: 0px;
-                                          font-size: 14px;
-                                          line-height: 21px;
-                                          mso-padding-alt: 12px 24px;
-                                          background-color: #242b3d;
-                                          border-radius: 4px;
-                                        ">
-                                        <a
-                                          class="o_text-white"
-                                          href="https://example.com/"
-                                          data-color="White"
-                                          style="
-                                            text-decoration: none;
-                                            outline: none;
-                                            color: #ffffff;
-                                            display: block;
-                                            padding: 12px 24px;
-                                            mso-text-raise: 3px;
-                                          "
-                                          >Learn More</a
-                                        >
-                                      </td>
-                                    </tr>
-                                  </tbody>
-                                </table>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                    <!--[if mso]></td><td width="200" align="center" valign="top" style="padding: 0px 8px;"><![endif]-->
-                    <div
-                      class="o_col o_col-2 o_col-full"
-                      style="display: inline-block; vertical-align: top; width: 100%; max-width: 180px">
-                      <div style="font-size: 24px; line-height: 24px; height: 24px">&nbsp;</div>
-                      <div class="o_px-xs" style="padding-left: 8px; padding-right: 8px">
-                        <table width="100%" role="presentation" cellspacing="0" cellpadding="0" border="0">
-                          <tbody>
-                            <tr>
-                              <td
-                                class="o_bg-ultra_light o_br o_px o_py-md o_sans o_text o_text-secondary"
-                                align="center"
-                                data-bgcolor="Bg Ultra Light"
-                                data-size="Text Default"
-                                data-min="12"
-                                data-max="20"
-                                data-color="Secondary"
-                                style="
-                                  font-family: Helvetica, Arial, sans-serif;
-                                  margin-top: 0px;
-                                  margin-bottom: 0px;
-                                  font-size: 16px;
-                                  line-height: 24px;
-                                  background-color: #ebf5fa;
-                                  color: #424651;
-                                  border-radius: 4px;
-                                  padding-left: 16px;
-                                  padding-right: 16px;
-                                  padding-top: 24px;
-                                  padding-bottom: 24px;
-                                ">
-                                <p class="o_mb-xxs" style="margin-top: 0px; margin-bottom: 4px">
-                                  <strong>Premium</strong>
-                                </p>
-                                <h2
-                                  class="o_heading o_text-primary"
-                                  data-size="Heading 2"
-                                  data-min="20"
-                                  data-max="40"
-                                  data-color="Primary"
-                                  style="
-                                    font-family: Helvetica, Arial, sans-serif;
-                                    font-weight: bold;
-                                    margin-top: 0px;
-                                    margin-bottom: 0px;
-                                    color: #126de5;
-                                    font-size: 30px;
-                                    line-height: 39px;
-                                  ">
-                                  $76
-                                </h2>
-                                <p
-                                  class="o_text-xxs o_text-light"
-                                  data-size="Text XXS"
-                                  data-min="8"
-                                  data-max="16"
-                                  data-color="Light"
-                                  style="
-                                    font-size: 12px;
-                                    line-height: 19px;
-                                    color: #82899a;
-                                    margin-top: 0px;
-                                    margin-bottom: 0px;
-                                  ">
-                                  monthly
-                                </p>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td
-                                class="o_py o_sans o_text-xs o_text-secondary"
-                                align="center"
-                                data-color="Secondary"
-                                data-size="Text XS"
-                                data-min="10"
-                                data-max="18"
-                                style="
-                                  font-family: Helvetica, Arial, sans-serif;
-                                  margin-top: 0px;
-                                  margin-bottom: 0px;
-                                  font-size: 14px;
-                                  line-height: 21px;
-                                  color: #424651;
-                                  padding-top: 16px;
-                                  padding-bottom: 16px;
-                                ">
-                                <p class="o_mb-xs" style="margin-top: 0px; margin-bottom: 8px">
-                                  <span class="o_text-primary" data-color="Primary" style="color: #126de5">●</span>
-                                  goodness familiarly
-                                </p>
-                                <p class="o_mb-xs" style="margin-top: 0px; margin-bottom: 8px">
-                                  <span class="o_text-primary" data-color="Primary" style="color: #126de5">●</span>
-                                  overpaid kneeled
-                                </p>
-                                <p class="o_mb-md" style="margin-top: 0px; margin-bottom: 24px">
-                                  <span class="o_text-primary" data-color="Primary" style="color: #126de5">●</span>
-                                  lubberly one
-                                </p>
-                                <table align="center" cellspacing="0" cellpadding="0" border="0" role="presentation">
-                                  <tbody>
-                                    <tr>
-                                      <td
-                                        class="o_btn o_bg-dark o_br o_heading o_text-xs"
-                                        align="center"
-                                        data-bgcolor="Bg Dark"
-                                        data-size="Text XS"
-                                        data-min="10"
-                                        data-max="18"
-                                        style="
-                                          font-family: Helvetica, Arial, sans-serif;
-                                          font-weight: bold;
-                                          margin-top: 0px;
-                                          margin-bottom: 0px;
-                                          font-size: 14px;
-                                          line-height: 21px;
-                                          mso-padding-alt: 12px 24px;
-                                          background-color: #242b3d;
-                                          border-radius: 4px;
-                                        ">
-                                        <a
-                                          class="o_text-white"
-                                          href="https://example.com/"
-                                          data-color="White"
-                                          style="
-                                            text-decoration: none;
-                                            outline: none;
-                                            color: #ffffff;
-                                            display: block;
-                                            padding: 12px 24px;
-                                            mso-text-raise: 3px;
-                                          "
-                                          >Learn More</a
-                                        >
-                                      </td>
-                                    </tr>
-                                  </tbody>
-                                </table>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                    <!--[if mso]></td><td width="200" align="center" valign="top" style="padding: 0px 8px;"><![endif]-->
-                    <div
-                      class="o_col o_col-2 o_col-full"
-                      style="display: inline-block; vertical-align: top; width: 100%; max-width: 200px">
-                      <div style="font-size: 24px; line-height: 24px; height: 24px">&nbsp;</div>
-                      <div class="o_px-xs" style="padding-left: 8px; padding-right: 8px">
-                        <table width="100%" role="presentation" cellspacing="0" cellpadding="0" border="0">
-                          <tbody>
-                            <tr>
-                              <td
-                                class="o_bg-ultra_light o_br o_px o_py-md o_sans o_text o_text-secondary"
-                                align="center"
-                                data-bgcolor="Bg Ultra Light"
-                                data-size="Text Default"
-                                data-min="12"
-                                data-max="20"
-                                data-color="Secondary"
-                                style="
-                                  font-family: Helvetica, Arial, sans-serif;
-                                  margin-top: 0px;
-                                  margin-bottom: 0px;
-                                  font-size: 16px;
-                                  line-height: 24px;
-                                  background-color: #ebf5fa;
-                                  color: #424651;
-                                  border-radius: 4px;
-                                  padding-left: 16px;
-                                  padding-right: 16px;
-                                  padding-top: 24px;
-                                  padding-bottom: 24px;
-                                ">
-                                <p class="o_mb-xxs" style="margin-top: 0px; margin-bottom: 4px">
-                                  <strong>Enterprise</strong>
-                                </p>
-                                <h2
-                                  class="o_heading o_text-primary"
-                                  data-size="Heading 2"
-                                  data-min="20"
-                                  data-max="40"
-                                  data-color="Primary"
-                                  style="
-                                    font-family: Helvetica, Arial, sans-serif;
-                                    font-weight: bold;
-                                    margin-top: 0px;
-                                    margin-bottom: 0px;
-                                    color: #126de5;
-                                    font-size: 30px;
-                                    line-height: 39px;
-                                  ">
-                                  $156
-                                </h2>
-                                <p
-                                  class="o_text-xxs o_text-light"
-                                  data-size="Text XXS"
-                                  data-min="8"
-                                  data-max="16"
-                                  data-color="Light"
-                                  style="
-                                    font-size: 12px;
-                                    line-height: 19px;
-                                    color: #82899a;
-                                    margin-top: 0px;
-                                    margin-bottom: 0px;
-                                  ">
-                                  monthly
-                                </p>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td
-                                class="o_py o_sans o_text-xs o_text-secondary"
-                                align="center"
-                                data-color="Secondary"
-                                data-size="Text XS"
-                                data-min="10"
-                                data-max="18"
-                                style="
-                                  font-family: Helvetica, Arial, sans-serif;
-                                  margin-top: 0px;
-                                  margin-bottom: 0px;
-                                  font-size: 14px;
-                                  line-height: 21px;
-                                  color: #424651;
-                                  padding-top: 16px;
-                                  padding-bottom: 16px;
-                                ">
-                                <p class="o_mb-xs" style="margin-top: 0px; margin-bottom: 8px">
-                                  <span class="o_text-primary" data-color="Primary" style="color: #126de5">●</span>
-                                  goodness familiarly
-                                </p>
-                                <p class="o_mb-xs" style="margin-top: 0px; margin-bottom: 8px">
-                                  <span class="o_text-primary" data-color="Primary" style="color: #126de5">●</span>
-                                  overpaid kneeled
-                                </p>
-                                <p class="o_mb-md" style="margin-top: 0px; margin-bottom: 24px">
-                                  <span class="o_text-primary" data-color="Primary" style="color: #126de5">●</span>
-                                  lubberly one
-                                </p>
-                                <table align="center" cellspacing="0" cellpadding="0" border="0" role="presentation">
-                                  <tbody>
-                                    <tr>
-                                      <td
-                                        class="o_btn o_bg-dark o_br o_heading o_text-xs"
-                                        align="center"
-                                        data-bgcolor="Bg Dark"
-                                        data-size="Text XS"
-                                        data-min="10"
-                                        data-max="18"
-                                        style="
-                                          font-family: Helvetica, Arial, sans-serif;
-                                          font-weight: bold;
-                                          margin-top: 0px;
-                                          margin-bottom: 0px;
-                                          font-size: 14px;
-                                          line-height: 21px;
-                                          mso-padding-alt: 12px 24px;
-                                          background-color: #242b3d;
-                                          border-radius: 4px;
-                                        ">
-                                        <a
-                                          class="o_text-white"
-                                          href="https://example.com/"
-                                          data-color="White"
-                                          style="
-                                            text-decoration: none;
-                                            outline: none;
-                                            color: #ffffff;
-                                            display: block;
-                                            padding: 12px 24px;
-                                            mso-text-raise: 3px;
-                                          "
-                                          >Learn More</a
-                                        >
-                                      </td>
-                                    </tr>
-                                  </tbody>
-                                </table>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                    <!--[if mso]></td></tr></table><![endif]-->
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-            <!--[if mso]></td></tr></table><![endif]-->
-          </td>
-        </tr>
-      </tbody>
-    </table>
-
-    <table
+  <table
       data-module="spacer0"
       data-thumb="http://www.stampready.net/dashboard/editor/user_uploads/zip_uploads/2018/11/19/pcVNfzKjZ3goPqkxr2hYT0ws/service_canceled/thumbnails/spacer.png"
       width="100%"
@@ -1085,16 +843,107 @@
         </tr>
       </tbody>
     </table>
-
-
             <!--[if mso]></td></tr></table><![endif]-->
           </td>
         </tr>
       </tbody>
     </table>
     <table
-      data-module="spacer000"
-      data-thumb="http://www.stampready.net/dashboard/editor/user_uploads/zip_uploads/2018/11/19/pcVNfzKjZ3goPqkxr2hYT0ws/service_canceled/thumbnails/spacer.png"
+    data-module="spacer0"
+    data-thumb="http://www.stampready.net/dashboard/editor/user_uploads/zip_uploads/2018/11/19/pcVNfzKjZ3goPqkxr2hYT0ws/service_canceled/thumbnails/spacer.png"
+    width="100%"
+    cellspacing="0"
+    cellpadding="0"
+    border="0"
+    role="presentation">
+    <tbody>
+      <tr>
+        <td
+          class="o_bg-light o_px-xs"
+          align="center"
+          data-bgcolor="Bg Light"
+          style="background-color: #dbe5ea; padding-left: 8px; padding-right: 8px">
+          <!--[if mso]><table width="632" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
+          <table
+            class="o_block"
+            width="100%"
+            cellspacing="0"
+            cellpadding="0"
+            border="0"
+            role="presentation"
+            style="max-width: 632px; margin: 0 auto">
+            <tbody>
+              <tr>
+                <td
+                  class="o_bg-white"
+                  style="font-size: 24px; line-height: 24px; height: 24px; background-color: #ffffff"
+                  data-bgcolor="Bg White">
+                  &nbsp;
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <!--[if mso]></td></tr></table><![endif]-->
+        </td>
+      </tr>
+    </tbody>
+  </table>
+          <!--[if mso]></td></tr></table><![endif]-->
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <table
+  data-module="spacer0"
+  data-thumb="http://www.stampready.net/dashboard/editor/user_uploads/zip_uploads/2018/11/19/pcVNfzKjZ3goPqkxr2hYT0ws/service_canceled/thumbnails/spacer.png"
+  width="100%"
+  cellspacing="0"
+  cellpadding="0"
+  border="0"
+  role="presentation">
+  <tbody>
+    <tr>
+      <td
+        class="o_bg-light o_px-xs"
+        align="center"
+        data-bgcolor="Bg Light"
+        style="background-color: #dbe5ea; padding-left: 8px; padding-right: 8px">
+        <!--[if mso]><table width="632" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
+        <table
+          class="o_block"
+          width="100%"
+          cellspacing="0"
+          cellpadding="0"
+          border="0"
+          role="presentation"
+          style="max-width: 632px; margin: 0 auto">
+          <tbody>
+            <tr>
+              <td
+                class="o_bg-white"
+                style="font-size: 24px; line-height: 24px; height: 24px; background-color: #ffffff"
+                data-bgcolor="Bg White">
+                &nbsp;
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <!--[if mso]></td></tr></table><![endif]-->
+      </td>
+    </tr>
+  </tbody>
+</table>
+        <!--[if mso]></td></tr></table><![endif]-->
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table
+
+  data-module="pricing-3cols"
+      data-visible="false"
+      data-thumb="http://www.stampready.net/dashboard/editor/user_uploads/zip_uploads/2018/11/19/pcVNfzKjZ3goPqkxr2hYT0ws/service_canceled/thumbnails/pricing-3cols.png"
       width="100%"
       cellspacing="0"
       cellpadding="0"
@@ -1102,6 +951,7 @@
       role="presentation">
       <tbody>
         <tr>
+
           <td
             class="o_bg-light o_px-xs"
             align="center"
@@ -1116,13 +966,375 @@
               border="0"
               role="presentation"
               style="max-width: 632px; margin: 0 auto">
+
               <tbody>
                 <tr>
                   <td
-                    class="o_bg-white"
-                    style="font-size: 24px; line-height: 24px; height: 24px; background-color: #ffffff"
-                    data-bgcolor="Bg White">
-                    &nbsp;
+                    id="kpi-list"
+                    class="o_re o_bg-white o_px o_pb-md"
+                    align="center"
+                    data-bgcolor="Bg White"
+                    style="
+                      font-size: 0;
+                      vertical-align: top;
+                      background-color: #ffffff;
+                      padding-left: 16px;
+                      padding-right: 16px;
+                      padding-bottom: 24px;
+                    ">
+                    <h4
+                    class="o_heading o_text-dark o_mb-xs"
+                    data-color="Dark"
+                    data-size="Heading 4"
+                    data-min="10"
+                    data-max="26"
+                    style="
+                      font-family: Helvetica, Arial, sans-serif;
+                      font-weight: bold;
+                      margin-top: 0px;
+                      margin-bottom: 8px;
+                      color: #242b3d;
+                      font-size: 18px;
+                      line-height: 23px;
+                    ">
+                    Your kpi Details
+                  </h4>
+                    <!--[if mso]><table cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td width="200" align="center" valign="top" style="padding: 0px 8px;"><![endif]-->
+                    <div
+                      id="kpi1"
+                      class="o_col o_col-2 o_col-full"
+                      style="display: inline-block; vertical-align: top; width: 100%; max-width: 180px">
+                      <div style="font-size: 24px; line-height: 24px; height: 24px">&nbsp;</div>
+                      <div class="o_px-xs" style="padding-left: 8px; padding-right: 8px">
+                        <table width="100%" role="presentation" cellspacing="0" cellpadding="0" border="0">
+                          <tbody>
+                            <tr>
+                              <td
+                                class="o_bg-ultra_light o_br o_px o_py-md o_sans o_text o_text-secondary"
+                                align="center"
+                                data-bgcolor="Bg Ultra Light"
+                                data-size="Text Default"
+                                data-min="12"
+                                data-max="20"
+                                data-color="Secondary"
+                                style="
+                                  font-family: Helvetica, Arial, sans-serif;
+                                  margin-top: 0px;
+                                  margin-bottom: 0px;
+                                  font-size: 16px;
+                                  line-height: 24px;
+                                  background-color: #ebf5fa;
+                                  color: #424651;
+                                  border-radius: 4px;
+                                  padding-left: 16px;
+                                  padding-right: 16px;
+                                  padding-top: 24px;
+                                  padding-bottom: 24px;
+                                ">
+                                <p class="o_mb-xxs" style="margin-top: 0px; margin-bottom: 4px">
+                                  <strong>Basic</strong>
+                                </p>
+                                <h2
+                                  id="kpiValue1"
+                                  class="o_heading o_text-primary"
+                                  data-size="Heading 2"
+                                  data-min="20"
+                                  data-max="40"
+                                  data-color="Primary"
+                                  style="
+                                    font-family: Helvetica, Arial, sans-serif;
+                                    font-weight: bold;
+                                    margin-top: 0px;
+                                    margin-bottom: 0px;
+                                    color: #126de5;
+                                    font-size: 30px;
+                                    line-height: 39px;
+                                  ">
+                                  $46
+                                </h2>
+
+                              </td>
+                            </tr>
+                            <tr>
+                              <td
+                                class="o_py o_sans o_text-xs o_text-secondary"
+                                align="center"
+                                data-color="Secondary"
+                                data-size="Text XS"
+                                data-min="10"
+                                data-max="18"
+                                style="
+                                  font-family: Helvetica, Arial, sans-serif;
+                                  margin-top: 0px;
+                                  margin-bottom: 0px;
+                                  font-size: 14px;
+                                  line-height: 21px;
+                                  color: #424651;
+                                  padding-top: 16px;
+                                  padding-bottom: 16px;
+                                ">
+
+                                <p class="o_mb-md" style="margin-top: 0px; margin-bottom: 24px"><span>&nbsp; </span></p>
+                                <table align="center" cellspacing="0" cellpadding="0" border="0" role="presentation">
+                                  <tbody>
+                                    <tr>
+
+
+                                      </td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    <!--[if mso]></td><td width="200" align="center" valign="top" style="padding: 0px 8px;"><![endif]-->
+                    <div
+                      id="kpi2"
+                      class="o_col o_col-2 o_col-full"
+                      style="display: inline-block; vertical-align: top; width: 100%; max-width: 180px">
+                      <div style="font-size: 24px; line-height: 24px; height: 24px">&nbsp;</div>
+                      <div class="o_px-xs" style="padding-left: 8px; padding-right: 8px">
+                        <table width="100%" role="presentation" cellspacing="0" cellpadding="0" border="0">
+                          <tbody>
+                            <tr>
+                              <td
+                                class="o_bg-ultra_light o_br o_px o_py-md o_sans o_text o_text-secondary"
+                                align="center"
+                                data-bgcolor="Bg Ultra Light"
+                                data-size="Text Default"
+                                data-min="12"
+                                data-max="20"
+                                data-color="Secondary"
+                                style="
+                                  font-family: Helvetica, Arial, sans-serif;
+                                  margin-top: 0px;
+                                  margin-bottom: 0px;
+                                  font-size: 16px;
+                                  line-height: 24px;
+                                  background-color: #ebf5fa;
+                                  color: #424651;
+                                  border-radius: 4px;
+                                  padding-left: 16px;
+                                  padding-right: 16px;
+                                  padding-top: 24px;
+                                  padding-bottom: 24px;
+                                ">
+                                <p class="o_mb-xxs" style="margin-top: 0px; margin-bottom: 4px">
+                                  <strong>Premium</strong>
+                                </p>
+                                <h2
+                                id="kpiValue2"
+                                  class="o_heading o_text-primary"
+                                  data-size="Heading 2"
+                                  data-min="20"
+                                  data-max="40"
+                                  data-color="Primary"
+                                  style="
+                                    font-family: Helvetica, Arial, sans-serif;
+                                    font-weight: bold;
+                                    margin-top: 0px;
+                                    margin-bottom: 0px;
+                                    color: #126de5;
+                                    font-size: 30px;
+                                    line-height: 39px;
+                                  ">
+                                  $76
+                                </h2>
+
+                              </td>
+                            </tr>
+                            <tr>
+                              <td
+                                class="o_py o_sans o_text-xs o_text-secondary"
+                                align="center"
+                                data-color="Secondary"
+                                data-size="Text XS"
+                                data-min="10"
+                                data-max="18"
+                                style="
+                                  font-family: Helvetica, Arial, sans-serif;
+                                  margin-top: 0px;
+                                  margin-bottom: 0px;
+                                  font-size: 14px;
+                                  line-height: 21px;
+                                  color: #424651;
+                                  padding-top: 16px;
+                                  padding-bottom: 16px;
+                                ">
+
+
+                                <table align="center" cellspacing="0" cellpadding="0" border="0" role="presentation">
+                                  <tbody>
+                                    <tr>
+                                      <td
+                                        class="o_btn o_bg-dark o_br o_heading o_text-xs"
+                                        align="center"
+                                        data-bgcolor="Bg Dark"
+                                        data-size="Text XS"
+                                        data-min="10"
+                                        data-max="18"
+                                        style="
+                                          font-family: Helvetica, Arial, sans-serif;
+                                          font-weight: bold;
+                                          margin-top: 0px;
+                                          margin-bottom: 0px;
+                                          font-size: 14px;
+                                          line-height: 21px;
+                                          mso-padding-alt: 12px 24px;
+                                          background-color: #242b3d;
+                                          border-radius: 4px;
+                                        ">
+
+                                      </td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    <!--[if mso]></td><td width="200" align="center" valign="top" style="padding: 0px 8px;"><![endif]-->
+                    <div
+                     id="kpi3"
+                      class="o_col o_col-2 o_col-full"
+                      style="display: inline-block; vertical-align: top; width: 100%; max-width: 200px">
+                      <div style="font-size: 24px; line-height: 24px; height: 24px">&nbsp;</div>
+                      <div class="o_px-xs" style="padding-left: 8px; padding-right: 8px">
+                        <table width="100%" role="presentation" cellspacing="0" cellpadding="0" border="0">
+                          <tbody>
+                            <tr>
+                              <td
+                                class="o_bg-ultra_light o_br o_px o_py-md o_sans o_text o_text-secondary"
+                                align="center"
+                                data-bgcolor="Bg Ultra Light"
+                                data-size="Text Default"
+                                data-min="12"
+                                data-max="20"
+                                data-color="Secondary"
+                                style="
+                                  font-family: Helvetica, Arial, sans-serif;
+                                  margin-top: 0px;
+                                  margin-bottom: 0px;
+                                  font-size: 16px;
+                                  line-height: 24px;
+                                  background-color: #ebf5fa;
+                                  color: #424651;
+                                  border-radius: 4px;
+                                  padding-left: 16px;
+                                  padding-right: 16px;
+                                  padding-top: 24px;
+                                  padding-bottom: 24px;
+                                ">
+                                <p class="o_mb-xxs" style="margin-top: 0px; margin-bottom: 4px">
+                                  <strong>Enterprise</strong>
+                                </p>
+                                <h2
+                                id="kpiValue3"
+                                  class="o_heading o_text-primary"
+                                  data-size="Heading 2"
+                                  data-min="20"
+                                  data-max="40"
+                                  data-color="Primary"
+                                  style="
+                                    font-family: Helvetica, Arial, sans-serif;
+                                    font-weight: bold;
+                                    margin-top: 0px;
+                                    margin-bottom: 0px;
+                                    color: #126de5;
+                                    font-size: 30px;
+                                    line-height: 39px;
+                                  ">
+                                  $156
+                                </h2>
+
+                              </td>
+                            </tr>
+                            <tr>
+                              <td
+                                class="o_py o_sans o_text-xs o_text-secondary"
+                                align="center"
+                                data-color="Secondary"
+                                data-size="Text XS"
+                                data-min="10"
+                                data-max="18"
+                                style="
+                                  font-family: Helvetica, Arial, sans-serif;
+                                  margin-top: 0px;
+                                  margin-bottom: 0px;
+                                  font-size: 14px;
+                                  line-height: 21px;
+                                  color: #424651;
+                                  padding-top: 16px;
+                                  padding-bottom: 16px;
+                                ">
+
+                                <table align="center" cellspacing="0" cellpadding="0" border="0" role="presentation">
+                                  <tbody>
+                                    <tr>
+                                      <td
+                                        class="o_btn o_bg-dark o_br o_heading o_text-xs"
+                                        align="center"
+                                        data-bgcolor="Bg Dark"
+                                        data-size="Text XS"
+                                        data-min="10"
+                                        data-max="18"
+                                        style="
+                                          font-family: Helvetica, Arial, sans-serif;
+                                          font-weight: bold;
+                                          margin-top: 0px;
+                                          margin-bottom: 0px;
+                                          font-size: 14px;
+                                          line-height: 21px;
+                                          mso-padding-alt: 12px 24px;
+                                          background-color: #242b3d;
+                                          border-radius: 4px;
+                                        ">
+
+
+                                      </td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    <!--[if mso]></td></tr></table><![endif]-->
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <!--[if mso]></td></tr></table><![endif]-->
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+
+    <table data-module="order-summary0" data-thumb="http://www.stampready.net/dashboard/editor/user_uploads/zip_uploads/2020/03/13/0D6ItbpLZUSmhj3YORzyfKEg/account_addons/thumbnails/order-summary.png" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+      <tbody>
+        <tr>
+          <td class="o_bg-light o_px-xs" align="center" data-bgcolor="Bg Light" style="background-color: #dbe5ea;padding-left: 8px;padding-right: 8px;">
+            <!--[if mso]><table width="632" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
+            <table class="o_block" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation" style="max-width: 632px;margin: 0 auto;">
+              <tbody>
+                <tr>
+                  <td class="o_bg-white o_sans o_text-xs o_text-light o_px-md o_pt-xs" align="center" data-bgcolor="Bg White" data-color="Light" data-size="Text XS" data-min="10" data-max="18" style="font-family: Helvetica, Arial, sans-serif;margin-top: 0px;margin-bottom: 0px;font-size: 14px;line-height: 21px;background-color: #ffffff;color: #82899a;padding-left: 24px;padding-right: 24px;padding-top: 8px;">
+                    <p style="margin-top: 0px;margin-bottom: 0px;">TOP 5 PRODUCTS</p>
+                    <table width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+                      <tbody>
+                        <tr>
+                          <td class="o_re o_bb-light" style="font-size: 8px;line-height: 8px;height: 8px;vertical-align: top;border-bottom: 1px solid #d3dce0;" data-border-bottom-color="Border Light">&nbsp; </td>
+                        </tr>
+                      </tbody>
+                    </table>
                   </td>
                 </tr>
               </tbody>
@@ -1136,8 +1348,311 @@
 
 
 
+    <table data-module="addon-row0" data-thumb="http://www.stampready.net/dashboard/editor/user_uploads/zip_uploads/2020/03/13/0D6ItbpLZUSmhj3YORzyfKEg/account_addons/thumbnails/addon-row.png" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+      <tbody>
+        <tr>
+          <td class="o_bg-light o_px-xs" align="center" data-bgcolor="Bg Light" style="background-color: #dbe5ea;padding-left: 8px;padding-right: 8px;">
+            <!--[if mso]><table width="632" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
+            <table class="o_block" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation" style="max-width: 632px;margin: 0 auto;">
+              <tbody>
+                <tr>
+                  <td class="o_re o_bg-white o_px o_pt" align="center" data-bgcolor="Bg White" style="font-size: 0;vertical-align: top;background-color: #ffffff;padding-left: 16px;padding-right: 16px;padding-top: 16px;">
+                    <!--[if mso]><table cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td width="100" align="center" valign="top" style="padding: 0px 8px;"><![endif]-->
+                    <div class="o_col o_col-1 o_col-full" style="display: inline-block;vertical-align: top;width: 100%;max-width: 100px;">
+                      <div class="o_px-xs o_sans o_text o_center" data-size="Text Default" data-min="12" data-max="20" style="font-family: Helvetica, Arial, sans-serif;margin-top: 0px;margin-bottom: 0px;font-size: 16px;line-height: 24px;text-align: center;padding-left: 8px;padding-right: 8px;">
+                        <p style="margin-top: 0px;margin-bottom: 0px;"><a class="o_text-primary" href="https://example.com/" data-color="Primary" style="text-decoration: none;outline: none;color: #126de5;"><img src="http://www.stampready.net/dashboard/editor/user_uploads/zip_uploads/2020/03/13/0D6ItbpLZUSmhj3YORzyfKEg/account_addons/images/thumb_84_4.jpg" width="84" height="84" alt="" style="max-width: 84px;-ms-interpolation-mode: bicubic;vertical-align: middle;border: 0;line-height: 100%;height: auto;outline: none;text-decoration: none;" data-crop="false"></a></p>
+                      </div>
+                    </div>
+                    <!--[if mso]></td><td width="300" align="left" valign="top" style="padding: 0px 8px;"><![endif]-->
+                    <div class="o_col o_col-3 o_col-full" style="display: inline-block;vertical-align: top;width: 100%;max-width: 300px;">
+                      <div style="font-size: 10px; line-height: 10px; height: 10px;">&nbsp; </div>
+                      <div class="o_px-xs o_sans o_text-xs o_text-secondary o_left o_xs-center" data-color="Secondary" data-size="Text XS" data-min="10" data-max="18" style="font-family: Helvetica, Arial, sans-serif;margin-top: 0px;margin-bottom: 0px;font-size: 14px;line-height: 21px;color: #424651;text-align: left;padding-left: 8px;padding-right: 8px;">
+                        <p class="o_text o_text-dark" data-color="Dark" data-size="Text Default" data-min="12" data-max="20" style="font-size: 16px;line-height: 24px;color: #242b3d;margin-top: 0px;margin-bottom: 0px;"><strong>SuperChat Add-On</strong></p>
+                        <p class="o_mb-xxs" style="margin-top: 0px;margin-bottom: 4px;">Less dear heroically much indignantly</p>
+                        <p class="o_text-primary" data-color="Primary" style="color: #126de5;margin-top: 0px;margin-bottom: 0px;"><strong>$9.00</strong></p>
+                      </div>
+                    </div>
+                    <!--[if mso]></td><td width="200" align="right" valign="top" style="padding: 0px 8px;"><![endif]-->
+                    <div class="o_col o_col-2 o_col-full" style="display: inline-block;vertical-align: top;width: 100%;max-width: 200px;">
+                      <div style="font-size: 10px; line-height: 10px; height: 10px;">&nbsp; </div>
+                      <div class="o_px-xs o_sans o_text-xxs o_text-light o_right o_xs-center" data-color="Light" data-size="Text XXS" data-min="8" data-max="16" style="font-family: Helvetica, Arial, sans-serif;margin-top: 0px;margin-bottom: 0px;font-size: 12px;line-height: 19px;color: #82899a;text-align: right;padding-left: 8px;padding-right: 8px;">
+                        <table class="o_right o_xs-center" cellspacing="0" cellpadding="0" border="0" role="presentation" style="text-align: right;margin-left: auto;margin-right: 0;">
+                          <tbody>
+                            <tr>
+                              <td class="o_btn-xs o_bg-dark o_br o_heading o_text-xs" align="center" data-bgcolor="Bg Dark" data-size="Text XS" data-min="10" data-max="18" style="font-family: Helvetica, Arial, sans-serif;font-weight: bold;margin-top: 0px;margin-bottom: 0px;font-size: 14px;line-height: 21px;mso-padding-alt: 7px 16px;background-color: #242b3d;border-radius: 4px;">
 
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                        <div style="font-size: 8px; line-height: 8px; height: 8px;">&nbsp; </div>
+                        <p style="margin-top: 0px;margin-bottom: 0px;"><br></p>
+                      </div>
+                    </div>
+                    <!--[if mso]></td></tr><tr><td colspan="3" style="padding: 0px 8px;"><![endif]-->
+                    <div class="o_px-xs" style="padding-left: 8px;padding-right: 8px;">
+                      <table width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+                        <tbody>
+                          <tr>
+                            <td class="o_re o_bb-light" style="font-size: 16px;line-height: 16px;height: 16px;vertical-align: top;border-bottom: 1px solid #d3dce0;" data-border-bottom-color="Border Light">&nbsp; </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <!--[if mso]></td></tr></table><![endif]-->
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <!--[if mso]></td></tr></table><![endif]-->
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <table data-module="addon-row0" data-thumb="http://www.stampready.net/dashboard/editor/user_uploads/zip_uploads/2020/03/13/0D6ItbpLZUSmhj3YORzyfKEg/account_addons/thumbnails/addon-row.png" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+      <tbody>
+        <tr>
+          <td class="o_bg-light o_px-xs" align="center" data-bgcolor="Bg Light" style="background-color: #dbe5ea;padding-left: 8px;padding-right: 8px;">
+            <!--[if mso]><table width="632" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
+            <table class="o_block" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation" style="max-width: 632px;margin: 0 auto;">
+              <tbody>
+                <tr>
+                  <td class="o_re o_bg-white o_px o_pt" align="center" data-bgcolor="Bg White" style="font-size: 0;vertical-align: top;background-color: #ffffff;padding-left: 16px;padding-right: 16px;padding-top: 16px;">
+                    <!--[if mso]><table cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td width="100" align="center" valign="top" style="padding: 0px 8px;"><![endif]-->
+                    <div class="o_col o_col-1 o_col-full" style="display: inline-block;vertical-align: top;width: 100%;max-width: 100px;">
+                      <div class="o_px-xs o_sans o_text o_center" data-size="Text Default" data-min="12" data-max="20" style="font-family: Helvetica, Arial, sans-serif;margin-top: 0px;margin-bottom: 0px;font-size: 16px;line-height: 24px;text-align: center;padding-left: 8px;padding-right: 8px;">
+                        <p style="margin-top: 0px;margin-bottom: 0px;"><a class="o_text-primary" href="https://example.com/" data-color="Primary" style="text-decoration: none;outline: none;color: #126de5;"><img src="http://www.stampready.net/dashboard/editor/user_uploads/zip_uploads/2020/03/13/0D6ItbpLZUSmhj3YORzyfKEg/account_addons/images/thumb_84_4.jpg" width="84" height="84" alt="" style="max-width: 84px;-ms-interpolation-mode: bicubic;vertical-align: middle;border: 0;line-height: 100%;height: auto;outline: none;text-decoration: none;" data-crop="false"></a></p>
+                      </div>
+                    </div>
+                    <!--[if mso]></td><td width="300" align="left" valign="top" style="padding: 0px 8px;"><![endif]-->
+                    <div class="o_col o_col-3 o_col-full" style="display: inline-block;vertical-align: top;width: 100%;max-width: 300px;">
+                      <div style="font-size: 10px; line-height: 10px; height: 10px;">&nbsp; </div>
+                      <div class="o_px-xs o_sans o_text-xs o_text-secondary o_left o_xs-center" data-color="Secondary" data-size="Text XS" data-min="10" data-max="18" style="font-family: Helvetica, Arial, sans-serif;margin-top: 0px;margin-bottom: 0px;font-size: 14px;line-height: 21px;color: #424651;text-align: left;padding-left: 8px;padding-right: 8px;">
+                        <p class="o_text o_text-dark" data-color="Dark" data-size="Text Default" data-min="12" data-max="20" style="font-size: 16px;line-height: 24px;color: #242b3d;margin-top: 0px;margin-bottom: 0px;"><strong>SuperChat Add-On</strong></p>
+                        <p class="o_mb-xxs" style="margin-top: 0px;margin-bottom: 4px;">Less dear heroically much indignantly</p>
+                        <p class="o_text-primary" data-color="Primary" style="color: #126de5;margin-top: 0px;margin-bottom: 0px;"><strong>$9.00</strong></p>
+                      </div>
+                    </div>
+                    <!--[if mso]></td><td width="200" align="right" valign="top" style="padding: 0px 8px;"><![endif]-->
+                    <div class="o_col o_col-2 o_col-full" style="display: inline-block;vertical-align: top;width: 100%;max-width: 200px;">
+                      <div style="font-size: 10px; line-height: 10px; height: 10px;">&nbsp; </div>
+                      <div class="o_px-xs o_sans o_text-xxs o_text-light o_right o_xs-center" data-color="Light" data-size="Text XXS" data-min="8" data-max="16" style="font-family: Helvetica, Arial, sans-serif;margin-top: 0px;margin-bottom: 0px;font-size: 12px;line-height: 19px;color: #82899a;text-align: right;padding-left: 8px;padding-right: 8px;">
+                        <table class="o_right o_xs-center" cellspacing="0" cellpadding="0" border="0" role="presentation" style="text-align: right;margin-left: auto;margin-right: 0;">
+                          <tbody>
+                            <tr>
+                              <td class="o_btn-xs o_bg-dark o_br o_heading o_text-xs" align="center" data-bgcolor="Bg Dark" data-size="Text XS" data-min="10" data-max="18" style="font-family: Helvetica, Arial, sans-serif;font-weight: bold;margin-top: 0px;margin-bottom: 0px;font-size: 14px;line-height: 21px;mso-padding-alt: 7px 16px;background-color: #242b3d;border-radius: 4px;">
 
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                        <div style="font-size: 8px; line-height: 8px; height: 8px;">&nbsp; </div>
+                        <p style="margin-top: 0px;margin-bottom: 0px;"><br></p>
+                      </div>
+                    </div>
+                    <!--[if mso]></td></tr><tr><td colspan="3" style="padding: 0px 8px;"><![endif]-->
+                    <div class="o_px-xs" style="padding-left: 8px;padding-right: 8px;">
+                      <table width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+                        <tbody>
+                          <tr>
+                            <td class="o_re o_bb-light" style="font-size: 16px;line-height: 16px;height: 16px;vertical-align: top;border-bottom: 1px solid #d3dce0;" data-border-bottom-color="Border Light">&nbsp; </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <!--[if mso]></td></tr></table><![endif]-->
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <!--[if mso]></td></tr></table><![endif]-->
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <table data-module="addon-row0" data-thumb="http://www.stampready.net/dashboard/editor/user_uploads/zip_uploads/2020/03/13/0D6ItbpLZUSmhj3YORzyfKEg/account_addons/thumbnails/addon-row.png" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+      <tbody>
+        <tr>
+          <td class="o_bg-light o_px-xs" align="center" data-bgcolor="Bg Light" style="background-color: #dbe5ea;padding-left: 8px;padding-right: 8px;">
+            <!--[if mso]><table width="632" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
+            <table class="o_block" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation" style="max-width: 632px;margin: 0 auto;">
+              <tbody>
+                <tr>
+                  <td class="o_re o_bg-white o_px o_pt" align="center" data-bgcolor="Bg White" style="font-size: 0;vertical-align: top;background-color: #ffffff;padding-left: 16px;padding-right: 16px;padding-top: 16px;">
+                    <!--[if mso]><table cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td width="100" align="center" valign="top" style="padding: 0px 8px;"><![endif]-->
+                    <div class="o_col o_col-1 o_col-full" style="display: inline-block;vertical-align: top;width: 100%;max-width: 100px;">
+                      <div class="o_px-xs o_sans o_text o_center" data-size="Text Default" data-min="12" data-max="20" style="font-family: Helvetica, Arial, sans-serif;margin-top: 0px;margin-bottom: 0px;font-size: 16px;line-height: 24px;text-align: center;padding-left: 8px;padding-right: 8px;">
+                        <p style="margin-top: 0px;margin-bottom: 0px;"><a class="o_text-primary" href="https://example.com/" data-color="Primary" style="text-decoration: none;outline: none;color: #126de5;"><img src="http://www.stampready.net/dashboard/editor/user_uploads/zip_uploads/2020/03/13/0D6ItbpLZUSmhj3YORzyfKEg/account_addons/images/thumb_84_4.jpg" width="84" height="84" alt="" style="max-width: 84px;-ms-interpolation-mode: bicubic;vertical-align: middle;border: 0;line-height: 100%;height: auto;outline: none;text-decoration: none;" data-crop="false"></a></p>
+                      </div>
+                    </div>
+                    <!--[if mso]></td><td width="300" align="left" valign="top" style="padding: 0px 8px;"><![endif]-->
+                    <div class="o_col o_col-3 o_col-full" style="display: inline-block;vertical-align: top;width: 100%;max-width: 300px;">
+                      <div style="font-size: 10px; line-height: 10px; height: 10px;">&nbsp; </div>
+                      <div class="o_px-xs o_sans o_text-xs o_text-secondary o_left o_xs-center" data-color="Secondary" data-size="Text XS" data-min="10" data-max="18" style="font-family: Helvetica, Arial, sans-serif;margin-top: 0px;margin-bottom: 0px;font-size: 14px;line-height: 21px;color: #424651;text-align: left;padding-left: 8px;padding-right: 8px;">
+                        <p class="o_text o_text-dark" data-color="Dark" data-size="Text Default" data-min="12" data-max="20" style="font-size: 16px;line-height: 24px;color: #242b3d;margin-top: 0px;margin-bottom: 0px;"><strong>SuperChat Add-On</strong></p>
+                        <p class="o_mb-xxs" style="margin-top: 0px;margin-bottom: 4px;">Less dear heroically much indignantly</p>
+                        <p class="o_text-primary" data-color="Primary" style="color: #126de5;margin-top: 0px;margin-bottom: 0px;"><strong>$9.00</strong></p>
+                      </div>
+                    </div>
+                    <!--[if mso]></td><td width="200" align="right" valign="top" style="padding: 0px 8px;"><![endif]-->
+                    <div class="o_col o_col-2 o_col-full" style="display: inline-block;vertical-align: top;width: 100%;max-width: 200px;">
+                      <div style="font-size: 10px; line-height: 10px; height: 10px;">&nbsp; </div>
+                      <div class="o_px-xs o_sans o_text-xxs o_text-light o_right o_xs-center" data-color="Light" data-size="Text XXS" data-min="8" data-max="16" style="font-family: Helvetica, Arial, sans-serif;margin-top: 0px;margin-bottom: 0px;font-size: 12px;line-height: 19px;color: #82899a;text-align: right;padding-left: 8px;padding-right: 8px;">
+                        <table class="o_right o_xs-center" cellspacing="0" cellpadding="0" border="0" role="presentation" style="text-align: right;margin-left: auto;margin-right: 0;">
+                          <tbody>
+                            <tr>
+                              <td class="o_btn-xs o_bg-dark o_br o_heading o_text-xs" align="center" data-bgcolor="Bg Dark" data-size="Text XS" data-min="10" data-max="18" style="font-family: Helvetica, Arial, sans-serif;font-weight: bold;margin-top: 0px;margin-bottom: 0px;font-size: 14px;line-height: 21px;mso-padding-alt: 7px 16px;background-color: #242b3d;border-radius: 4px;">
+
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                        <div style="font-size: 8px; line-height: 8px; height: 8px;">&nbsp; </div>
+                        <p style="margin-top: 0px;margin-bottom: 0px;"><br></p>
+                      </div>
+                    </div>
+                    <!--[if mso]></td></tr><tr><td colspan="3" style="padding: 0px 8px;"><![endif]-->
+                    <div class="o_px-xs" style="padding-left: 8px;padding-right: 8px;">
+                      <table width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+                        <tbody>
+                          <tr>
+                            <td class="o_re o_bb-light" style="font-size: 16px;line-height: 16px;height: 16px;vertical-align: top;border-bottom: 1px solid #d3dce0;" data-border-bottom-color="Border Light">&nbsp; </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <!--[if mso]></td></tr></table><![endif]-->
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <!--[if mso]></td></tr></table><![endif]-->
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <table data-module="addon-row0" data-thumb="http://www.stampready.net/dashboard/editor/user_uploads/zip_uploads/2020/03/13/0D6ItbpLZUSmhj3YORzyfKEg/account_addons/thumbnails/addon-row.png" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+      <tbody>
+        <tr>
+          <td class="o_bg-light o_px-xs" align="center" data-bgcolor="Bg Light" style="background-color: #dbe5ea;padding-left: 8px;padding-right: 8px;">
+            <!--[if mso]><table width="632" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
+            <table class="o_block" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation" style="max-width: 632px;margin: 0 auto;">
+              <tbody>
+                <tr>
+                  <td class="o_re o_bg-white o_px o_pt" align="center" data-bgcolor="Bg White" style="font-size: 0;vertical-align: top;background-color: #ffffff;padding-left: 16px;padding-right: 16px;padding-top: 16px;">
+                    <!--[if mso]><table cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td width="100" align="center" valign="top" style="padding: 0px 8px;"><![endif]-->
+                    <div class="o_col o_col-1 o_col-full" style="display: inline-block;vertical-align: top;width: 100%;max-width: 100px;">
+                      <div class="o_px-xs o_sans o_text o_center" data-size="Text Default" data-min="12" data-max="20" style="font-family: Helvetica, Arial, sans-serif;margin-top: 0px;margin-bottom: 0px;font-size: 16px;line-height: 24px;text-align: center;padding-left: 8px;padding-right: 8px;">
+                        <p style="margin-top: 0px;margin-bottom: 0px;"><a class="o_text-primary" href="https://example.com/" data-color="Primary" style="text-decoration: none;outline: none;color: #126de5;"><img src="http://www.stampready.net/dashboard/editor/user_uploads/zip_uploads/2020/03/13/0D6ItbpLZUSmhj3YORzyfKEg/account_addons/images/thumb_84_4.jpg" width="84" height="84" alt="" style="max-width: 84px;-ms-interpolation-mode: bicubic;vertical-align: middle;border: 0;line-height: 100%;height: auto;outline: none;text-decoration: none;" data-crop="false"></a></p>
+                      </div>
+                    </div>
+                    <!--[if mso]></td><td width="300" align="left" valign="top" style="padding: 0px 8px;"><![endif]-->
+                    <div class="o_col o_col-3 o_col-full" style="display: inline-block;vertical-align: top;width: 100%;max-width: 300px;">
+                      <div style="font-size: 10px; line-height: 10px; height: 10px;">&nbsp; </div>
+                      <div class="o_px-xs o_sans o_text-xs o_text-secondary o_left o_xs-center" data-color="Secondary" data-size="Text XS" data-min="10" data-max="18" style="font-family: Helvetica, Arial, sans-serif;margin-top: 0px;margin-bottom: 0px;font-size: 14px;line-height: 21px;color: #424651;text-align: left;padding-left: 8px;padding-right: 8px;">
+                        <p class="o_text o_text-dark" data-color="Dark" data-size="Text Default" data-min="12" data-max="20" style="font-size: 16px;line-height: 24px;color: #242b3d;margin-top: 0px;margin-bottom: 0px;"><strong>SuperChat Add-On</strong></p>
+                        <p class="o_mb-xxs" style="margin-top: 0px;margin-bottom: 4px;">Less dear heroically much indignantly</p>
+                        <p class="o_text-primary" data-color="Primary" style="color: #126de5;margin-top: 0px;margin-bottom: 0px;"><strong>$9.00</strong></p>
+                      </div>
+                    </div>
+                    <!--[if mso]></td><td width="200" align="right" valign="top" style="padding: 0px 8px;"><![endif]-->
+                    <div class="o_col o_col-2 o_col-full" style="display: inline-block;vertical-align: top;width: 100%;max-width: 200px;">
+                      <div style="font-size: 10px; line-height: 10px; height: 10px;">&nbsp; </div>
+                      <div class="o_px-xs o_sans o_text-xxs o_text-light o_right o_xs-center" data-color="Light" data-size="Text XXS" data-min="8" data-max="16" style="font-family: Helvetica, Arial, sans-serif;margin-top: 0px;margin-bottom: 0px;font-size: 12px;line-height: 19px;color: #82899a;text-align: right;padding-left: 8px;padding-right: 8px;">
+                        <table class="o_right o_xs-center" cellspacing="0" cellpadding="0" border="0" role="presentation" style="text-align: right;margin-left: auto;margin-right: 0;">
+                          <tbody>
+                            <tr>
+                              <td class="o_btn-xs o_bg-dark o_br o_heading o_text-xs" align="center" data-bgcolor="Bg Dark" data-size="Text XS" data-min="10" data-max="18" style="font-family: Helvetica, Arial, sans-serif;font-weight: bold;margin-top: 0px;margin-bottom: 0px;font-size: 14px;line-height: 21px;mso-padding-alt: 7px 16px;background-color: #242b3d;border-radius: 4px;">
+
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                        <div style="font-size: 8px; line-height: 8px; height: 8px;">&nbsp; </div>
+                        <p style="margin-top: 0px;margin-bottom: 0px;"><br></p>
+                      </div>
+                    </div>
+                    <!--[if mso]></td></tr><tr><td colspan="3" style="padding: 0px 8px;"><![endif]-->
+                    <div class="o_px-xs" style="padding-left: 8px;padding-right: 8px;">
+                      <table width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+                        <tbody>
+                          <tr>
+                            <td class="o_re o_bb-light" style="font-size: 16px;line-height: 16px;height: 16px;vertical-align: top;border-bottom: 1px solid #d3dce0;" data-border-bottom-color="Border Light">&nbsp; </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <!--[if mso]></td></tr></table><![endif]-->
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <!--[if mso]></td></tr></table><![endif]-->
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <table data-module="addon-row0" data-thumb="http://www.stampready.net/dashboard/editor/user_uploads/zip_uploads/2020/03/13/0D6ItbpLZUSmhj3YORzyfKEg/account_addons/thumbnails/addon-row.png" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+      <tbody>
+        <tr>
+          <td class="o_bg-light o_px-xs" align="center" data-bgcolor="Bg Light" style="background-color: #dbe5ea;padding-left: 8px;padding-right: 8px;">
+            <!--[if mso]><table width="632" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
+            <table class="o_block" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation" style="max-width: 632px;margin: 0 auto;">
+              <tbody>
+                <tr>
+                  <td class="o_re o_bg-white o_px o_pt" align="center" data-bgcolor="Bg White" style="font-size: 0;vertical-align: top;background-color: #ffffff;padding-left: 16px;padding-right: 16px;padding-top: 16px;">
+                    <!--[if mso]><table cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td width="100" align="center" valign="top" style="padding: 0px 8px;"><![endif]-->
+                    <div class="o_col o_col-1 o_col-full" style="display: inline-block;vertical-align: top;width: 100%;max-width: 100px;">
+                      <div class="o_px-xs o_sans o_text o_center" data-size="Text Default" data-min="12" data-max="20" style="font-family: Helvetica, Arial, sans-serif;margin-top: 0px;margin-bottom: 0px;font-size: 16px;line-height: 24px;text-align: center;padding-left: 8px;padding-right: 8px;">
+                        <p style="margin-top: 0px;margin-bottom: 0px;"><a class="o_text-primary" href="https://example.com/" data-color="Primary" style="text-decoration: none;outline: none;color: #126de5;"><img src="http://www.stampready.net/dashboard/editor/user_uploads/zip_uploads/2020/03/13/0D6ItbpLZUSmhj3YORzyfKEg/account_addons/images/thumb_84_4.jpg" width="84" height="84" alt="" style="max-width: 84px;-ms-interpolation-mode: bicubic;vertical-align: middle;border: 0;line-height: 100%;height: auto;outline: none;text-decoration: none;" data-crop="false"></a></p>
+                      </div>
+                    </div>
+                    <!--[if mso]></td><td width="300" align="left" valign="top" style="padding: 0px 8px;"><![endif]-->
+                    <div class="o_col o_col-3 o_col-full" style="display: inline-block;vertical-align: top;width: 100%;max-width: 300px;">
+                      <div style="font-size: 10px; line-height: 10px; height: 10px;">&nbsp; </div>
+                      <div class="o_px-xs o_sans o_text-xs o_text-secondary o_left o_xs-center" data-color="Secondary" data-size="Text XS" data-min="10" data-max="18" style="font-family: Helvetica, Arial, sans-serif;margin-top: 0px;margin-bottom: 0px;font-size: 14px;line-height: 21px;color: #424651;text-align: left;padding-left: 8px;padding-right: 8px;">
+                        <p class="o_text o_text-dark" data-color="Dark" data-size="Text Default" data-min="12" data-max="20" style="font-size: 16px;line-height: 24px;color: #242b3d;margin-top: 0px;margin-bottom: 0px;"><strong>SuperChat Add-On</strong></p>
+                        <p class="o_mb-xxs" style="margin-top: 0px;margin-bottom: 4px;">Less dear heroically much indignantly</p>
+                        <p class="o_text-primary" data-color="Primary" style="color: #126de5;margin-top: 0px;margin-bottom: 0px;"><strong>$9.00</strong></p>
+                      </div>
+                    </div>
+                    <!--[if mso]></td><td width="200" align="right" valign="top" style="padding: 0px 8px;"><![endif]-->
+                    <div class="o_col o_col-2 o_col-full" style="display: inline-block;vertical-align: top;width: 100%;max-width: 200px;">
+                      <div style="font-size: 10px; line-height: 10px; height: 10px;">&nbsp; </div>
+                      <div class="o_px-xs o_sans o_text-xxs o_text-light o_right o_xs-center" data-color="Light" data-size="Text XXS" data-min="8" data-max="16" style="font-family: Helvetica, Arial, sans-serif;margin-top: 0px;margin-bottom: 0px;font-size: 12px;line-height: 19px;color: #82899a;text-align: right;padding-left: 8px;padding-right: 8px;">
+                        <table class="o_right o_xs-center" cellspacing="0" cellpadding="0" border="0" role="presentation" style="text-align: right;margin-left: auto;margin-right: 0;">
+                          <tbody>
+                            <tr>
+                              <td class="o_btn-xs o_bg-dark o_br o_heading o_text-xs" align="center" data-bgcolor="Bg Dark" data-size="Text XS" data-min="10" data-max="18" style="font-family: Helvetica, Arial, sans-serif;font-weight: bold;margin-top: 0px;margin-bottom: 0px;font-size: 14px;line-height: 21px;mso-padding-alt: 7px 16px;background-color: #242b3d;border-radius: 4px;">
+
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                        <div style="font-size: 8px; line-height: 8px; height: 8px;">&nbsp; </div>
+                        <p style="margin-top: 0px;margin-bottom: 0px;"><br></p>
+                      </div>
+                    </div>
+                    <!--[if mso]></td></tr><tr><td colspan="3" style="padding: 0px 8px;"><![endif]-->
+                    <div class="o_px-xs" style="padding-left: 8px;padding-right: 8px;">
+                      <table width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+                        <tbody>
+                          <tr>
+                            <td class="o_re o_bb-light" style="font-size: 16px;line-height: 16px;height: 16px;vertical-align: top;border-bottom: 1px solid #d3dce0;" data-border-bottom-color="Border Light">&nbsp; </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <!--[if mso]></td></tr></table><![endif]-->
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <!--[if mso]></td></tr></table><![endif]-->
+          </td>
+        </tr>
+      </tbody>
+    </table>
 
     <table
     data-module="footer"
@@ -1166,106 +1681,14 @@
             style="max-width: 632px; margin: 0 auto">
             <tbody>
               <tr>
-                <td
-                  class="o_bg-dark o_px-md o_py-lg o_br-b o_sans o_text-xs o_text-dark_light"
-                  align="center"
-                  data-bgcolor="Bg Dark"
-                  data-color="Dark Light"
-                  data-size="Text XS"
-                  data-min="10"
-                  data-max="18"
-                  style="
-                    font-family: Helvetica, Arial, sans-serif;
-                    margin-top: 0px;
-                    margin-bottom: 0px;
-                    font-size: 14px;
-                    line-height: 21px;
-                    background-color: #242b3d;
-                    color: #a0a3ab;
-                    border-radius: 0px 0px 4px 4px;
-                    padding-left: 24px;
-                    padding-right: 24px;
-                    padding-top: 32px;
-                    padding-bottom: 32px;
-                  ">
-                  <p class="o_mb" style="margin-top: 0px; margin-bottom: 16px">
-                    <a
-                      class="o_text-dark_light"
-                      href="https://example.com/"
-                      data-color="Dark Light"
-                      style="text-decoration: none; outline: none; color: #a0a3ab"
-                      ><img
-                        src="http://www.stampready.net/dashboard/editor/user_uploads/zip_uploads/2018/11/19/pcVNfzKjZ3goPqkxr2hYT0ws/service_canceled/images/logo_icon-white.png"
-                        width="36"
-                        height="36"
-                        alt="SimpleApp"
-                        style="
-                          max-width: 36px;
-                          -ms-interpolation-mode: bicubic;
-                          vertical-align: middle;
-                          border: 0;
-                          line-height: 100%;
-                          height: auto;
-                          outline: none;
-                          text-decoration: none;
-                        "
-                        data-crop="false"
-                    /></a>
-                  </p>
-                  <p class="o_mb" style="margin-top: 0px; margin-bottom: 16px">©2018 SimpleApp Inc</p>
-                  <p class="o_mb" style="margin-top: 0px; margin-bottom: 16px">
-                    2603 Woodridge Lane,<br />
-                    Memphis, TN 38104, USA
-                  </p>
-                  <p style="margin-top: 0px; margin-bottom: 0px">
-                    <a
-                      class="o_text-dark_light o_underline"
-                      href="https://example.com/"
-                      data-color="Dark Light"
-                      style="text-decoration: underline; outline: none; color: #a0a3ab"
-                      >Help Center</a
-                    >
-                    <span class="o_hide-xs">&nbsp; • &nbsp;</span
-                    ><br
-                      class="o_hide-lg"
-                      style="
-                        display: none;
-                        font-size: 0;
-                        max-height: 0;
-                        width: 0;
-                        line-height: 0;
-                        overflow: hidden;
-                        mso-hide: all;
-                        visibility: hidden;
-                      " />
-                    <a
-                      class="o_text-dark_light o_underline"
-                      href="https://example.com/"
-                      data-color="Dark Light"
-                      style="text-decoration: underline; outline: none; color: #a0a3ab"
-                      >Preferences</a
-                    >
-                    <span class="o_hide-xs">&nbsp; • &nbsp;</span
-                    ><br
-                      class="o_hide-lg"
-                      style="
-                        display: none;
-                        font-size: 0;
-                        max-height: 0;
-                        width: 0;
-                        line-height: 0;
-                        overflow: hidden;
-                        mso-hide: all;
-                        visibility: hidden;
-                      " />
-                    <a
-                      class="o_text-dark_light o_underline"
-                      href="https://example.com/"
-                      data-color="Dark Light"
-                      style="text-decoration: underline; outline: none; color: #a0a3ab"
-                      >Unsubscribe</a
-                    >
-                  </p>
+
+
+  <td class="o_bg-white o_px-md o_py-lg o_bt-light o_br-b o_sans o_text-xs o_text-light" align="center"  data-color="Light" data-size="Text XS" data-min="10" data-max="18" data-border-top-color="Border Light" style="font-family: Helvetica, Arial, sans-serif;margin-top: 0px;margin-bottom: 0px;font-size: 14px;line-height: 21px;background-color: #ffffff;color: #82899a;border-top: 1px solid #d3dce0;border-radius: 0px 0px 4px 4px;padding-left: 50px;padding-right: 50px;padding-top: 32px;padding-bottom: 32px;">
+
+    <p class="o_mb" style="margin-top: 0px;margin-bottom: 16px;">©2025 Valomnia</p>
+
+  </td></td>
+
                 </td>
               </tr>
             </tbody>
@@ -1279,8 +1702,6 @@
 
 
 
-
-
   </body>
 </html>
 
@@ -1291,64 +1712,60 @@
         </div>
 
         <!-- Alerte Section -->
-
-        <div id="alerteSection"class="col-md-4 section" style="display: none;">
-            <div class="card mb-6">
-                <h5 class="card-header">Formulaire d'Alerte</h5>
-                <div class="card-body">
-                    <form >
-                        @csrf
-                        <div class="mb-4">
+        <div id="alerteSection" class="col-md-4 section" style="display: none;">
+          <div class="card mb-6">
+              <h5 class="card-header">Formulaire d'Alerte</h5>
+              <div class="card-body">
+                  <form action="{{ route('email.store') }}" method="POST">
+                      @csrf
+                      <div class="mb-4">
                           <label for="alerte-type" class="form-label">Type d'Alerte</label>
-                            <select class="form-select" id="alerte-type" name="alert_type" required>
+                          <select class="form-select" id="alerte-type" name="alert_type" required>
                               <option value="">Sélectionnez un type</option>
                               <option value="stock">Stock</option>
-                                <option value="prix">Prix</option>
-                             </select>
-                        </div>
+                              <option value="prix">Prix</option>
+                          </select>
+                      </div>
 
-                 <div class="mb-4">
-    <label for="alerte-title" class="form-label">Titre</label>
-    <input type="text" class="form-control" id="alerte-title" name="alert_title" placeholder="Titre de l'alerte" required oninput="updateTemplateTitle()" />
-</div>
+                      <div class="mb-4">
+                          <label for="alerte-title" class="form-label">Titre</label>
+                          <input type="text" class="form-control" id="alerte-title" name="alert_title" placeholder="Titre de l'alerte" required />
+                      </div>
 
-    <div class="mb-4">
-        <label for="alerte-email-subject" class="form-label">Sujet d'Email</label>
-        <input type="text" class="form-control" id="alerte-email-subject" name="email_subject" placeholder="Sujet de l'email" required />
-    </div>
+                      <div class="mb-4">
+                          <label for="alerte-email-subject" class="form-label">Sujet d'Email</label>
+                          <input type="text" class="form-control" id="alerte-email-subject" name="email_subject" placeholder="Sujet de l'email" required />
+                      </div>
 
-    <div class="mb-4">
-    <label for="alerte-text" class="form-label">Texte</label>
-    <textarea class="form-control" id="alerte-text" name="alert_text" rows="3" placeholder="Entrez votre texte ici" oninput="updateTemplateText()"></textarea>
-</div>
-<div class="form-check">
+
+
+
+
+                      <form>
+    <div class="form-check">
         <input class="form-check-input" type="checkbox" id="alert-open" onclick="toggleUrlSection()" />
         <label class="form-check-label" for="alert-open">Afficher Bouton</label>
     </div>
 
-    <div id="urlSection" class="mb-4" style="display: none;">
-        <label for="alerte-url" class="form-label">URL Spécifique</label>
-        <input type="url" class="form-control" id="alerte-url" name="alert_url" placeholder="URL spécifique" required oninput="updateButtonUrl()" />
-        <div class="mb-4">
-            <label for="alerte-text" class="form-label">Texte</label>
-            <textarea class="form-control" id="alerte-text" name="alert_text" rows="3" placeholder="Entrez votre texte ici" oninput="updateTemplateText()"></textarea>
-        </div>
-                        </div>
-                        <div class="mb-4">
-                            <button type="submit" class="btn btn-warning">Créer l'Alerte</button>
-                        </div>
-                        <button type="button" class="button" onclick="showTemplatePopup()">Agrandir le Template</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <div id="templateModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeTemplatePopup()">&times;</span>
-            <div id="modalBody"></div>
-        </div>
+    <div id="alert-url-section" class="mb-4">
+        <label for="alert-url" class="form-label">URL Spécifique</label>
+        <input type="url" class="form-control" id="alert-url" name="alert_url" placeholder="URL spécifique" oninput="updateButtonUrl()" />
     </div>
+
+    <div id="alert-button-input" class="mb-4">
+        <label for="alert-button-text" class="form-label">Titre du Bouton</label>
+        <textarea class="form-control" id="alert-button-text" name="alert_text" rows="3" placeholder="Entrez le titre du bouton ici" oninput="updateButtonText()"></textarea>
+    </div>
+
+
+
+                      <div class="mb-4">
+                          <button type="submit" class="btn btn-warning">Créer l'Alerte</button>
+                      </div>
+                  </form>
+              </div>
+          </div>
+      </div>
         <!-- Email Template for Alerte -->
         <div id="alerteTemplate"  class="col-md-8" style="display: none;"> <!-- 70% width -->
             <div class="card mb-6">
@@ -1469,7 +1886,7 @@
                                           </tr>
                                         </tbody>
                                       </table>
-                                      <h2 class="o_heading o_text-dark o_mb-xxs" id="template-title" data-color="Dark" data-size="Heading 2" data-min="20" data-max="40" style="font-family: Helvetica, Arial, sans-serif;font-weight: bold;margin-top: 0px;margin-bottom: 4px;color: #242b3d;font-size: 30px;line-height: 39px;">Welcome to B2B Valomnia</h2>
+                                      <h2 class="o_heading o_text-dark o_mb-xxs" id="template-title" data-color="Dark" data-size="Heading 2" data-min="20" data-max="40" style="font-family: Helvetica, Arial, sans-serif;font-weight: bold;margin-top: 0px;margin-bottom: 4px;color: #242b3d;font-size: 30px;line-height: 39px;">Titre de l'alerte par défaut</h2>
 
                                     </td>
                                   </tr>
@@ -1556,8 +1973,8 @@
                     <table align="center" cellspacing="0" cellpadding="0" border="0" role="presentation">
                         <tbody>
                             <tr>
-                                <td width="300" class="o_btn o_bg-success o_br o_heading o_text" id="action-button" align="center" data-bgcolor="Bg Success" data-size="Text Default" data-min="12" data-max="20" style="font-family: Helvetica, Arial, sans-serif;font-weight: bold;margin-top: 0px;margin-bottom: 0px;font-size: 16px;line-height: 24px;mso-padding-alt: 12px 24px;background-color: #0ec06e;border-radius: 4px; display: none;">
-                                    <a class="o_text-white" id="action-link" href="https://example.com/" data-color="White" style="text-decoration: none;outline: none;color: #ffffff;display: block;padding: 12px 24px;mso-text-raise: 3px;">Access Your Account</a>
+                                <td width="300" class="o_btn o_bg-success o_br o_heading o_text"  id="alert-button" align="center" data-bgcolor="Bg Success" data-size="Text Default" data-min="12" data-max="20" style="font-family: Helvetica, Arial, sans-serif;font-weight: bold;margin-top: 0px;margin-bottom: 0px;font-size: 16px;line-height: 24px;mso-padding-alt: 12px 24px;background-color: #0ec06e;border-radius: 4px; display: none;">
+                                    <a class="o_text-white" id="alert-link"  href="https://example.com/" data-color="White" style="text-decoration: none;outline: none;color: #ffffff;display: block;padding: 12px 24px;mso-text-raise: 3px;">Access Your Account</a>
                                 </td>
                             </tr>
                         </tbody>
@@ -1630,79 +2047,154 @@
     </div>
 
 @endsection
-
 @section('page-script')
 <script>
-    function toggleSections(section) {
-        const rapportSection = document.getElementById('rapportSection');
-        const rapportTemplate = document.getElementById('rapportTemplate');
-        const alerteSection = document.getElementById('alerteSection');
-        const alerteTemplate = document.getElementById('alerteTemplate');
+ function toggleSections(section) {
+    const rapportSection = document.getElementById('rapportSection');
+    const rapportTemplate = document.getElementById('rapportTemplate');
+    const alerteSection = document.getElementById('alerteSection');
+    const alerteTemplate = document.getElementById('alerteTemplate');
 
-        if (section === 'rapport') {
-            rapportSection.style.display = 'block';
-            rapportTemplate.style.display = 'block';
-            alerteSection.style.display = 'none';
-            alerteTemplate.style.display = 'none';
-        } else if (section === 'alerte') {
-            rapportSection.style.display = 'none';
-            rapportTemplate.style.display = 'none';
-            alerteSection.style.display = 'block';
-            alerteTemplate.style.display = 'block';
-        }
+    // Réinitialiser l'affichage des sections
+    rapportSection.style.display = 'none';
+    rapportTemplate.style.display = 'none';
+    alerteSection.style.display = 'none';
+    alerteTemplate.style.display = 'none';
+
+    // Afficher la section et le modèle sélectionnés
+    if (section === 'rapport') {
+        rapportSection.style.display = 'block';
+        rapportTemplate.style.display = 'block';
+        document.getElementById('rapportBtn').classList.remove('btn-label-primary');
+        document.getElementById('rapportBtn').classList.add('btn-primary');
+        document.getElementById('alerteBtn').classList.remove('btn-primary');
+        document.getElementById('alerteBtn').classList.add('btn-label-primary');
+    } else if (section === 'alerte') {
+        alerteSection.style.display = 'block';
+        alerteTemplate.style.display = 'block';
+        document.getElementById('alerteBtn').classList.remove('btn-label-primary');
+        document.getElementById('alerteBtn').classList.add('btn-primary');
+        document.getElementById('rapportBtn').classList.remove('btn-primary');
+        document.getElementById('rapportBtn').classList.add('btn-label-primary');
+    }
+}
+
+// Initialisation : afficher la section Rapport par défaut
+document.addEventListener('DOMContentLoaded', function() {
+    toggleSections('rapport'); // Affiche par défaut la section Rapport
+});
+
+    function toggleReportSection() {
+    const checkbox = document.getElementById('report-open');
+    const urlSection = document.getElementById('urlSection');
+    const buttonTitleSection = document.getElementById('buttonTitleSection');
+    const reportTemplate = document.getElementById('reportTemplate');
+
+    // Affiche ou masque la section d'URL de rapport, le titre et le bouton
+    urlSection.style.display = checkbox.checked ? 'block' : 'none';
+    buttonTitleSection.style.display = checkbox.checked ? 'block' : 'none';
+    reportTemplate.style.display = checkbox.checked ? 'block' : 'none';
+
+    console.log(checkbox.checked ? 'URL section, button title, and button displayed' : 'Sections hidden');
+}
+
+function updateReportButtonText() {
+    const buttonText = document.getElementById('button-title').value;
+    const actionLink = document.getElementById('action-link');
+    actionLink.innerText = buttonText || "Voir le Rapport"; // Texte par défaut
+    console.log('Button text updated to:', actionLink.innerText);
+}
+
+function updateReportButtonUrl() {
+    const reportUrl = document.getElementById('report-url').value;
+    console.log('Report URL updated to:', reportUrl);
+}
+
+
+
+
+
+
+
+
+
+
+
+    function updateReportTitle() {
+        // Get the value from the input field
+        const titleInput = document.getElementById('rapport-title').value;
+        // Get the template title element
+        const reportTitle = document.getElementById('report-title');
+        // Update the title or set default if input is empty
+        reportTitle.innerText = titleInput || "Titre du rapport par défaut"; // Default title
+    }
+    function updateRapportContent() {
+        // Get the value from the textarea
+        const rapportContent = document.getElementById('rapport-content').value;
+        // Get the rapport template text element
+        const rapportTemplateText = document.getElementById('rapport-template-text');
+        // Update the paragraph or set default if input is empty
+        rapportTemplateText.innerText = rapportContent || "Contenu par défaut du rapport. Veuillez entrer votre texte ci-dessus."; // Default text
     }
 
-    function updateTemplateTitle() {
-    const title = document.getElementById('alerte-title').value;
-    document.getElementById('template-title').innerText = title || "Titre de l'alerte par défaut"; // Met à jour le titre dans le template
+    function toggleTitle() {
+        const titleElement = document.getElementById('report-title');
+        const titleCheckbox = document.getElementById('show-title');
+        titleElement.style.display = titleCheckbox.checked ? 'block' : 'none'; // Show or hide title
+    }
+
+    function toggleParagraph() {
+        const contentElement = document.getElementById('rapport-template-text');
+        const paragraphCheckbox = document.getElementById('show-paragraph');
+        contentElement.style.display = paragraphCheckbox.checked ? 'block' : 'none'; // Show or hide content
+    }
+
+
+
+
+
+
+    function updateAlertText() {
+        const text = document.getElementById('alerte-text').value;
+        document.getElementById('template-text').innerText = text || "Welcome to B2B Valomnia! We're excited to have you on board."; // Texte par défaut
+    }
+
+    function toggleUrlSection() {
+        const checkbox = document.getElementById('alert-open');
+        const urlSection = document.getElementById('alert-url-section');
+        const buttonInput = document.getElementById('alert-button-input');
+        const button = document.getElementById('alert-button');
+
+        const displayStyle = checkbox.checked ? 'block' : 'none';
+
+        // Afficher/Masquer les sections et le bouton
+        urlSection.style.display = displayStyle;
+        buttonInput.style.display = displayStyle;
+        button.style.display = checkbox.checked ? 'block' : 'none';
+
+        console.log(checkbox.checked ? 'Sections et bouton affichés' : 'Sections et bouton cachés');
+    }
+
+    // Fonction pour mettre à jour l'URL du bouton
+    function updateButtonUrl() {
+        const buttonUrl = document.getElementById('alert-url').value;
+        document.getElementById('alert-link').href = buttonUrl || "https://example.com/";
+    }
+
+    // Fonction pour mettre à jour le texte du bouton
+    function updateButtonText() {
+        const buttonText = document.getElementById('alert-button-text').value;
+        document.getElementById('alert-link').innerText = buttonText || "Access Your Account";
+    }
+
+    function toggleKPI(kpiId, isChecked) {
+    const kpiElement = document.getElementById(kpiId);
+    if (isChecked) {
+        kpiElement.style.display = "block";
+    } else {
+        kpiElement.style.display = "none"; // Hide the KPI when unchecked
+    }
 }
-function updateTemplateText() {
-    const text = document.getElementById('alerte-text').value;
-    document.getElementById('template-text').innerText = text || "Welcome to B2B Valomnia! We're excited to have you on board."; // Texte par défaut
-}
-function toggleUrlSection() {
-            const checkbox = document.getElementById('alert-open');
-            const urlSection = document.getElementById('urlSection');
-            const button = document.getElementById('action-button');
-            urlSection.style.display = checkbox.checked ? 'block' : 'none'; // Affiche ou cache la section URL
-            button.style.display = checkbox.checked ? 'table-cell' : 'none'; // Affiche ou cache le bouton
-        }
 
-        function updateButtonUrl() {
-            const buttonUrl = document.getElementById('alerte-url').value;
-            document.getElementById('action-link').href = buttonUrl || "https://example.com/";
-        }
-        function showTemplate() {
-    const formContainer = document.getElementById('form-container');
-    const templateContainer = document.getElementById('template-container');
-    const templateFull = document.getElementById('template-full');
-
-    // Masquer le formulaire
-    formContainer.style.display = 'none';
-
-    // Afficher le template plein et ajuster sa taille
-    templateFull.style.display = 'block';
-    templateContainer.style.width = '100%';
-}
-
-function showTemplatePopup() {
-            // Get the content of the hidden template
-            const templateContent = document.getElementById('alerteTemplate').innerHTML;
-            document.getElementById('modalBody').innerHTML = templateContent;
-
-            // Show the modal
-            document.getElementById('templateModal').style.display = 'block';
-        }
-
-        function closeTemplatePopup() {
-            document.getElementById('templateModal').style.display = 'none';
-        }
-
-        // Close the modal if the user clicks outside of it
-        window.onclick = function(event) {
-            const modal = document.getElementById('templateModal');
-            if (event.target === modal) {
-                modal.style.display = 'none';
-            }}
 </script>
 @endsection

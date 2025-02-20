@@ -3,6 +3,28 @@
 @section('title', 'Liste des Modèles d\'E-mail')
 
 @section('content')
+<div class="col-md-12">
+    <div class="nav-align-top">
+        <ul class="nav nav-pills flex-column flex-md-row mb-6">
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url('pages/account-settings-account') }}">
+                    <i class="bx bx-sm bx-user me-1_5"></i> Account
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link " href="{{ url('pages/account-settings-notifications') }}">
+                    <i class="bx bx-sm bx-bell me-1_5"></i> Notifications
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" href="{{ url('email/liste') }}">
+                    <i class="bx bx-sm bx-envelope me-1_5"></i> Email Template Manager
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
 
 
 @if(session('success'))
