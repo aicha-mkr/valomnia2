@@ -22,7 +22,7 @@
                       <i class="bx bx-sm bx-envelope me-1_5"></i> Email Template Manager
                   </a>
               </li>
-             
+
           </ul>
       </div>
   </div>
@@ -48,29 +48,29 @@
                       <label for="alerte-title" class="form-label">Titre</label>
                       <input type="text" class="form-control" id="rapport-title" name="title" placeholder="Titre de l'alerte" required oninput="updateReportTitle()" />
                   </div>
-                      
+
                   <div class="mb-4">
                     <h5>Configurer le Texte du Rapport</h5>
-                    <textarea class="form-control" id="rapport-content" name="rapport_content" rows="6" 
+                    <textarea class="form-control" id="rapport-content" name="rapport_content" rows="6"
                               placeholder="Entrez le contenu du rapport ici..." oninput="updateRapportContent()"></textarea>
                 </div>
 
-                      
+
                 <div class="form-check">
                   <input class="form-check-input" type="checkbox" id="report-open" onclick="toggleReportSection()" />
                   <label class="form-check-label" for="report-open">Afficher Bouton de Rapport</label>
               </div>
-              
+
               <div id="urlSection" class="mb-4" style="display: none;">
                   <label for="report-url" class="form-label">URL Spécifique</label>
                   <input type="url" class="form-control" id="report-url" name="report_url" placeholder="URL spécifique" oninput="updateReportButtonUrl()">              </div>
-              
+
               <div class="mb-4" id="buttonTitleSection" style="display: none;">
                   <label for="button-title" class="form-label">Titre du Bouton</label>
                   <input type="text" class="form-control" id="button-title" placeholder="Entrez le titre du bouton" oninput="updateReportButtonText()" />
               </div>
-              
-             
+
+
 
 
               <h5>Sélectionner les KPI</h5>
@@ -91,13 +91,13 @@
                 <div class="mb-4">
                   <button type="submit" class="btn btn-primary">Créer le Rapport</button>
                                 </div>
-                    
+
                   </form>
               </div>
           </div>
       </div>
-    
-    
+
+
 
 
 
@@ -491,7 +491,7 @@
                         </tr>
                       </tbody>
                     </table>
-                    
+
                     <h2 id="report-title" class="o_heading o_text-dark o_mb-xxs" data-color="Dark" data-size="Heading 2" data-min="20" data-max="40"
                     style="
                         font-family: Helvetica, Arial, sans-serif;
@@ -651,7 +651,7 @@
                     padding-top: 16px;
                     padding-bottom: 16px;
                   ">
-                  
+
                   <p id="rapport-template-text" style="margin-top: 0px; margin-bottom: 0px">
                     Callously piranha however moronic selfless more because spitefully dear some far forward where
                     mounted underneath however feeling out less alas.
@@ -731,7 +731,7 @@ role="presentation">
       style="background-color: #dbe5ea; padding-left: 8px; padding-right: 8px">
       <!--[if mso]><table width="632" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
       <table
-      
+
         class="o_block"
         width="100%"
         cellspacing="0"
@@ -940,7 +940,7 @@ role="presentation">
 </table>
 
 <table
-    
+
   data-module="pricing-3cols"
       data-visible="false"
       data-thumb="http://www.stampready.net/dashboard/editor/user_uploads/zip_uploads/2018/11/19/pcVNfzKjZ3goPqkxr2hYT0ws/service_canceled/thumbnails/pricing-3cols.png"
@@ -951,7 +951,7 @@ role="presentation">
       role="presentation">
       <tbody>
         <tr>
-          
+
           <td
             class="o_bg-light o_px-xs"
             align="center"
@@ -966,10 +966,10 @@ role="presentation">
               border="0"
               role="presentation"
               style="max-width: 632px; margin: 0 auto">
-              
+
               <tbody>
                 <tr>
-                  <td  
+                  <td
                     id="kpi-list"
                     class="o_re o_bg-white o_px o_pb-md"
                     align="center"
@@ -1052,7 +1052,7 @@ role="presentation">
                                   ">
                                   $46
                                 </h2>
-                                
+
                               </td>
                             </tr>
                             <tr>
@@ -1073,13 +1073,13 @@ role="presentation">
                                   padding-top: 16px;
                                   padding-bottom: 16px;
                                 ">
-                               
+
                                 <p class="o_mb-md" style="margin-top: 0px; margin-bottom: 24px"><span>&nbsp; </span></p>
                                 <table align="center" cellspacing="0" cellpadding="0" border="0" role="presentation">
                                   <tbody>
                                     <tr>
-                                      
-                                     
+
+
                                       </td>
                                     </tr>
                                   </tbody>
@@ -1143,7 +1143,7 @@ role="presentation">
                                   ">
                                   $76
                                 </h2>
-                                
+
                               </td>
                             </tr>
                             <tr>
@@ -1164,8 +1164,8 @@ role="presentation">
                                   padding-top: 16px;
                                   padding-bottom: 16px;
                                 ">
-                                
-                                
+
+
                                 <table align="center" cellspacing="0" cellpadding="0" border="0" role="presentation">
                                   <tbody>
                                     <tr>
@@ -1187,7 +1187,7 @@ role="presentation">
                                           background-color: #242b3d;
                                           border-radius: 4px;
                                         ">
-                                        
+
                                       </td>
                                     </tr>
                                   </tbody>
@@ -1251,7 +1251,7 @@ role="presentation">
                                   ">
                                   $156
                                 </h2>
-                                
+
                               </td>
                             </tr>
                             <tr>
@@ -1272,7 +1272,7 @@ role="presentation">
                                   padding-top: 16px;
                                   padding-bottom: 16px;
                                 ">
-                               
+
                                 <table align="center" cellspacing="0" cellpadding="0" border="0" role="presentation">
                                   <tbody>
                                     <tr>
@@ -1294,8 +1294,8 @@ role="presentation">
                                           background-color: #242b3d;
                                           border-radius: 4px;
                                         ">
-                                       
-                                        
+
+
                                       </td>
                                     </tr>
                                   </tbody>
@@ -1344,10 +1344,10 @@ role="presentation">
         </tr>
       </tbody>
     </table>
-    
 
 
 
+
     <table data-module="addon-row0" data-thumb="http://www.stampready.net/dashboard/editor/user_uploads/zip_uploads/2020/03/13/0D6ItbpLZUSmhj3YORzyfKEg/account_addons/thumbnails/addon-row.png" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
       <tbody>
         <tr>
@@ -1380,7 +1380,7 @@ role="presentation">
                           <tbody>
                             <tr>
                               <td class="o_btn-xs o_bg-dark o_br o_heading o_text-xs" align="center" data-bgcolor="Bg Dark" data-size="Text XS" data-min="10" data-max="18" style="font-family: Helvetica, Arial, sans-serif;font-weight: bold;margin-top: 0px;margin-bottom: 0px;font-size: 14px;line-height: 21px;mso-padding-alt: 7px 16px;background-color: #242b3d;border-radius: 4px;">
-                                
+
                               </td>
                             </tr>
                           </tbody>
@@ -1441,7 +1441,7 @@ role="presentation">
                           <tbody>
                             <tr>
                               <td class="o_btn-xs o_bg-dark o_br o_heading o_text-xs" align="center" data-bgcolor="Bg Dark" data-size="Text XS" data-min="10" data-max="18" style="font-family: Helvetica, Arial, sans-serif;font-weight: bold;margin-top: 0px;margin-bottom: 0px;font-size: 14px;line-height: 21px;mso-padding-alt: 7px 16px;background-color: #242b3d;border-radius: 4px;">
-                                
+
                               </td>
                             </tr>
                           </tbody>
@@ -1502,7 +1502,7 @@ role="presentation">
                           <tbody>
                             <tr>
                               <td class="o_btn-xs o_bg-dark o_br o_heading o_text-xs" align="center" data-bgcolor="Bg Dark" data-size="Text XS" data-min="10" data-max="18" style="font-family: Helvetica, Arial, sans-serif;font-weight: bold;margin-top: 0px;margin-bottom: 0px;font-size: 14px;line-height: 21px;mso-padding-alt: 7px 16px;background-color: #242b3d;border-radius: 4px;">
-                                
+
                               </td>
                             </tr>
                           </tbody>
@@ -1563,7 +1563,7 @@ role="presentation">
                           <tbody>
                             <tr>
                               <td class="o_btn-xs o_bg-dark o_br o_heading o_text-xs" align="center" data-bgcolor="Bg Dark" data-size="Text XS" data-min="10" data-max="18" style="font-family: Helvetica, Arial, sans-serif;font-weight: bold;margin-top: 0px;margin-bottom: 0px;font-size: 14px;line-height: 21px;mso-padding-alt: 7px 16px;background-color: #242b3d;border-radius: 4px;">
-                                
+
                               </td>
                             </tr>
                           </tbody>
@@ -1624,7 +1624,7 @@ role="presentation">
                           <tbody>
                             <tr>
                               <td class="o_btn-xs o_bg-dark o_br o_heading o_text-xs" align="center" data-bgcolor="Bg Dark" data-size="Text XS" data-min="10" data-max="18" style="font-family: Helvetica, Arial, sans-serif;font-weight: bold;margin-top: 0px;margin-bottom: 0px;font-size: 14px;line-height: 21px;mso-padding-alt: 7px 16px;background-color: #242b3d;border-radius: 4px;">
-                                
+
                               </td>
                             </tr>
                           </tbody>
@@ -1681,12 +1681,12 @@ role="presentation">
             style="max-width: 632px; margin: 0 auto">
             <tbody>
               <tr>
-                
-                  
+
+
   <td class="o_bg-white o_px-md o_py-lg o_bt-light o_br-b o_sans o_text-xs o_text-light" align="center"  data-color="Light" data-size="Text XS" data-min="10" data-max="18" data-border-top-color="Border Light" style="font-family: Helvetica, Arial, sans-serif;margin-top: 0px;margin-bottom: 0px;font-size: 14px;line-height: 21px;background-color: #ffffff;color: #82899a;border-top: 1px solid #d3dce0;border-radius: 0px 0px 4px 4px;padding-left: 50px;padding-right: 50px;padding-top: 32px;padding-bottom: 32px;">
-                   
+
     <p class="o_mb" style="margin-top: 0px;margin-bottom: 16px;">©2025 Valomnia</p>
-  
+
   </td></td>
 
                 </td>
@@ -1726,32 +1726,39 @@ role="presentation">
                               <option value="prix">Prix</option>
                           </select>
                       </div>
-      
+
                       <div class="mb-4">
                           <label for="alerte-title" class="form-label">Titre</label>
                           <input type="text" class="form-control" id="alerte-title" name="alert_title" placeholder="Titre de l'alerte" required />
                       </div>
-      
+
                       <div class="mb-4">
                           <label for="alerte-email-subject" class="form-label">Sujet d'Email</label>
                           <input type="text" class="form-control" id="alerte-email-subject" name="email_subject" placeholder="Sujet de l'email" required />
                       </div>
-      
-                      <div class="form-check">
-                          <input class="form-check-input" type="checkbox" id="alert-open" onclick="toggleUrlSection()" />
-                          <label class="form-check-label" for="alert-open">Afficher Bouton</label>
-                      </div>
-      
-                      <div id="urlSection" class="mb-4" style="display: none;">
-                          <label for="alerte-url" class="form-label">URL Spécifique</label>
-                          <input type="url" class="form-control" id="alerte-url" name="alert_url" placeholder="URL spécifique" />
-                      </div>
-      
-                      <div class="mb-4">
-                          <label for="alerte-text" class="form-label">Texte</label>
-                          <textarea class="form-control" id="alerte-text" name="alert_text" rows="3" placeholder="Entrez votre texte ici"></textarea>
-                      </div>
-      
+
+
+
+
+
+                      <form>
+    <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="alert-open" onclick="toggleUrlSection()" />
+        <label class="form-check-label" for="alert-open">Afficher Bouton</label>
+    </div>
+
+    <div id="alert-url-section" class="mb-4">
+        <label for="alert-url" class="form-label">URL Spécifique</label>
+        <input type="url" class="form-control" id="alert-url" name="alert_url" placeholder="URL spécifique" oninput="updateButtonUrl()" />
+    </div>
+
+    <div id="alert-button-input" class="mb-4">
+        <label for="alert-button-text" class="form-label">Titre du Bouton</label>
+        <textarea class="form-control" id="alert-button-text" name="alert_text" rows="3" placeholder="Entrez le titre du bouton ici" oninput="updateButtonText()"></textarea>
+    </div>
+
+
+
                       <div class="mb-4">
                           <button type="submit" class="btn btn-warning">Créer l'Alerte</button>
                       </div>
@@ -1813,7 +1820,15 @@ role="presentation">
                           .o_sans, .o_heading { font-family: "Roboto", sans-serif !important; }
                           .o_heading, strong, b { font-weight: 700 !important; }
                           a[x-apple-data-detectors] { color: inherit !important; text-decoration: none !important; }
-
+                          .button {
+    padding: 10px 20px;
+    background-color: #0ec06e; /* Couleur de fond */
+    color: white; /* Couleur du texte */
+    border: none; /* Pas de bordure */
+    border-radius: 4px; /* Coins arrondis */
+    cursor: pointer; /* Curseur en forme de main */
+    margin: 20px 0; /* Marge verticale */
+}
 
                         }
                         #canvas td.o_hide, #canvas td.o_hide div { display: block!important; font-family: "Roboto", sans-serif; font-size: 16px!important; color: #000; font-size: inherit!important; max-height: none!important; width: auto!important; line-height: inherit!important; visibility: visible!important;}
@@ -1951,23 +1966,23 @@ role="presentation">
                           <tr>
                             <td class="o_bg-light o_px-xs" align="center" data-bgcolor="Bg Light" style="background-color: #dbe5ea;padding-left: 8px;padding-right: 8px;">
                               <!--[if mso]><table width="432" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
-                                <table class="o_block-xs" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation" style="max-width: 432px; margin: 0 auto;">
-                                  <tbody>
-                                      <tr>
-                                          <td class="o_bg-white o_px-md o_py-xs" align="center" data-bgcolor="Bg White" style="background-color: #ffffff; padding: 24px;">
-                                              <table align="center" cellspacing="0" cellpadding="0" border="0" role="presentation">
-                                                  <tbody>
-                                                      <tr>
-                                                          <td width="300" class="o_btn o_bg-success o_br o_heading o_text" id="action-button" align="center" data-bgcolor="Bg Success" style="font-family: Helvetica, Arial, sans-serif; font-weight: bold; font-size: 16px; line-height: 24px; background-color: #0ec06e; border-radius: 4px; display: none;">
-                                                              <a class="o_text-white" id="alert-action-link" href="https://example.com/" data-color="White" style="text-decoration: none; color: #ffffff; display: block; padding: 12px 24px;">Access Your Account</a>
-                                                          </td>
-                                                      </tr>
-                                                  </tbody>
-                                              </table>
-                                          </td>
-                                      </tr>
-                                  </tbody>
-                              </table>
+                              <table class="o_block-xs" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation" style="max-width: 432px;margin: 0 auto;">
+        <tbody>
+            <tr>
+                <td class="o_bg-white o_px-md o_py-xs" align="center" data-bgcolor="Bg White" style="background-color: #ffffff;padding-left: 24px;padding-right: 24px;padding-top: 8px;padding-bottom: 8px;">
+                    <table align="center" cellspacing="0" cellpadding="0" border="0" role="presentation">
+                        <tbody>
+                            <tr>
+                                <td width="300" class="o_btn o_bg-success o_br o_heading o_text"  id="alert-button" align="center" data-bgcolor="Bg Success" data-size="Text Default" data-min="12" data-max="20" style="font-family: Helvetica, Arial, sans-serif;font-weight: bold;margin-top: 0px;margin-bottom: 0px;font-size: 16px;line-height: 24px;mso-padding-alt: 12px 24px;background-color: #0ec06e;border-radius: 4px; display: none;">
+                                    <a class="o_text-white" id="alert-link"  href="https://example.com/" data-color="White" style="text-decoration: none;outline: none;color: #ffffff;display: block;padding: 12px 24px;mso-text-raise: 3px;">Access Your Account</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+        </tbody>
+    </table>
                               <!--[if mso]></td></tr></table><![endif]-->
                             </td>
                           </tr>
@@ -2068,7 +2083,7 @@ role="presentation">
 document.addEventListener('DOMContentLoaded', function() {
     toggleSections('rapport'); // Affiche par défaut la section Rapport
 });
-   
+
     function toggleReportSection() {
     const checkbox = document.getElementById('report-open');
     const urlSection = document.getElementById('urlSection');
@@ -2133,7 +2148,7 @@ function updateReportButtonUrl() {
         const paragraphCheckbox = document.getElementById('show-paragraph');
         contentElement.style.display = paragraphCheckbox.checked ? 'block' : 'none'; // Show or hide content
     }
-    
+
 
 
 
@@ -2144,49 +2159,42 @@ function updateReportButtonUrl() {
         document.getElementById('template-text').innerText = text || "Welcome to B2B Valomnia! We're excited to have you on board."; // Texte par défaut
     }
 
-    
-    function updateAlertTitle() {
-        // Get the value from the input field
-        const titleInput = document.getElementById('alerte-title').value;
-        // Get the template title element
-        const alertTitle = document.getElementById('template-title');
-        // Update the title or set default if input is empty
-        alertTitle.innerText = titleInput || "Titre de l'alerte par défaut";
+    function toggleUrlSection() {
+        const checkbox = document.getElementById('alert-open');
+        const urlSection = document.getElementById('alert-url-section');
+        const buttonInput = document.getElementById('alert-button-input');
+        const button = document.getElementById('alert-button');
+
+        const displayStyle = checkbox.checked ? 'block' : 'none';
+
+        // Afficher/Masquer les sections et le bouton
+        urlSection.style.display = displayStyle;
+        buttonInput.style.display = displayStyle;
+        button.style.display = checkbox.checked ? 'block' : 'none';
+
+        console.log(checkbox.checked ? 'Sections et bouton affichés' : 'Sections et bouton cachés');
     }
 
-    function toggleAlertButtonVisibility() {
-        const checkbox = document.getElementById('toggle-alert-button');
-        const urlInputSection = document.getElementById('urlInputSection');
-        const alertActionButton = document.getElementById('alert-action-button');
-
-        // Afficher ou masquer la section URL
-        urlInputSection.style.display = checkbox.checked ? 'block' : 'none';
-
-        // Afficher ou masquer le bouton d'alerte
-        alertActionButton.style.display = checkbox.checked ? 'block' : 'none';
-        
-        console.log(checkbox.checked ? 'URL section displayed' : 'URL section hidden');
-    }
-
-    function updateAlertButtonUrl() {
+    // Fonction pour mettre à jour l'URL du bouton
+    function updateButtonUrl() {
         const buttonUrl = document.getElementById('alert-url').value;
-        document.getElementById('alert-action-link').href = buttonUrl || "https://example.com/";
+        document.getElementById('alert-link').href = buttonUrl || "https://example.com/";
     }
 
-    function updateAlertButtonText() {
-        const buttonText = document.getElementById('alert-text').value;
-        document.getElementById('alert-action-link').innerText = buttonText || "Access Your Account"; // Texte par défaut
+    // Fonction pour mettre à jour le texte du bouton
+    function updateButtonText() {
+        const buttonText = document.getElementById('alert-button-text').value;
+        document.getElementById('alert-link').innerText = buttonText || "Access Your Account";
     }
-
 
     function toggleKPI(kpiId, isChecked) {
     const kpiElement = document.getElementById(kpiId);
     if (isChecked) {
-        kpiElement.style.display = "block"; 
+        kpiElement.style.display = "block";
     } else {
         kpiElement.style.display = "none"; // Hide the KPI when unchecked
     }
 }
-    
+
 </script>
 @endsection
