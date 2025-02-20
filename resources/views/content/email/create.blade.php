@@ -1951,23 +1951,23 @@ role="presentation">
                           <tr>
                             <td class="o_bg-light o_px-xs" align="center" data-bgcolor="Bg Light" style="background-color: #dbe5ea;padding-left: 8px;padding-right: 8px;">
                               <!--[if mso]><table width="432" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
-                              <table class="o_block-xs" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation" style="max-width: 432px;margin: 0 auto;">
-        <tbody>
-            <tr>
-                <td class="o_bg-white o_px-md o_py-xs" align="center" data-bgcolor="Bg White" style="background-color: #ffffff;padding-left: 24px;padding-right: 24px;padding-top: 8px;padding-bottom: 8px;">
-                    <table align="center" cellspacing="0" cellpadding="0" border="0" role="presentation">
-                        <tbody>
-                            <tr>
-                                <td width="300" class="o_btn o_bg-success o_br o_heading o_text" id="action-button" align="center" data-bgcolor="Bg Success" data-size="Text Default" data-min="12" data-max="20" style="font-family: Helvetica, Arial, sans-serif;font-weight: bold;margin-top: 0px;margin-bottom: 0px;font-size: 16px;line-height: 24px;mso-padding-alt: 12px 24px;background-color: #0ec06e;border-radius: 4px; display: none;">
-                                    <a class="o_text-white" id="action-link" href="https://example.com/" data-color="White" style="text-decoration: none;outline: none;color: #ffffff;display: block;padding: 12px 24px;mso-text-raise: 3px;">Access Your Account</a>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+                                <table class="o_block-xs" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation" style="max-width: 432px; margin: 0 auto;">
+                                  <tbody>
+                                      <tr>
+                                          <td class="o_bg-white o_px-md o_py-xs" align="center" data-bgcolor="Bg White" style="background-color: #ffffff; padding: 24px;">
+                                              <table align="center" cellspacing="0" cellpadding="0" border="0" role="presentation">
+                                                  <tbody>
+                                                      <tr>
+                                                          <td width="300" class="o_btn o_bg-success o_br o_heading o_text" id="action-button" align="center" data-bgcolor="Bg Success" style="font-family: Helvetica, Arial, sans-serif; font-weight: bold; font-size: 16px; line-height: 24px; background-color: #0ec06e; border-radius: 4px; display: none;">
+                                                              <a class="o_text-white" id="alert-action-link" href="https://example.com/" data-color="White" style="text-decoration: none; color: #ffffff; display: block; padding: 12px 24px;">Access Your Account</a>
+                                                          </td>
+                                                      </tr>
+                                                  </tbody>
+                                              </table>
+                                          </td>
+                                      </tr>
+                                  </tbody>
+                              </table>
                               <!--[if mso]></td></tr></table><![endif]-->
                             </td>
                           </tr>
@@ -2154,35 +2154,30 @@ function updateReportButtonUrl() {
         alertTitle.innerText = titleInput || "Titre de l'alerte par défaut";
     }
 
-    function toggleUrlSection() {
-        const checkbox = document.getElementById('alert-open');
-        const urlSection = document.getElementById('urlSection');
-        const button = document.getElementById('action-button');
-        urlSection.style.display = checkbox.checked ? 'block' : 'none';
-    console.log(checkbox.checked ? 'URL section displayed' : 'URL section hidden');
+    function toggleAlertButtonVisibility() {
+        const checkbox = document.getElementById('toggle-alert-button');
+        const urlInputSection = document.getElementById('urlInputSection');
+        const alertActionButton = document.getElementById('alert-action-button');
+
+        // Afficher ou masquer la section URL
+        urlInputSection.style.display = checkbox.checked ? 'block' : 'none';
+
+        // Afficher ou masquer le bouton d'alerte
+        alertActionButton.style.display = checkbox.checked ? 'block' : 'none';
+        
+        console.log(checkbox.checked ? 'URL section displayed' : 'URL section hidden');
     }
 
-    function updateButtonUrl() {
-        const buttonUrl = document.getElementById('alerte-url').value;
-        document.getElementById('action-link').href = buttonUrl || "https://example.com/";
-        document.getElementById('report-link').href = buttonUrl || "https://example.com/"; // Update report link
-
+    function updateAlertButtonUrl() {
+        const buttonUrl = document.getElementById('alert-url').value;
+        document.getElementById('alert-action-link').href = buttonUrl || "https://example.com/";
     }
 
-    function updateButtonText() {
-        const buttonText = document.getElementById('alerte-text').value;
-        document.getElementById('action-link').innerText = buttonText || "Access Your Account"; // Texte par défaut
-            document.getElementById('report-link').innerText = buttonText || "Voir le Rapport"; // Update button text
-
+    function updateAlertButtonText() {
+        const buttonText = document.getElementById('alert-text').value;
+        document.getElementById('alert-action-link').innerText = buttonText || "Access Your Account"; // Texte par défaut
     }
 
-    function toggleButtonInput() {
-        const checkbox = document.getElementById('addButton');
-        const inputSection = document.getElementById('buttonInput');
-        inputSection.style.display = checkbox.checked ? 'block' : 'none';
-    }
-
- 
 
     function toggleKPI(kpiId, isChecked) {
     const kpiElement = document.getElementById(kpiId);

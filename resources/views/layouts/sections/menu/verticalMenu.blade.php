@@ -67,28 +67,7 @@
       @endif
     @endforeach
 
-    <!-- Email Template Manager Item with Submenu -->
-    <li class="menu-item">
-      <a href="{{ route('email.liste') }}" class="menu-link menu-toggle">
-        <i class="bx bx-envelope me-2"></i> <!-- Icon with margin -->
-        <div>Email Templates</div>
-      </a>
-      <ul class="menu-sub">
-        <li class="menu-item">
-          <a href="{{ route('email.liste') }}" class="menu-link">
-             <!-- Plus icon for creating -->
-            <div>List Email Template</div>
-          </a>
-        </li>
-        <li class="menu-item">
-          <a href="{{ route('email.create') }}" class="menu-link">
-             <!-- Plus icon for creating -->
-            <div>Create Email Template</div>
-          </a>
-        </li>
-      </ul>
-    </li>
-
+    
   </ul>
 
 </aside>

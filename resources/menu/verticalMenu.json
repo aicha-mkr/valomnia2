@@ -1,49 +1,51 @@
 {
   "menu": [
-    {
-      "url": "/",
-      "name": "Analytics",
-      "icon": "menu-icon tf-icons bx bx-home-smile",
-      "slug": "dashboard-analytics",
-      "badge": [
-        "danger",
-        "5"
-      ]
-     
-    },
-   
-    {
-      "name": "Account Settings",
-      "icon": "menu-icon tf-icons bx bx bx-dock-top",
-      "slug": "pages-account-settings",
-      "submenu": [
-        {
-          "url": "pages/account-settings-account",
-          "name": "Account",
-          "slug": "pages-account-settings-account"
-        },
-        {
-          "url": "pages/account-settings-notifications",
-          "name": "Notifications",
-          "slug": "pages-account-settings-notifications"
-        }
+      {
+          "url": "/dashboard",
+          "name": "Dashboard",
+          "icon": "menu-icon tf-icons bx bx-home-circle",
+          "slug": "dashboard-organisation"
+      },
 
-      ]
-    },
-    {
-      "name": "Authentications",
-      "icon": "menu-icon tf-icons bx bx-lock-open-alt",
-      "slug": "auth",
-      "submenu": [
-        {
-          "url": "auth/login",
-          "name": "Login",
-          "slug": "auth-login",
-          "target": "_blank"
-        }
-      ]
-    }
-  
- 
+      {
+          "name": "Alerts",
+          "icon": "menu-icon tf-icons bx bx-alarm-snooze",
+          "slug": "organisation-alerts",
+          "url": "email/create"
+      },
+      {
+          "url": "/admin/alerts/history",
+          "name": "Alerts history",
+          "icon": "menu-icon tf-icons bx bx-history",
+          "slug": "organisation-history-alerts"
+      },
+      {
+          "url": "#",
+          "name": "Email",
+          "icon": "menu-icon tf-icons bx bx-envelope",
+          "slug": "app-email"
+      },
+      {
+          "name": "Account Settings",
+          "icon": "menu-icon tf-icons bx bx bx-dock-top",
+          "slug": "pages-account-settings",
+          "submenu": [
+              {
+                  "url": "pages/account-settings-account",
+                  "name": "Account",
+                  "slug": "pages-account-settings-account"
+              },
+              {
+                  "url": "pages/account-settings-notifications",
+                  "name": "Notifications",
+                  "slug": "pages-account-settings-notifications"
+              },
+              {
+                  "url": "logout",
+                  "name": "logout",
+                  "slug": "logout"
+              }
+          ]
+      }
   ]
 }
