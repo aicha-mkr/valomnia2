@@ -1291,6 +1291,7 @@
         </div>
 
         <!-- Alerte Section -->
+
         <div id="alerteSection"class="col-md-4 section" style="display: none;">
             <div class="card mb-6">
                 <h5 class="card-header">Formulaire d'Alerte</h5>
@@ -1336,11 +1337,18 @@
                         <div class="mb-4">
                             <button type="submit" class="btn btn-warning">Créer l'Alerte</button>
                         </div>
+                        <button type="button" class="button" onclick="showTemplatePopup()">Agrandir le Template</button>
                     </form>
                 </div>
             </div>
         </div>
 
+        <div id="templateModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeTemplatePopup()">&times;</span>
+            <div id="modalBody"></div>
+        </div>
+    </div>
         <!-- Email Template for Alerte -->
         <div id="alerteTemplate"  class="col-md-8" style="display: none;"> <!-- 70% width -->
             <div class="card mb-6">
@@ -1395,7 +1403,15 @@
                           .o_sans, .o_heading { font-family: "Roboto", sans-serif !important; }
                           .o_heading, strong, b { font-weight: 700 !important; }
                           a[x-apple-data-detectors] { color: inherit !important; text-decoration: none !important; }
-
+                          .button {
+    padding: 10px 20px;
+    background-color: #0ec06e; /* Couleur de fond */
+    color: white; /* Couleur du texte */
+    border: none; /* Pas de bordure */
+    border-radius: 4px; /* Coins arrondis */
+    cursor: pointer; /* Curseur en forme de main */
+    margin: 20px 0; /* Marge verticale */
+}
 
                         }
                         #canvas td.o_hide, #canvas td.o_hide div { display: block!important; font-family: "Roboto", sans-serif; font-size: 16px!important; color: #000; font-size: inherit!important; max-height: none!important; width: auto!important; line-height: inherit!important; visibility: visible!important;}
@@ -1656,12 +1672,37 @@ function toggleUrlSection() {
             const buttonUrl = document.getElementById('alerte-url').value;
             document.getElementById('action-link').href = buttonUrl || "https://example.com/";
         }
+        function showTemplate() {
+    const formContainer = document.getElementById('form-container');
+    const templateContainer = document.getElementById('template-container');
+    const templateFull = document.getElementById('template-full');
 
-        function updateTemplateText() {
-            const buttonText = document.getElementById('alerte-text').value;
-            document.getElementById('action-link').innerText = buttonText || "Access Your Account";
+    // Masquer le formulaire
+    formContainer.style.display = 'none';
+
+    // Afficher le template plein et ajuster sa taille
+    templateFull.style.display = 'block';
+    templateContainer.style.width = '100%';
+}
+
+function showTemplatePopup() {
+            // Get the content of the hidden template
+            const templateContent = document.getElementById('alerteTemplate').innerHTML;
+            document.getElementById('modalBody').innerHTML = templateContent;
+
+            // Show the modal
+            document.getElementById('templateModal').style.display = 'block';
         }
 
-        updateTemplateTitle();
+        function closeTemplatePopup() {
+            document.getElementById('templateModal').style.display = 'none';
+        }
+
+        // Close the modal if the user clicks outside of it
+        window.onclick = function(event) {
+            const modal = document.getElementById('templateModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }}
 </script>
 @endsection
