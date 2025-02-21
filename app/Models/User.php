@@ -1,34 +1,50 @@
 <?php
+
 namespace App\Models;
 
+// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Passport\HasApiTokens;
+use  App\Models\ApiCall;
 use Exception;
+use Illuminate\Support\Str;
+
+
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable;
 
-    // Autres attributs et méthodes
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $guarded = [];
 
-    public function __construct(array $attributes = [])
-    {
-        parent::__construct($attributes);
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
 
-        $this->makeAllAttributesFillable();
-    }
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+    ];
 
-    protected function makeAllAttributesFillable()
-    {
-        $this->fillable = $this->getConnection()
-            ->getSchemaBuilder()
-            ->getColumnListing($this->getTable());
-    }
-    public function recapitulatifs()
-    {
-        return $this->hasMany(Recapitulatif::class);
-    }
+    //login with valomnia API
+
     public static function FindUser($data)
     {
         $response = array("status" => 400, "error" => "");
@@ -168,7 +184,7 @@ class User extends Authenticatable
                     'role' => implode(",", $user_data['role']),
                     // 'created_at' =>$user_data['created_at'],
                     // 'updated_at' =>$user_data['updated_at'],
-                    'password' =>$data['password'],
+                     'password' =>$data['password'],
                     //ajoutéé les données !
                 ]);
                 //create new user

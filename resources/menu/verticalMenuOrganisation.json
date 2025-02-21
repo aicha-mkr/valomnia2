@@ -1,22 +1,27 @@
 {
     "menu": [
         {
-            "url": "/admin/dashboard",
+            "url": "/dashboard",
             "name": "Dashboard",
             "icon": "menu-icon tf-icons bx bx-home-circle",
-            "slug": "dashboard-admin"
+            "slug": "dashboard-organisation"
         },
         {
-            "name": "Type Alerts",
+            "name": "Alerts",
             "icon": "menu-icon tf-icons bx bx-alarm-snooze",
-            "slug": "alerts-types",
-            "url": "/admin/alerts/types"
-        },
-        {
-            "url": "/admin/alerts/history",
-            "name": "Alerts History",
-            "icon": "menu-icon tf-icons bx bx-history",
-            "slug": "history-alerts"
+            "slug": "organisation-alerts",
+            "submenu": [
+                {
+                    "url": "email/liste",
+                    "name": "List",
+                    "slug": "organisation-alerts-list"
+                },
+                {
+                    "url": "/admin/alerts/history",
+                    "name": "History",
+                    "slug": "organisation-history-alerts"
+                }
+            ]
         },
         {
             "url": "#",

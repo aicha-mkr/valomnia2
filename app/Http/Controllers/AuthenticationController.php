@@ -75,7 +75,13 @@ class AuthenticationController extends Controller
             }
         }
     }
-
+    public function logout(){
+        Session::forget('isSuperAdmin');
+        Session::forget('token_user');
+        Session::forget('user');
+        Session::forget('isOrganisation');
+        return redirect()->route('login');
+    }
     public function showDashboard()
     {
         if (Auth::check()) {

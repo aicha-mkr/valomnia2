@@ -50,6 +50,16 @@ use App\Http\Controllers\EmailTemplateController;
 
 
 
+use App\Http\Controllers\UserController as Users;
+use App\Http\Controllers\AlertController as Alert;
+use App\Http\Controllers\TypeAlertController as TypeAlerts;
+use App\Http\Controllers\HistoriqueAlertController as HistoriqueAlert;
+
+use App\Mail\myTestEmail;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\OrgDashboardController;
+
+
 
 Route::middleware(['auth'])->group(function () {
     Route::resource('email-templates', EmailTemplateController::class);
@@ -70,38 +80,71 @@ Route::middleware(['auth'])->group(function () {
 });
 
 
-// Test Route
-Route::get('/test', function () {
-    return "test view";
+Route::get('/', [AuthenticationController::class, 'index'])->name('auth-login');
+Route::get('/test_email', function(){$quantity="10000";$warehouse_name = "Tesla"; Mail::to('tahayassine28470618@gmail.com')->send(new \App\Mail\myTestEmail($warehouse_name,$quantity));});
+Route::get('/test_email200', function(){$quantity="10000";$warehouse_name = "Tesla"; Mail::to('tahayassine28470618@gmail.com')->send(new \App\Mail\Alert_Stock200($warehouse_name,$quantity));});
+Route::get('/test_email3', function(){Mail::to('tahayassine28470618@gmail.com')->send(new \App\Mail\Alert_Stock3());});
+Route::get('/test_emailCustomer', function(){$customer_name="taha zouari";$hour="22:30";Mail::to('tahayassine28470618@gmail.com')->send(new \App\Mail\Alert_customer($customer_name,$hour));});
+Route::get('/user/{id}', [UserController::class, 'show'])->name('user.show');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
 });
-Route::post('/login', [AuthenticationController::class, 'login']);
-// routes/web.php
-Route::get('/login', [AuthenticationController::class, 'showLoginForm'])->name('login');
-
-Route::post('/generate-recapitulatifs', [RecapitulatifController::class, 'generateRecapitulatifs']);
-
-
-Route::middleware(['auth:api'])->group(function () {
-    Route::get('generate-recapitulatif/{operationId}', [RecapitulatifController::class, 'generateRecapitulatif']);
+Route::get('/admin/recent-orders', [AdminController::class, 'fetchRecentOrders'])->name('admin.recentOrders');
+Route::middleware(['auth', 'isOrgAdmin'])->group(function () {
+    Route::get('/org-dashboard', [OrgDashboardController::class, 'index'])->name('org.dashboard');
+    Route::get('/org-dashboard/recent-activities', [OrgDashboardController::class, 'fetchRecentActivities'])->name('org.dashboard.recentActivities');
 });
-    Route::get('/auth/login', [AuthenticationController::class, 'showLoginForm']);
-// API routes with middleware
-Route::prefix('api')->middleware([ApiMiddleware::class])->group(function () {
-    Route::post('/login', [AuthenticationController::class, 'login']);
-    Route::post('/generate-recapitulatifs', [RecapitulatifController::class, 'generateRecapitulatifs'])->middleware('auth:api');
+
+
+Route::post('/login', [AuthenticationController::class, 'login'])->name('post-login');
+Route::get('/logout', [AuthenticationController::class, 'logout'])->name('auth-logout');
+Route::group(['prefix' => 'admin','middleware'=>'isadmin'], function () {
+    Route::get('/dashboard', [Analytics::class, 'index'])->name('dashboard-admin');
+    Route::get('/users', [Users::class, 'index'])->name('users');
+    Route::group(['prefix' => 'alerts'], function () {
+        Route::get('/history', [HistoriqueAlert::class, 'index'])->name('history-alerts');
+        Route::get('/history/{id}', [HistoriqueAlert::class, 'regenerate'])->name('history-details-alerts');
+
+        Route::get('/', [Alert::class, 'index'])->name('alerts-list');
+        Route::get('/create', [Alert::class, 'create'])->name('alerts-list-create');
+        Route::post('/store', [Alert::class, 'store'])->name('alerts-list-store');
+        Route::get('/update/{id}', [Alert::class, 'update'])->name('alerts-list-update');
+        Route::post('/update/{id}', [Alert::class, 'edit'])->name('alerts-list-edit');
+        Route::get('/delete/{id}', [Alert::class, 'destroy'])->name('alerts-list-delete');
+        Route::get('/show/{id}', [Alert::class, 'show'])->name('alerts-list-show');
+        Route::group(['prefix' => 'types'], function () {
+            Route::get('/', [TypeAlerts::class, 'index'])->name('alerts-types');
+            Route::get('/create', [TypeAlerts::class, 'create'])->name('alerts-types-create');
+            Route::post('/store', [TypeAlerts::class, 'store'])->name('alerts-types-store');
+            Route::get('/update/{id}', [TypeAlerts::class, 'edit'])->name('alerts-types-update');
+            Route::post('/update/{id}', [TypeAlerts::class, 'update'])->name('alerts-types-edit');
+            Route::get('/delete/{id}', [TypeAlerts::class, 'destroy'])->name('alerts-types-delete');
+            Route::get('/show/{id}', [TypeAlerts::class, 'show'])->name('alerts-types-show');
+        });
+
+    });
 
 });
-// Main Page Route
-Route::get('/', [Analytics::class, 'index'])->name('dashboard-analytics');
+Route::group(['prefix' => 'organisation','middleware'=>'isorganisation'], function () {
+    Route::get('/dashboard', [Analytics::class, 'indexOrganisation'])->name('dashboard-organisation');
+    Route::group(['prefix' => 'alerts'], function () {
+        Route::get('/history', [HistoriqueAlert::class, 'index'])->name('organisation-history-alerts');
+        Route::get('/history/{id}', [HistoriqueAlert::class, 'regenerate'])->name('organisation-history-details-alerts');
+
+        Route::get('/', [Alert::class, 'indexOrganisation'])->name('organisation-alerts');;
+        Route::get('/create', [Alert::class, 'create'])->name('organisation-alerts-create');
+        Route::post('/store', [Alert::class, 'store'])->name('organisation-alerts-store');
+        Route::get('/update/{id}', [Alert::class, 'update'])->name('organisation-alerts-update');
+        Route::post('/update/{id}', [Alert::class, 'edit'])->name('organisation-alerts-edit');
+        Route::get('/delete/{id}', [Alert::class, 'destroy'])->name('organisation-alerts-destroy');
+        Route::get('/show/{id}', [Alert::class, 'show'])->name('organisation-alerts-show');
 
 
-Route::middleware(['web'])->group(function () { // This should have a matching closing bracket
-    // Your route definitions
+    });
+
 });
-Route::get('/dashboard', [AuthenticationController::class, 'showDashboard'])->name('dashboard');
-Route::get('/error', function () {
-    return view('pages.misecerror');
-})->name('pages-misc-error');
+
 
 
 
