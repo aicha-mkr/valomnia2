@@ -8,14 +8,16 @@
           "slug": "dashboard-organisation"
       },
       {
-          "name": "Type d'alert",
-          "icon": "menu-icon tf-icons bx bx-alarm-snooze",
-          "slug": "organisation-alerts"
-      },
-      {
-        "name": "alert history",
+        "name": "Alerts",
         "icon": "menu-icon tf-icons bx bx-alarm-snooze",
-        "slug": "organisation-alerts"
+        "slug": "organisation-alerts",
+        "url": "organisation/alerts/"
+    },
+    {
+        "url": "/admin/alerts/history",
+        "name": "Alerts history",
+        "icon": "menu-icon tf-icons bx bx-history",
+        "slug": "organisation-history-alerts"
     },
     {
       "name": "report history",
