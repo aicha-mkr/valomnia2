@@ -1,28 +1,53 @@
 {
     "menu": [
         {
-            "url": "/dashboard",
+            "url": "organisation/dashboard",
             "name": "Dashboard",
             "icon": "menu-icon tf-icons bx bx-home-circle",
             "slug": "dashboard-organisation"
         },
+
+
+
         {
             "name": "Alerts",
             "icon": "menu-icon tf-icons bx bx-alarm-snooze",
             "slug": "organisation-alerts",
             "submenu": [
                 {
-                    "url": "email/liste",
+                    "url": "/organisation/alerts/",
                     "name": "List",
                     "slug": "organisation-alerts-list"
                 },
                 {
-                    "url": "/admin/alerts/history",
+                    "url": "/organisation/alerts/history",
                     "name": "History",
                     "slug": "organisation-history-alerts"
                 }
             ]
         },
+
+
+
+
+
+        {
+          "name": "Report",
+          "icon": "menu-icon tf-icons bx bx-alarm-snooze",
+          "slug": "organisation-alerts",
+          "submenu": [
+              {
+                  "url": "/organisation/email/liste",
+                  "name": "List",
+                  "slug": "organisation-alerts-list"
+              },
+              {
+                  "url": "#",
+                  "name": "History",
+                  "slug": "organisation-history-alerts"
+              }
+          ]
+      },
         {
             "url": "#",
             "name": "Email",
@@ -53,3 +78,4 @@
         }
     ]
 }
+

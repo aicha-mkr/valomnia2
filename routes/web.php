@@ -112,45 +112,33 @@ Route::group(['prefix' => 'admin'], function () {
 
 });
 Route::group(['prefix' => 'organisation'], function () {
-    Route::get('/dashboard', [Analytics::class, 'indexOrganisation'])->name('dashboard-organisation');
-    Route::group(['prefix' => 'alerts'], function () {
-        Route::get('/history', [HistoriqueAlert::class, 'index'])->name('organisation-history-alerts');
-        Route::get('/history/{id}', [HistoriqueAlert::class, 'regenerate'])->name('organisation-history-details-alerts');
+  Route::get('/dashboard', [Analytics::class, 'indexOrganisation'])->name('dashboard-organisation');
 
-        Route::get('/', [Alert::class, 'indexOrganisation'])->name('organisation-alerts');;
-        Route::get('/create', [Alert::class, 'create'])->name('organisation-alerts-create');
-        Route::post('/store', [Alert::class, 'store'])->name('organisation-alerts-store');
-        Route::get('/update/{id}', [Alert::class, 'update'])->name('organisation-alerts-update');
-        Route::post('/update/{id}', [Alert::class, 'edit'])->name('organisation-alerts-edit');
-        Route::get('/delete/{id}', [Alert::class, 'destroy'])->name('organisation-alerts-destroy');
-        Route::get('/show/{id}', [Alert::class, 'show'])->name('organisation-alerts-show');
+  Route::group(['prefix' => 'alerts'], function () {
+      Route::get('/history', [HistoriqueAlert::class, 'index'])->name('organisation-history-alerts');
+      Route::get('/history/{id}', [HistoriqueAlert::class, 'regenerate'])->name('organisation-history-details-alerts');
 
+      Route::get('/', [Alert::class, 'indexOrganisation'])->name('organisation-alerts');
+      Route::get('/create', [Alert::class, 'create'])->name('organisation-alerts-create');
+      Route::post('/store', [Alert::class, 'store'])->name('organisation-alerts-store');
+      Route::get('/update/{id}', [Alert::class, 'update'])->name('organisation-alerts-update');
+      Route::post('/update/{id}', [Alert::class, 'edit'])->name('organisation-alerts-edit');
+      Route::get('/delete/{id}', [Alert::class, 'destroy'])->name('organisation-alerts-destroy');
+      Route::get('/show/{id}', [Alert::class, 'show'])->name('organisation-alerts-show');
+  });
 
-    });
-
+  // Intégration des routes pour les templates d'email sous l'organisation
+  Route::group(['prefix' => 'email'], function () {
+      Route::resource('templates', EmailTemplateController::class);
+      Route::get('/liste', [EmailTemplateController::class, 'index'])->name('email.liste');
+      Route::get('/create', [EmailTemplateController::class, 'create'])->name('email.create');
+      Route::post('/', [EmailTemplateController::class, 'store'])->name('email.store');
+  });
 });
 
 
 
 
-
-//v1 summer
-Route::middleware(['auth'])->group(function () {
-    Route::resource('email-templates', EmailTemplateController::class);
-});
-
-
-Route::middleware(['web'])->group(function () {
-    Route::middleware(['auth'])->group(function () {
-        Route::get('/email/liste', [EmailTemplateController::class, 'index'])->name('email.liste');
-        Route::get('/email/create', [EmailTemplateController::class, 'create'])->name('email.create');
-        Route::post('/email', [EmailTemplateController::class, 'store'])->name('email.store');
-    });
-});
-Route::post('/email', [EmailTemplateController::class, 'store'])->name('email.store');
-Route::middleware(['auth'])->group(function () {
-    Route::get('/email/create', [EmailTemplateController::class, 'create'])->name('email.create');
-});
 
 
 // routes/web.php
