@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class isOrganisation
+class IsOrganisation
 {
     /**
      * Handle an incoming request.
@@ -15,6 +15,7 @@ class isOrganisation
      */
     public function handle(Request $request, Closure $next): Response
     {
+       
 
         if($request->route()->named('auth-login') || $request->route()->named('post-login')) {
             if($request->route()->named('auth-login')){
