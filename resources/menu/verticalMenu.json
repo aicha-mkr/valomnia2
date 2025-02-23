@@ -1,50 +1,54 @@
+
 {
-    "menu": [
-        {
-            "url": "/admin/dashboard",
-            "name": "Dashboard",
-            "icon": "menu-icon tf-icons bx bx-home-circle",
-            "slug": "dashboard-admin"
-        },
-        {
-            "name": "Type Alerts",
-            "icon": "menu-icon tf-icons bx bx-alarm-snooze",
-            "slug": "alerts-types",
-            "url": "/admin/alerts/types"
-        },
-        {
-            "url": "/admin/alerts/history",
-            "name": "Alerts History",
-            "icon": "menu-icon tf-icons bx bx-history",
-            "slug": "history-alerts"
-        },
-        {
-            "url": "#",
-            "name": "Email",
-            "icon": "menu-icon tf-icons bx bx-envelope",
-            "slug": "app-email"
-        },
-        {
-            "name": "Account Settings",
-            "icon": "menu-icon tf-icons bx bx bx-dock-top",
-            "slug": "pages-account-settings",
-            "submenu": [
-                {
-                    "url": "pages/account-settings-account",
-                    "name": "Account",
-                    "slug": "pages-account-settings-account"
-                },
-                {
-                    "url": "pages/account-settings-notifications",
-                    "name": "Notifications",
-                    "slug": "pages-account-settings-notifications"
-                },
-                {
-                    "url": "logout",
-                    "name": "Logout",
-                    "slug": "logout"
-                }
-            ]
-        }
-    ]
+  "menu": [
+      {
+          "url": "/Admin",
+          "name": "Dashboard",
+          "icon": "menu-icon tf-icons bx bx-home-circle",
+          "slug": "dashboard-organisation"
+      },
+      {
+          "name": "Type d'alert",
+          "icon": "menu-icon tf-icons bx bx-alarm-snooze",
+          "slug": "organisation-alerts"
+      },
+      {
+        "name": "alert history",
+        "icon": "menu-icon tf-icons bx bx-alarm-snooze",
+        "slug": "organisation-alerts"
+    },
+    {
+      "name": "report history",
+      "icon": "menu-icon tf-icons bx bx-alarm-snooze",
+      "slug": "organisation-alerts"
+  },
+      {
+          "url": "#",
+          "name": "Email setting",
+          "icon": "menu-icon tf-icons bx bx-envelope",
+          "slug": "app-email"
+      },
+      {
+          "name": "Account Settings",
+          "icon": "menu-icon tf-icons bx bx bx-dock-top",
+          "slug": "pages-account-settings",
+          "submenu": [
+              {
+                  "url": "pages/account-settings-account",
+                  "name": "Account",
+                  "slug": "pages-account-settings-account"
+              },
+              {
+                  "url": "pages/account-settings-notifications",
+                  "name": "Notifications",
+                  "slug": "pages-account-settings-notifications"
+              },
+              {
+                  "url": "logout",
+                  "name": "Logout",
+                  "slug": "logout"
+              }
+          ]
+      }
+  ]
 }
