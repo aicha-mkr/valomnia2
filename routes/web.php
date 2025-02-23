@@ -1,5 +1,8 @@
 <?php
 
+use App\Models\Warehouse;
+use App\Http\Controllers\ProfileController;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\dashboard\Analytics;
 use App\Http\Controllers\layouts\WithoutMenu;
@@ -7,14 +10,14 @@ use App\Http\Controllers\layouts\WithoutNavbar;
 use App\Http\Controllers\layouts\Fluid;
 use App\Http\Controllers\layouts\Container;
 use App\Http\Controllers\layouts\Blank;
-
-
 use App\Http\Controllers\pages\AccountSettingsAccount;
 use App\Http\Controllers\pages\AccountSettingsNotifications;
 use App\Http\Controllers\pages\AccountSettingsConnections;
 use App\Http\Controllers\pages\MiscError;
 use App\Http\Controllers\pages\MiscUnderMaintenance;
-
+use App\Http\Controllers\authentications\LoginBasic;
+use App\Http\Controllers\authentications\RegisterBasic;
+use App\Http\Controllers\authentications\ForgotPasswordBasic;
 use App\Http\Controllers\cards\CardBasic;
 use App\Http\Controllers\user_interface\Accordion;
 use App\Http\Controllers\user_interface\Alerts;
@@ -43,44 +46,25 @@ use App\Http\Controllers\form_elements\InputGroups;
 use App\Http\Controllers\form_layouts\VerticalForm;
 use App\Http\Controllers\form_layouts\HorizontalForm;
 use App\Http\Controllers\tables\Basic as TablesBasic;
-use App\Http\Middleware\ApiMiddleware;
-use App\Http\Controllers\AuthenticationController;
-use App\Http\Controllers\RecapitulatifController;
-use App\Http\Controllers\EmailTemplateController;
-
-
-
 use App\Http\Controllers\UserController as Users;
 use App\Http\Controllers\AlertController as Alert;
 use App\Http\Controllers\TypeAlertController as TypeAlerts;
 use App\Http\Controllers\HistoriqueAlertController as HistoriqueAlert;
+use App\Http\Controllers\Auth\LoginController as Login;
+use App\Http\Controllers\AdminController;
+
+use App\Http\Controllers\EmailTemplateController;
+use App\Http\Controllers\RecapitulatifController;
 
 use App\Mail\myTestEmail;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\OrgDashboardController;
 
 
+// Main Page Route
+//Route::get('/', [Analytics::class, 'index'])->name('dashboard-analytics');
 
-Route::middleware(['auth'])->group(function () {
-    Route::resource('email-templates', EmailTemplateController::class);
-});
-
-
-Route::middleware(['web'])->group(function () {
-    Route::middleware(['auth'])->group(function () {
-        Route::get('/email/liste', [EmailTemplateController::class, 'index'])->name('email.liste');
-        Route::get('/email/create', [EmailTemplateController::class, 'create'])->name('email.create');
-        Route::get('/dashboard', [AuthenticationController::class, 'showDashboard'])->name('dashboard');
-        Route::post('/email', [EmailTemplateController::class, 'store'])->name('email.store');
-    });
-});
-Route::post('/email', [EmailTemplateController::class, 'store'])->name('email.store');
-Route::middleware(['auth'])->group(function () {
-    Route::get('/email/create', [EmailTemplateController::class, 'create'])->name('email.create');
-});
-
-
-Route::get('/', [AuthenticationController::class, 'index'])->name('auth-login');
+Route::get('/', [Login::class, 'index'])->name('auth-login');
 Route::get('/test_email', function(){$quantity="10000";$warehouse_name = "Tesla"; Mail::to('tahayassine28470618@gmail.com')->send(new \App\Mail\myTestEmail($warehouse_name,$quantity));});
 Route::get('/test_email200', function(){$quantity="10000";$warehouse_name = "Tesla"; Mail::to('tahayassine28470618@gmail.com')->send(new \App\Mail\Alert_Stock200($warehouse_name,$quantity));});
 Route::get('/test_email3', function(){Mail::to('tahayassine28470618@gmail.com')->send(new \App\Mail\Alert_Stock3());});
@@ -97,9 +81,10 @@ Route::middleware(['auth', 'isOrgAdmin'])->group(function () {
 });
 
 
-Route::post('/login', [AuthenticationController::class, 'login'])->name('post-login');
-Route::get('/logout', [AuthenticationController::class, 'logout'])->name('auth-logout');
-Route::group(['prefix' => 'admin','middleware'=>'isadmin'], function () {
+Route::post('/login', [Login::class, 'login'])->name('post-login');
+Route::get('/logout', [Login::class, 'logout'])->name('auth-logout');
+
+Route::group(['prefix' => 'admin'], function () {
     Route::get('/dashboard', [Analytics::class, 'index'])->name('dashboard-admin');
     Route::get('/users', [Users::class, 'index'])->name('users');
     Route::group(['prefix' => 'alerts'], function () {
@@ -126,7 +111,7 @@ Route::group(['prefix' => 'admin','middleware'=>'isadmin'], function () {
     });
 
 });
-Route::group(['prefix' => 'organisation','middleware'=>'isorganisation'], function () {
+Route::group(['prefix' => 'organisation'], function () {
     Route::get('/dashboard', [Analytics::class, 'indexOrganisation'])->name('dashboard-organisation');
     Route::group(['prefix' => 'alerts'], function () {
         Route::get('/history', [HistoriqueAlert::class, 'index'])->name('organisation-history-alerts');
@@ -148,6 +133,41 @@ Route::group(['prefix' => 'organisation','middleware'=>'isorganisation'], functi
 
 
 
+
+//v1 summer
+Route::middleware(['auth'])->group(function () {
+    Route::resource('email-templates', EmailTemplateController::class);
+});
+
+
+Route::middleware(['web'])->group(function () {
+    Route::middleware(['auth'])->group(function () {
+        Route::get('/email/liste', [EmailTemplateController::class, 'index'])->name('email.liste');
+        Route::get('/email/create', [EmailTemplateController::class, 'create'])->name('email.create');
+        Route::post('/email', [EmailTemplateController::class, 'store'])->name('email.store');
+    });
+});
+Route::post('/email', [EmailTemplateController::class, 'store'])->name('email.store');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/email/create', [EmailTemplateController::class, 'create'])->name('email.create');
+});
+
+
+// routes/web.php
+
+Route::post('/generate-recapitulatifs', [RecapitulatifController::class, 'generateRecapitulatifs']);
+
+
+Route::middleware(['auth:api'])->group(function () {
+    Route::get('generate-recapitulatif/{operationId}', [RecapitulatifController::class, 'generateRecapitulatif']);
+});
+Route::middleware(['web'])->group(function () { // This should have a matching closing bracket
+    // Your route definitions
+});
+
+
+
+
 // layout routes
 Route::get('/layouts/without-menu', [WithoutMenu::class, 'index'])->name('layouts-without-menu');
 Route::get('/layouts/without-navbar', [WithoutNavbar::class, 'index'])->name('layouts-without-navbar');
@@ -162,11 +182,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/pages/account-settings-account', [AccountSettingsAccount::class, 'index'])->name('pages-account-settings-notifications');
     Route::post('/account/update', [AccountSettingsAccount::class, 'update'])->name('account.update');
 });
-//pour verifier si user identifier wala le
-Route::get('/check-auth', function () {
-    return auth()->check() ? 'Utilisateur authentifié' : 'Utilisateur non authentifié';
-});
-Route::get('/check/auth', [AuthenticationController::class, 'checkAuth'])->middleware('auth:api');
+
 
 
 
