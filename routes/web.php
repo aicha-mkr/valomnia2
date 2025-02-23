@@ -177,19 +177,11 @@ Route::middleware(['auth'])->group(function () {
 
 // Route sans authentification
 Route::get('/pages/account-settings-notifications', [AccountSettingsNotifications::class, 'index'])->name('pages-account-settings-notifications');
+Route::get('/pages/account-settings-account', [AccountSettingsAccount::class, 'index'])->name('account.settings');
+Route::post('/account/update', [AccountSettingsAccount::class, 'update'])->name('account.update');
 
 
 
-
-// Routes nécessitant une authentification
-Route::middleware(['auth'])->group(function () {
-    Route::get('/pages/account-settings-account', [AccountSettingsAccount::class, 'index'])->name('account.settings');
-    Route::post('/account/update', [AccountSettingsAccount::class, 'update'])->name('account.update');
-});Route::get('/pages/account-settings-connections', [AccountSettingsConnections::class, 'index'])->name('pages-account-settings-connections');
-Route::get('/pages/misc-error', [MiscError::class, 'index'])->name('pages-misc-error');
-Route::get('/pages/misc-under-maintenance', [MiscUnderMaintenance::class, 'index'])->name('pages-misc-under-maintenance');
-
-// cards routes
 Route::get('/cards/basic', [CardBasic::class, 'index'])->name('cards-basic');
 
 // User Interface routes

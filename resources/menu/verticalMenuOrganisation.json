@@ -32,7 +32,7 @@
 
 
         {
-          "name": "Report",
+          "name": "Repport",
           "icon": "menu-icon tf-icons bx bx-alarm-snooze",
           "slug": "organisation-alerts",
           "submenu": [

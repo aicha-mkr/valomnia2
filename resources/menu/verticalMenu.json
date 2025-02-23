@@ -2,46 +2,40 @@
 {
   "menu": [
       {
-          "url": "/Admin",
+          "url": "/admin/dashboard",
           "name": "Dashboard",
           "icon": "menu-icon tf-icons bx bx-home-circle",
-          "slug": "dashboard-organisation"
+          "slug": "dashboard-admin"
       },
       {
-        "name": "Alerts",
+        "name": "Type d'alerts",
         "icon": "menu-icon tf-icons bx bx-alarm-snooze",
-        "slug": "organisation-alerts",
-        "url": "organisation/alerts/"
+        "slug": "admin-alerts",
+        "url": "/admin/alerts/"
     },
     {
         "url": "/admin/alerts/history",
         "name": "Alerts history",
         "icon": "menu-icon tf-icons bx bx-history",
-        "slug": "organisation-history-alerts"
+        "slug": "admin-history-alerts"
     },
     {
-      "name": "report history",
+      "name": "Repport history",
       "icon": "menu-icon tf-icons bx bx-alarm-snooze",
-      "slug": "organisation-alerts"
+      "slug": "admin-alerts"
   },
-      {
-          "url": "#",
-          "name": "Email setting",
-          "icon": "menu-icon tf-icons bx bx-envelope",
-          "slug": "app-email"
-      },
       {
           "name": "Account Settings",
           "icon": "menu-icon tf-icons bx bx bx-dock-top",
           "slug": "pages-account-settings",
           "submenu": [
               {
-                  "url": "pages/account-settings-account",
+                  "url": "/admin/pages/account-settings-account",
                   "name": "Account",
                   "slug": "pages-account-settings-account"
               },
               {
-                  "url": "pages/account-settings-notifications",
+                  "url": "/admin/pages/account-settings-notifications",
                   "name": "Notifications",
                   "slug": "pages-account-settings-notifications"
               },

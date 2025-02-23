@@ -4,19 +4,19 @@
 
 @section('content')
 <div class="row">
-  <div class="col-md-12">
-      <div class="nav-align-top">
-          <ul class="nav nav-pills flex-column flex-md-row mb-6">
-              <li class="nav-item">
-                  <a class="nav-link" href="{{ url('organisation/email/liste') }}">
-                      <button type="button" class="btn btn-primary">
-                <span class="tf-icons bx bx-pie-chart-alt bx-18px me-2"></span>Return
-              </button>
-                  </a>
-              </li>
-          </ul>
-      </div>
-  </div>
+    <div class="col-md-12">
+        <div class="nav-align-top">
+            <ul class="nav nav-pills flex-column flex-md-row mb-6">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url('organisation/email/liste') }}">
+                        <button type="button" class="btn btn-primary">
+                            <span class="bx bx-left-arrow-alt bx-sm me-2"></span>Return
+                        </button>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
 </div>
 <div class="text-center mb-4">
   <button id="rapportBtn" class="btn rounded-pill btn-primary" onclick="toggleSections('rapport', this)">Rapport</button>
