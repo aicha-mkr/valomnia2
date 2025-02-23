@@ -6,8 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
+    /**     * Run the migrations.
      */
     public function up(): void
     {
@@ -15,34 +14,24 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email');
-            $table->string('password');
+           $table->string('password');
             $table->string('organisation')->nullable();
-            $table->string('password_valomnia')->nullable();
             $table->string('role')->nullable();
+
+
+
             $table->string('token')->nullable();
             $table->string('cookies')->nullable();
             $table->string('first_name')->nullable();
             $table->string('last_name')->nullable();
             $table->timestamps();
         });
-        Schema::create('sessions', function (Blueprint $table) {
-            $table->string('id')->primary();
-            $table->foreignId('user_id')->nullable()->index();
-            $table->string('ip_address', 45)->nullable();
-            $table->text('user_agent')->nullable();
-            $table->longText('payload');
-            $table->integer('last_activity')->index();
-        });
+
 
     }
 
     /**
      * Reverse the migrations.
      */
-    public function down(): void
-    {
-        Schema::dropIfExists('users');
-        Schema::dropIfExists('password_reset_tokens');
-        Schema::dropIfExists('sessions');
-    }
+    
 };
