@@ -2155,7 +2155,7 @@ function updateReportButtonUrl() {
         const urlSection = document.getElementById('alert-url-section');
         const buttonInput = document.getElementById('alert-button-input');
         const button = document.getElementById('alert-button');
-
+        
         const displayStyle = checkbox.checked ? 'block' : 'none';
 
         // Afficher/Masquer les sections et le bouton
