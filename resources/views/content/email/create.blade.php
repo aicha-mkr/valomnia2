@@ -29,61 +29,58 @@
           <div class="card mb-6">
               <h5 class="card-header">Formulaire de Rapport</h5>
               <div class="card-body">
-                <form action="{{ route('email.store') }}" method="POST">
+                <form action="{{ route('email.store') }}" method="POST"  onsubmit="console.log('Form submitted!');>
                   @csrf
-                      <div class="mb-4">
-                        <label for="rapport-email-subject" class="form-label">Sujet</label>
-                        <input type="text" class="form-control" id="rapport-email-subject" name="email_subject" placeholder="Sujet de l'email" required />
-                    </div>
-                    <div class="mb-4">
-                      <label for="alerte-title" class="form-label">Titre</label>
+                  <div class="mb-4">
+                      <label for="rapport-email-subject" class="form-label">Sujet</label>
+                      <input type="text" class="form-control" id="rapport-email-subject" name="email_subject" placeholder="Sujet de l'email" required />
+                  </div>
+                  
+                  <div class="mb-4">
+                      <label for="rapport-title" class="form-label">Titre</label>
                       <input type="text" class="form-control" id="rapport-title" name="title" placeholder="Titre de l'alerte" required oninput="updateReportTitle()" />
                   </div>
-
+              
                   <div class="mb-4">
-                    <h5>Configurer le Texte du Rapport</h5>
-                    <textarea class="form-control" id="rapport-content" name="rapport_content" rows="6"
-                              placeholder="Entrez le contenu du rapport ici..." oninput="updateRapportContent()"></textarea>
-                </div>
-
-
-                <div class="form-check">
-                  <input class="form-check-input" type="checkbox" id="report-open" onclick="toggleReportSection()" />
-                  <label class="form-check-label" for="report-open">Afficher Bouton de Rapport</label>
-              </div>
-
-              <div id="urlSection" class="mb-4" style="display: none;">
-                  <label for="report-url" class="form-label">URL Spécifique</label>
-                  <input type="url" class="form-control" id="report-url" name="report_url" placeholder="URL spécifique" oninput="updateReportButtonUrl()">              </div>
-
-              <div class="mb-4" id="buttonTitleSection" style="display: none;">
-                  <label for="button-title" class="form-label">Titre du Bouton</label>
-                  <input type="text" class="form-control" id="button-title" placeholder="Entrez le titre du bouton" oninput="updateReportButtonText()" />
-              </div>
-
-
-
-
-              <h5>Sélectionner les KPI</h5>
-              <div>
-                  <div class="form-check">
-                      <input class="form-check-input" type="checkbox" value="total_revenue" id="totalRevenueCheckbox" onchange="toggleKPI('kpi1', this.checked)" checked />
-                      <label class="form-check-label" for="totalRevenueCheckbox">Total Revenue</label>
+                      <h5>Configurer le Texte du Rapport</h5>
+                      <textarea class="form-control" id="rapport-content" name="rapport_content" rows="6" placeholder="Entrez le contenu du rapport ici..." required oninput="updateRapportContent()"></textarea>
                   </div>
+              
                   <div class="form-check">
-                      <input class="form-check-input" type="checkbox" value="total_orders" id="totalOrdersCheckbox" onchange="toggleKPI('kpi2', this.checked)" checked />
-                      <label class="form-check-label" for="totalOrdersCheckbox">Total Orders</label>
+                      <input class="form-check-input" type="checkbox" id="report-open" onclick="toggleReportSection()" />
+                      <label class="form-check-label" for="report-open">Afficher Bouton de Rapport</label>
                   </div>
-                  <div class="form-check">
-                      <input class="form-check-input" type="checkbox" value="total_employees" id="totalEmployeesCheckbox" onchange="toggleKPI('kpi3', this.checked)" checked />
-                      <label class="form-check-label" for="totalEmployeesCheckbox">Total Employees</label>
+              
+                  <div id="urlSection" class="mb-4" style="display: none;">
+                      <label for="report-url" class="form-label">URL Spécifique</label>
+                      <input type="url" class="form-control" id="report-url" name="report_url" placeholder="URL spécifique" oninput="updateReportButtonUrl()">
                   </div>
-              </div>
-                <div class="mb-4">
-                  <button type="submit" class="btn btn-primary">Créer le Rapport</button>
-                                </div>
-
-                  </form>
+              
+                  <div class="mb-4" id="buttonTitleSection" style="display: none;">
+                      <label for="button-title" class="form-label">Titre du Bouton</label>
+                      <input type="text" class="form-control" id="button-title" name="btn_name" placeholder="Entrez le titre du bouton" oninput="updateReportButtonText()" />
+                  </div>
+              
+                  <h5>Sélectionner les KPI</h5>
+                  <div class="mb-4">
+                      <div class="form-check">
+                          <input class="form-check-input" type="checkbox" value="total_revenue" id="totalRevenueCheckbox" name="kpi[]" onchange="toggleKPI('kpi1', this.checked)" checked />
+                          <label class="form-check-label" for="totalRevenueCheckbox">Total Revenue</label>
+                      </div>
+                      <div class="form-check">
+                          <input class="form-check-input" type="checkbox" value="total_orders" id="totalOrdersCheckbox" name="kpi[]" onchange="toggleKPI('kpi2', this.checked)" checked />
+                          <label class="form-check-label" for="totalOrdersCheckbox">Total Orders</label>
+                      </div>
+                      <div class="form-check">
+                          <input class="form-check-input" type="checkbox" value="total_employees" id="totalEmployeesCheckbox" name="kpi[]" onchange="toggleKPI('kpi3', this.checked)" checked />
+                          <label class="form-check-label" for="totalEmployeesCheckbox">Total Employees</label>
+                      </div>
+                  </div>
+              
+                  <div class="mb-4">
+                      <button type="submit" class="btn btn-primary">Créer le Rapport</button>
+                  </div>
+              </form>
               </div>
           </div>
       </div>
