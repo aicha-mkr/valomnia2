@@ -56,10 +56,10 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\EmailTemplateController;
 use App\Http\Controllers\RecapitulatifController;
 
-use App\Mail\myTestEmail;
+use App\Mail\email;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\OrgDashboardController;
-
+use App\Http\Controllers\TestMailController;
 
 // Main Page Route
 //Route::get('/', [Analytics::class, 'index'])->name('dashboard-analytics');
@@ -224,7 +224,6 @@ Route::get('/form/layouts-horizontal', [HorizontalForm::class, 'index'])->name('
 Route::get('/tables/basic', [TablesBasic::class, 'index'])->name('tables-basic');
 
 //evoi email
-Route::get('/', function () {
-  Mail::to('laravelpfe12@gmail.com')
-      ->send(new myTestEmail());
-});
+Route::get('/send-test-mail', [TestMailController::class, 'testMail']);
+
+

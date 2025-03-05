@@ -27,7 +27,7 @@ class email extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Email',
+            subject: 'Email from valomnia ',
         );
     }
 
@@ -37,7 +37,7 @@ class email extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'view.name',
+            view: 'content.email.testmail',
         );
     }
 
@@ -52,9 +52,9 @@ class email extends Mailable
     }
 
 
-    
     public function build()
     {
-      return $this->view('email.create');
+        return $this->subject('Test Email')
+                    ->view('content.email.testmai'); // Assure-toi que cette vue existe
     }
 }
