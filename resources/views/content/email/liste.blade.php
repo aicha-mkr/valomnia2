@@ -4,13 +4,18 @@
 
 @section('content')
 
+@if (session('error'))
+    <div class="alert alert-danger">
+        {{ session('error') }}
+    </div>
+@endif
 
-
-@if(session('success'))
+@if (session('success'))
     <div class="alert alert-success">
         {{ session('success') }}
     </div>
 @endif
+
 
 
 
@@ -46,7 +51,7 @@
                                     <button class="btn p-0 text-primary" onclick="editRecord('{{ $template->name }}', 'Template', '{{ $template->updated_at->format('Y-m-d') }}', '{{ $template->id }}')">
                                         <i class="bx bx-edit-alt"></i>
                                     </button>
-                                    <form action="{{ route('email-templates.destroy', $template->id) }}" method="POST" style="display:inline;">
+                                    <form action="{{ route('email.destroy', $template->id) }}" method="POST" style="display:inline;">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn p-0 text-danger" onclick="return confirm('Are you sure you want to delete this template?');">

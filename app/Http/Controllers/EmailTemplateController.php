@@ -23,7 +23,6 @@ class EmailTemplateController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'subject' => 'required|string|max:255',
-            'template_type' => 'required|string|in:report,alert',
             'total_revenue' => 'nullable|numeric',
             'total_orders' => 'nullable|integer',
             'total_employees' => 'nullable|integer',
@@ -50,10 +49,9 @@ class EmailTemplateController extends Controller
             'btn_name' => $request->btn_name,
             'btn_link' => $request->btn_link,
             'has_btn' => !empty($request->btn_name) && !empty($request->btn_link),
-            'template_type' => $request->template_type,
         ]);
 
-        return redirect()->route('organisation.email.templates.index')->with('success', 'Template créé avec succès !');
+        return redirect()->route('email.liste')->with('success', 'Template créé avec succès !');
     }
 
     public function show($id)
@@ -64,9 +62,24 @@ class EmailTemplateController extends Controller
 
     public function edit($id)
     {
+        // Récupérer le template à partir de l'ID
         $template = EmailTemplate::findOrFail($id);
-        return view('content.email.edit', compact('template'));
+    
+        // Vérifier le type de template
+        $view = '';
+        if ($template->name === 'Alert') {
+            $view = 'email_templates.edit_alert'; // Vue pour Alert
+        } elseif ($template->name === 'Report') {
+            $view = 'email_templates.edit_report'; // Vue pour Report
+        } else {
+            return redirect()->back()->with('error', 'Type de template inconnu.');
+        }
+    
+        // Retourner la vue appropriée avec les données
+        return view($view, compact('template'));
     }
+    
+    
 
     public function update(Request $request, $id)
     {
@@ -75,7 +88,6 @@ class EmailTemplateController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'subject' => 'required|string|max:255',
-            'template_type' => 'required|string|in:report,alert',
             'total_revenue' => 'nullable|numeric',
             'total_orders' => 'nullable|integer',
             'total_employees' => 'nullable|integer',
@@ -86,7 +98,6 @@ class EmailTemplateController extends Controller
         $template->update([
             'name' => $request->name,
             'subject' => $request->subject,
-            'template_type' => $request->template_type,
             'total_revenue' => $request->total_revenue,
             'total_orders' => $request->total_orders,
             'total_employees' => $request->total_employees,
@@ -95,14 +106,18 @@ class EmailTemplateController extends Controller
             'has_btn' => !empty($request->btn_name) && !empty($request->btn_link),
         ]);
 
-        return redirect()->route('organisation.email.templates.index')->with('success', 'Template mis à jour avec succès !');
+        return redirect()->route('email.liste')->with('success', 'Template mis à jour avec succès !');
     }
 
     public function destroy($id)
     {
         $template = EmailTemplate::findOrFail($id);
         $template->delete();
-
-        return redirect()->route('organisation.email.templates.index')->with('success', 'Template supprimé avec succès.');
+    
+        // Redirect to the list route
+        return redirect()->route('email.liste')->with('error', 'Template supprimé avec succès.');
     }
+    
+
+    
 }

@@ -56,10 +56,10 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\EmailTemplateController;
 use App\Http\Controllers\RecapitulatifController;
 
-use App\Mail\myTestEmail;
+use App\Mail\email;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\OrgDashboardController;
-
+use App\Http\Controllers\TestMailController;
 
 // Main Page Route
 //Route::get('/', [Analytics::class, 'index'])->name('dashboard-analytics');
@@ -130,6 +130,13 @@ Route::group(['prefix' => 'organisation'], function () {
     Route::get('/liste', [EmailTemplateController::class, 'index'])->name('email.liste');
     Route::get('/create', [EmailTemplateController::class, 'create'])->name('email.create');
     Route::post('/store', [EmailTemplateController::class, 'store'])->name('organisation.email.templates.store');
+    Route::delete('/destroy/{id}', [EmailTemplateController::class, 'destroy'])->name('email.destroy'); 
+
+    //route teb3ak issam bch tthabet fyh m3a eddit
+    Route::get('/edit/{id}', [EmailTemplateController::class, 'edit'])->name('email.edit');
+    Route::put('/update/{id}', [EmailTemplateController::class, 'update'])->name('email.update');
+    Route::get('/show/{id}', [EmailTemplateController::class, 'show'])->name('email.show');
+
 });
 });
 
@@ -219,3 +226,7 @@ Route::get('/form/layouts-horizontal', [HorizontalForm::class, 'index'])->name('
 
 // tables routes
 Route::get('/tables/basic', [TablesBasic::class, 'index'])->name('tables-basic');
+
+
+//evoi email
+Route::get('/send-test-mail', [TestMailController::class, 'testMail']);
