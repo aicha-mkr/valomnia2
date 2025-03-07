@@ -1,5 +1,4 @@
 <?php
-// app/Http/Controllers/EmailTemplateController.php
 
 namespace App\Http\Controllers;
 
@@ -10,57 +9,100 @@ class EmailTemplateController extends Controller
 {
     public function index()
     {
-        $templates = EmailTemplate::all(); // Fetch all templates
+        $templates = EmailTemplate::all();
         return view('content.email.liste', compact('templates'));
     }
 
     public function create()
     {
-        return view('content.email.create'); // Render the create template view
+        return view('content.email.create');
     }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'subject' => 'required|string|max:255',
+            'template_type' => 'required|string|in:report,alert',
+            'total_revenue' => 'nullable|numeric',
+            'total_orders' => 'nullable|integer',
+            'total_employees' => 'nullable|integer',
+            'btn_name' => 'nullable|string|max:255',
+            'btn_link' => 'nullable|url',
+        ]);
+
+        $topSellingItems = [
+            'Product 1',
+            'Product 2',
+            'Product 3',
+            'Product 4',
+            'Product 5',
+        ];
+
+        EmailTemplate::create([
+            'user_id' => auth()->id(),
+            'name' => $request->name,
+            'subject' => $request->subject,
+            'total_revenue' => $request->total_revenue,
+            'total_orders' => $request->total_orders,
+            'total_employees' => $request->total_employees,
+            'top_selling_items' => json_encode($topSellingItems),
+            'btn_name' => $request->btn_name,
+            'btn_link' => $request->btn_link,
+            'has_btn' => !empty($request->btn_name) && !empty($request->btn_link),
+            'template_type' => $request->template_type,
+        ]);
+
+        return redirect()->route('organisation.email.templates.index')->with('success', 'Template créé avec succès !');
+    }
+
+    public function show($id)
+    {
+        $template = EmailTemplate::findOrFail($id);
+        return view('content.email.show', compact('template'));
+    }
+
+    public function edit($id)
+    {
+        $template = EmailTemplate::findOrFail($id);
+        return view('content.email.edit', compact('template'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $template = EmailTemplate::findOrFail($id);
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'subject' => 'required|string|max:255',
+            'template_type' => 'required|string|in:report,alert',
+            'total_revenue' => 'nullable|numeric',
+            'total_orders' => 'nullable|integer',
+            'total_employees' => 'nullable|integer',
+            'btn_name' => 'nullable|string|max:255',
+            'btn_link' => 'nullable|url',
+        ]);
+
+        $template->update([
+            'name' => $request->name,
+            'subject' => $request->subject,
+            'template_type' => $request->template_type,
+            'total_revenue' => $request->total_revenue,
+            'total_orders' => $request->total_orders,
+            'total_employees' => $request->total_employees,
+            'btn_name' => $request->btn_name,
+            'btn_link' => $request->btn_link,
+            'has_btn' => !empty($request->btn_name) && !empty($request->btn_link),
+        ]);
+
+        return redirect()->route('organisation.email.templates.index')->with('success', 'Template mis à jour avec succès !');
+    }
+
     public function destroy($id)
     {
-        $template = EmailTemplate::findOrFail($id); // This will throw a 404 if not found
+        $template = EmailTemplate::findOrFail($id);
         $template->delete();
-    
-        return redirect()->route('email-templates.index')->with('success', 'Template deleted successfully.');
+
+        return redirect()->route('organisation.email.templates.index')->with('success', 'Template supprimé avec succès.');
     }
-    public function show($id)
-{
-    $template = EmailTemplate::findOrFail($id); // Fetch the template by ID
-    return view('content.email.show', compact('template')); // Return the view with the template data
 }
-
-public function store(Request $request)
-{
-    // Validation des données
-    $request->validate([
-        'name' => 'required|string|max:255',
-        'subject' => 'required|string|max:255',
-        'total_revenue' => 'nullable|boolean',
-        'total_orders' => 'nullable|boolean',
-        'total_employees' => 'nullable|boolean',
-        'top_selling_items' => 'nullable|string',
-        'btn_name' => 'nullable|string|max:255',
-        'btn_link' => 'nullable|url',
-        'template_type' => 'required|string|in:report,alert', // Validation du type
-    ]);
-
-    // Créer une nouvelle entrée dans la base de données
-    EmailTemplate::create([
-        'user_id' => auth()->id(),
-        'name' => $request->name,
-        'subject' => $request->subject,
-        'total_revenue' => $request->input('total_revenue', false),
-        'total_orders' => $request->input('total_orders', false),
-        'total_employees' => $request->input('total_employees', false),
-        'top_selling_items' => $request->input('top_selling_items'),
-        'btn_name' => $request->btn_name,
-        'btn_link' => $request->btn_link,
-        'has_btn' => !empty($request->btn_name),
-        'template_type' => 'report', // Assurez-vous d'assigner un type approprié
-    ]);
-
-    // Rediriger vers la même page avec un message de succès
-    return redirect()->back()->with('success', 'Template créé avec succès !');
-}}

@@ -29,8 +29,18 @@
           <div class="card mb-6">
               <h5 class="card-header">Formulaire de Rapport</h5>
               <div class="card-body">
-                <form action="{{ route('email.store') }}" method="POST"  onsubmit="console.log('Form submitted!');>
+                <form id="rapportForm" action="{{ route('organisation.email.templates.store') }}" method="POST" onsubmit="console.log('Form submitted!');">
                   @csrf
+                   @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+                    
                   <div class="mb-4">
                       <label for="rapport-email-subject" class="form-label">Sujet</label>
                       <input type="text" class="form-control" id="rapport-email-subject" name="email_subject" placeholder="Sujet de l'email" required />
@@ -1704,8 +1714,17 @@ role="presentation">
           <div class="card mb-6">
               <h5 class="card-header">Formulaire d'Alerte</h5>
               <div class="card-body">
-                  <form action="{{ route('email.store') }}" method="POST">
+                  <form  id="alerteSection"action="{{ route('organisation.email.templates.store') }}" method="POST">
                       @csrf
+                      @if ($errors->any())
+                      <div class="alert alert-danger">
+                          <ul>
+                              @foreach ($errors->all() as $error)
+                                  <li>{{ $error }}</li>
+                              @endforeach
+                          </ul>
+                      </div>
+                  @endif
                       <div class="mb-4">
                           <label for="alerte-type" class="form-label">Type d'Alerte</label>
                           <select class="form-select" id="alerte-type" name="alert_type" required>
@@ -2086,6 +2105,12 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log(checkbox.checked ? 'URL section, button title, and button displayed' : 'Sections hidden');
 }
 
+
+
+
+
+
+
 function updateReportButtonText() {
     const buttonText = document.getElementById('button-title').value;
     const actionLink = document.getElementById('action-link');
@@ -2152,7 +2177,7 @@ function updateReportButtonUrl() {
         const urlSection = document.getElementById('alert-url-section');
         const buttonInput = document.getElementById('alert-button-input');
         const button = document.getElementById('alert-button');
-
+        
         const displayStyle = checkbox.checked ? 'block' : 'none';
 
         // Afficher/Masquer les sections et le bouton
@@ -2183,6 +2208,50 @@ function updateReportButtonUrl() {
         kpiElement.style.display = "none"; // Hide the KPI when unchecked
     }
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('rapportForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        // Valider et soumettre le formulaire de rapport
+        if (validateRapportForm()) {
+            this.submit();
+        }
+    });
+
+    document.getElementById('alerteForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        // Valider et soumettre le formulaire d'alerte
+        if (validateAlerteForm()) {
+            this.submit();
+        }
+    });
+});
+
+// Fonction de validation pour le formulaire de rapport
+function validateRapportForm() {
+    let isValid = true;
+    // Ajoutez ici les validations nécessaires pour le formulaire de rapport
+    const emailSubject = document.getElementById('rapport-email-subject').value;
+    const title = document.getElementById('rapport-title').value;
+    if (!emailSubject || !title) {
+        isValid = false;
+    }
+    return isValid;
+}
+
+// Fonction de validation pour le formulaire d'alerte
+function validateAlerteForm() {
+    let isValid = true;
+    // Ajoutez ici les validations nécessaires pour le formulaire d'alerte
+    const alertType = document.getElementById('alerte-type').value;
+    const alertTitle = document.getElementById('alerte-title').value;
+    if (!alertType || !alertTitle) {
+        isValid = false;
+    }
+    return isValid;
+}
+
+
 
 </script>
 @endsection

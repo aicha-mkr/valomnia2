@@ -80,7 +80,6 @@ Route::middleware(['auth', 'isOrgAdmin'])->group(function () {
     Route::get('/org-dashboard/recent-activities', [OrgDashboardController::class, 'fetchRecentActivities'])->name('org.dashboard.recentActivities');
 });
 
-
 Route::post('/login', [Login::class, 'login'])->name('post-login');
 Route::get('/logout', [Login::class, 'logout'])->name('auth-logout');
 
@@ -127,13 +126,11 @@ Route::group(['prefix' => 'organisation'], function () {
       Route::get('/show/{id}', [Alert::class, 'show'])->name('organisation-alerts-show');
   });
 
-  // Intégration des routes pour les templates d'email sous l'organisation
-  Route::group(['prefix' => 'email'], function () {
-      Route::resource('templates', EmailTemplateController::class);
-      Route::get('/liste', [EmailTemplateController::class, 'index'])->name('email.liste');
-      Route::get('/create', [EmailTemplateController::class, 'create'])->name('email.create');
-      Route::post('/', [EmailTemplateController::class, 'store'])->name('email.store');
-  });
+   Route::group(['prefix' => 'email'], function () {
+    Route::get('/liste', [EmailTemplateController::class, 'index'])->name('email.liste');
+    Route::get('/create', [EmailTemplateController::class, 'create'])->name('email.create');
+    Route::post('/store', [EmailTemplateController::class, 'store'])->name('organisation.email.templates.store');
+});
 });
 
 
