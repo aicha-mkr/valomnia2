@@ -55,6 +55,6 @@ class email extends Mailable
     public function build()
     {
         return $this->subject('Test Email')
-                    ->view('content.email.testmai'); // Assure-toi que cette vue existe
+                    ->view('content.email.testmail'); // Assure-toi que cette vue existe
     }
 }
