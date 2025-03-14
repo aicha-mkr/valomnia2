@@ -35,7 +35,7 @@
                     <table class="table table-bordered">
                         <thead>
                             <tr>
-                                <th>Name</th>
+                                <th>title</th>
                                 <th>Type</th>
                                 <th>Last Updated</th>
                                 <th>Actions</th>
@@ -44,11 +44,19 @@
                         <tbody>
                             @foreach ($templates as $template)
                             <tr>
-                                <td>{{ $template->name }}</td>
-                                <td><span class="badge bg-label-primary">Report</span></td>
+                                <td>{{ $template->title }}</td>
+                                <td>
+                                    @if ($template->type === 'Rapport')
+                                        <span class="badge bg-label-primary">Report</span>
+                                    @elseif ($template->type === 'Alert')
+                                        <span class="badge bg-label-danger">Alert</span>
+                                    @else
+                                        <span class="badge bg-label-secondary">Unknown</span>
+                                    @endif
+                                </td>
                                 <td>{{ $template->updated_at->format('d/m/Y') }}</td>
                                 <td>
-                                    <button class="btn p-0 text-primary" onclick="editRecord('{{ $template->name }}', 'Template', '{{ $template->updated_at->format('Y-m-d') }}', '{{ $template->id }}')">
+                                    <button class="btn p-0 text-primary" onclick="editRecord('{{ $template->title }}', 'Template', '{{ $template->updated_at->format('Y-m-d') }}', '{{ $template->id }}')">
                                         <i class="bx bx-edit-alt"></i>
                                     </button>
                                     <form action="{{ route('email.destroy', $template->id) }}" method="POST" style="display:inline;">
@@ -60,7 +68,8 @@
                                     </form>
                                 </td>
                             </tr>
-                            @endforeach
+                        @endforeach
+                        
                         </tbody>
                     </table>
                 </div>
