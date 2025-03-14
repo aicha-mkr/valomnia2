@@ -99,13 +99,5 @@ class ValomniaService
             ]
         );
     }
-
-    // Send a weekly summary email
-    public function sendWeeklySummary($email, $operationId)
-    {
-        $recapData = $this->calculateKPI($operationId); // Pass the operation ID
-        $recipientName = 'User'; // Adjust as needed
-
-        Mail::to($email)->send(new WeeklySummary($recapData, $recipientName));
-    }
+    
 }

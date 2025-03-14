@@ -83,6 +83,9 @@ Route::middleware(['auth', 'isOrgAdmin'])->group(function () {
 Route::post('/login', [Login::class, 'login'])->name('post-login');
 Route::get('/logout', [Login::class, 'logout'])->name('auth-logout');
 
+
+
+
 Route::group(['prefix' => 'admin'], function () {
     Route::get('/dashboard', [Analytics::class, 'index'])->name('dashboard-admin');
     Route::get('/users', [Users::class, 'index'])->name('users');
@@ -110,6 +113,10 @@ Route::group(['prefix' => 'admin'], function () {
     });
 
 });
+
+
+
+
 Route::group(['prefix' => 'organisation'], function () {
   Route::get('/dashboard', [Analytics::class, 'indexOrganisation'])->name('dashboard-organisation');
 
@@ -228,5 +235,5 @@ Route::get('/form/layouts-horizontal', [HorizontalForm::class, 'index'])->name('
 Route::get('/tables/basic', [TablesBasic::class, 'index'])->name('tables-basic');
 
 
-//evoi email
-Route::get('/send-test-mail', [TestMailController::class, 'testMail']);
+
+Route::get('/test/send-email/{id}/{type}', [App\Http\Controllers\EmailTemplateController::class, 'sendEmail']);

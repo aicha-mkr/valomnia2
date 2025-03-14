@@ -11,8 +11,10 @@ class EmailTemplate extends Model
 
     protected $fillable = [
         'user_id',
-        'name',
+        'type',
         'subject',
+        'title',
+        'content',
         'created_at',
         'updated_at',
         'total_revenue',
@@ -22,9 +24,18 @@ class EmailTemplate extends Model
         'btn_name',
         'btn_link',
         'has_btn',
-        'template_type', // Si vous utilisez ce champ
-        'is_active', // Si vous utilisez ce champ
+        'is_active',
     ];
+    public function getFormattedContent(array $data)
+    {
+        $content = $this->content; // Assurez-vous que la colonne "content" contient le HTML
 
-    // Vous pouvez également ajouter des méthodes pour gérer les relations, si nécessaire
+        // Remplace les placeholders par les données dynamiques
+        foreach ($data as $key => $value) {
+            $placeholder = "{{" . $key . "}}";
+            $content = str_replace($placeholder, $value, $content);
+        }
+
+        return $content;
+    }
 }

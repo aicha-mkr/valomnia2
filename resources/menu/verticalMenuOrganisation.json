@@ -33,7 +33,7 @@
 
         {
           "name": "Repport",
-          "icon": "menu-icon tf-icons bx bx-alarm-snooze",
+          "icon": "menu-icon tf-icons bx bx-envelope",
           "slug": "organisation-alerts",
           "submenu": [
               {
@@ -48,12 +48,7 @@
               }
           ]
       },
-        {
-            "url": "#",
-            "name": "Email",
-            "icon": "menu-icon tf-icons bx bx-envelope",
-            "slug": "app-email"
-        },
+
         {
             "name": "Account Settings",
             "icon": "menu-icon tf-icons bx bx bx-dock-top",
