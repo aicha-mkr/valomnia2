@@ -62,18 +62,23 @@ class EmailTemplateController extends Controller
         $template = EmailTemplate::findOrFail($id);
         return view('content.email.show', compact('template'));
     }
-
     public function edit($id)
     {
+        // Récupérer le template à partir de l'ID
         $template = EmailTemplate::findOrFail($id);
 
+        // Identifier la vue à retourner en fonction du type
+        $view = '';
         if ($template->type === 'Alert') {
-            return view('content.email.partials.edit_alert', compact('template'));
+            $view = 'content.email.partials.edit_alert'; // Vue pour le formulaire d'Alert
         } elseif ($template->type === 'Rapport') {
-            return view('content.email.partials.edit_report', compact('template'));
+            $view = 'content.email.partials.edit_rapport'; // Vue pour le formulaire de Rapport
         } else {
-            return response()->json(['error' => 'Type de template inconnu.'], 400);
+            return response()->json(['error' => 'Type de template inconnu.'], 404);
         }
+
+        // Retourner la vue sous forme de HTML
+        return view($view, compact('template'))->render();
     }
 
 

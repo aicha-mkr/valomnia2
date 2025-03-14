@@ -30,8 +30,20 @@ class Email extends Mailable
      * @return $this
      */
     public function build()
-    {
-        return $this->subject('Test Email')
-                    ->view('content.email.testmail'); // Assure-toi que cette vue existe
-    }
+{
+    \Log::info('Building email with template type: ' . $this->templateType);
+
+    // Convertir en minuscule pour éviter les problèmes de casse
+    $view = match (strtolower($this->templateType)) {
+        'alert' => 'emails.alert',
+        'rapport' => 'emails.rapport',
+        default => throw new \Exception("Unhandled template type: {$this->templateType}"),
+    };
+
+    return $this->subject($this->data['subject'])
+                ->view($view)
+                ->with($this->data);
+}
+
+
 }

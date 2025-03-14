@@ -137,7 +137,7 @@ Route::group(['prefix' => 'organisation'], function () {
     Route::get('/liste', [EmailTemplateController::class, 'index'])->name('email.liste');
     Route::get('/create', [EmailTemplateController::class, 'create'])->name('email.create');
     Route::post('/store', [EmailTemplateController::class, 'store'])->name('organisation.email.templates.store');
-    Route::delete('/destroy/{id}', [EmailTemplateController::class, 'destroy'])->name('email.destroy'); 
+    Route::delete('/destroy/{id}', [EmailTemplateController::class, 'destroy'])->name('email.destroy');
 
     //route teb3ak issam bch tthabet fyh m3a eddit
     Route::get('/edit/{id}', [EmailTemplateController::class, 'edit'])->name('email.edit');

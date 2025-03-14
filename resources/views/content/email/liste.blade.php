@@ -92,21 +92,28 @@
 
 
 <script>
-    function editRecord(id) {
-        const container = document.getElementById('editViewContainer');
+   function editRecord(id) {
+    const container = document.getElementById('editViewContainer');
 
-        // Faire une requête AJAX pour charger la bonne vue
-        fetch(`/email/edit/${id}`)
-            .then(response => response.text())
-            .then(html => {
-                container.innerHTML = html;
+    // Faire une requête AJAX pour récupérer le formulaire approprié
+    fetch("{{ route('email.edit', ':id') }}".replace(':id', id))
+    .then(response => {
+        console.log('Statut HTTP :', response.status);
+        if (!response.ok) {
+            throw new Error(`Erreur HTTP : ${response.status}`);
+        }
+        return response.text();
+    })
+    .then(html => {
+        container.innerHTML = html; // Insérer le formulaire dans le conteneur
 
-                // Afficher l'offcanvas
-                var editOffcanvas = new bootstrap.Offcanvas(document.getElementById('editRecord'));
-                editOffcanvas.show();
-            })
-            .catch(error => console.error("Erreur lors du chargement de la vue :", error));
-    }
+        // Afficher l'Offcanvas
+        var editOffcanvas = new bootstrap.Offcanvas(document.getElementById('editRecord'));
+        editOffcanvas.show();
+    })
+    .catch(error => console.error("Erreur lors du chargement de la vue :", error));
+
+
 </script>
 
 
