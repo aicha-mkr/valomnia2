@@ -63,56 +63,60 @@ class EmailTemplateController extends Controller
         return view('content.email.show', compact('template'));
     }
     public function edit($id)
-    {
-        // Récupérer le template à partir de l'ID
-        $template = EmailTemplate::findOrFail($id);
+{
+    $template = EmailTemplate::findOrFail($id);
+    \Log::info('Template à éditer : ', [$template]);
 
-        // Identifier la vue à retourner en fonction du type
-        $view = '';
-        if ($template->type === 'Alert') {
-            $view = 'content.email.partials.edit_alert'; // Vue pour le formulaire d'Alert
-        } elseif ($template->type === 'Rapport') {
-            $view = 'content.email.partials.edit_rapport'; // Vue pour le formulaire de Rapport
-        } else {
-            return response()->json(['error' => 'Type de template inconnu.'], 404);
-        }
-
-        // Retourner la vue sous forme de HTML
-        return view($view, compact('template'))->render();
+    // Identifier la vue à retourner en fonction du type
+    $view = '';
+    if ($template->type === 'Alert') {
+        $view = 'content.email.partials.edit_alert'; // Vue pour le formulaire d'Alert
+    } elseif ($template->type === 'Rapport') {
+        $view = 'content.email.partials.edit_rapport'; // Vue pour le formulaire de Rapport
+    } else {
+        return response()->json(['error' => 'Type de template inconnu.'], 404);
     }
 
+    // Retourner la vue sous forme de HTML
+    return view($view, compact('template'));
+}
 
-    public function update(Request $request, $id)
-    {
-        $template = EmailTemplate::findOrFail($id);
 
-        $request->validate([
-            'type' => 'required|string|max:255',
-            'subject' => 'required|string|max:255',
-            'title' => 'required|string|max:255',
-        'content' => 'nullable|string', // Permettre un contenu vide
-            'total_revenue' => 'nullable|numeric',
-            'total_orders' => 'nullable|integer',
-            'total_employees' => 'nullable|integer',
-            'btn_name' => 'nullable|string|max:255',
-            'btn_link' => 'nullable|url',
-        ]);
+public function update(Request $request, $id)
+{
+    // Find the template
+    $template = EmailTemplate::findOrFail($id);
 
-        $template->update([
-            'type' => $request->type,
-            'subject' => $request->subject,
-            'title' => $template->title, // Utilisez la valeur du champ
-        'content' => $template->content, // Utilisez la valeur du champ
-            'total_revenue' => $request->total_revenue,
-            'total_orders' => $request->total_orders,
-            'total_employees' => $request->total_employees,
-            'btn_name' => $request->btn_name,
-            'btn_link' => $request->btn_link,
-            'has_btn' => !empty($request->btn_name) && !empty($request->btn_link),
-        ]);
+    // Validate the incoming request
+    $request->validate([
+        'type' => 'required|string|max:255',
+        'subject' => 'required|string|max:255',
+        'title' => 'required|string|max:255',
+        'content' => 'nullable|string', // Allow empty content
+        'total_revenue' => 'nullable|numeric',
+        'total_orders' => 'nullable|integer',
+        'total_employees' => 'nullable|integer',
+        'btn_name' => 'nullable|string|max:255',
+        'btn_link' => 'nullable|url',
+    ]);
 
-        return redirect()->route('email.liste')->with('success', 'Template mis à jour avec succès !');
-    }
+    // Update the template with the new values from the request
+    $template->update([
+        'type' => $request->type,
+        'subject' => $request->subject,
+        'title' => $request->title, // Update to the new value
+        'content' => $request->content, // Update to the new value
+        'total_revenue' => $request->total_revenue,
+        'total_orders' => $request->total_orders,
+        'total_employees' => $request->total_employees,
+        'btn_name' => $request->btn_name,
+        'btn_link' => $request->btn_link,
+        'has_btn' => !empty($request->btn_name) && !empty($request->btn_link),
+    ]);
+
+    // Redirect with success message
+    return redirect()->route('email.liste')->with('success', 'Template mis à jour avec succès !');
+}
 
     public function destroy($id)
     {

@@ -140,8 +140,7 @@ Route::group(['prefix' => 'organisation'], function () {
     Route::delete('/destroy/{id}', [EmailTemplateController::class, 'destroy'])->name('email.destroy');
 
     //route teb3ak issam bch tthabet fyh m3a eddit
-    Route::get('/edit/{id}', [EmailTemplateController::class, 'edit'])->name('email.edit');
-    Route::put('/update/{id}', [EmailTemplateController::class, 'update'])->name('email.update');
+    Route::get('organisation/email/edit/{id}', [EmailTemplateController::class, 'edit'])->name('email.edit');    Route::put('/update/{id}', [EmailTemplateController::class, 'update'])->name('email.update');
     Route::get('/show/{id}', [EmailTemplateController::class, 'show'])->name('email.show');
 
 });

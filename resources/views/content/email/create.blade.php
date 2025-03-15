@@ -55,13 +55,16 @@
                     <div class="mb-4">
                         <label for="rapport-title" class="form-label">Titre</label>
                         <input type="text" class="form-control" id="rapport-title" name="title"
-                            placeholder="Titre du rapport" required />
+                            placeholder=" Report Title" required oninput="updateReportTitle()" />
                     </div>
+
+
 
                     <div class="mb-4">
                         <h5>Configurer le Texte du Rapport</h5>
                         <textarea class="form-control" id="rapport-content" name="content" rows="6"
-                            placeholder="Entrez le contenu du rapport ici..." required></textarea>
+                            placeholder="Entrez le contenu du rapport ici..." required
+                            oninput="updateRapportContent()"></textarea>
                     </div>
 
                     <div class="form-check">
@@ -77,9 +80,10 @@
                     </div>
 
                     <div class="mb-4" id="buttonTitleSection" style="display: none;">
-                        <label for="button-title" class="form-label">Titre du Bouton</label>
-                        <input type="text" class="form-control" id="button-title" name="btn_name"
-                            placeholder="Entrez le titre du bouton" />
+                        <label for="button-title" class="form-label">Titre du
+                            Bouton</label>
+                        <input type="text" class="form-control" id="button-rr" name="btn_name"
+                            placeholder="Entrez le titre du bouton" oninput="updateReportButtonText()" />
                     </div>
 
                     <h5>Sélectionner les KPI</h5>
@@ -467,7 +471,7 @@
                                                             </tbody>
                                                         </table>
 
-                                                        <h2 id="report-title" class="o_heading o_text-dark o_mb-xxs"
+                                                        <h2 id="report-title2" class="o_heading o_text-dark o_mb-xxs"
                                                             data-color="Dark" data-size="Heading 2" data-min="20"
                                                             data-max="40" style="
                         font-family: Helvetica, Arial, sans-serif;
@@ -663,7 +667,7 @@
                         background-color: #242b3d;
                         border-radius: 4px;
                       ">
-                                                                        <a id="action-link" class="o_text-white"
+                                                                        <a id="action-link2" class=" o_text-white"
                                                                             href="https://example.com/"
                                                                             data-color="White" style="
                           text-decoration: none;
@@ -2165,28 +2169,30 @@ function toggleSections(section) {
     const rapportTemplate = document.getElementById('rapportTemplate');
     const alerteSection = document.getElementById('alerteSection');
     const alerteTemplate = document.getElementById('alerteTemplate');
+    const rapportBtn = document.getElementById('rapportBtn');
+    const alerteBtn = document.getElementById('alerteBtn');
 
-    // Réinitialiser l'affichage des sections
+    // Reset sections visibility
     rapportSection.style.display = 'none';
     rapportTemplate.style.display = 'none';
     alerteSection.style.display = 'none';
     alerteTemplate.style.display = 'none';
 
-    // Afficher la section et le modèle sélectionnés
+    // Apply appropriate classes to buttons and display the selected section
     if (section === 'rapport') {
         rapportSection.style.display = 'block';
         rapportTemplate.style.display = 'block';
-        document.getElementById('rapportBtn').classList.remove('btn-label-primary');
-        document.getElementById('rapportBtn').classList.add('btn-primary');
-        document.getElementById('alerteBtn').classList.remove('btn-primary');
-        document.getElementById('alerteBtn').classList.add('btn-label-primary');
+
+        // Set Rapport as active and Alerte as inactive
+        rapportBtn.className = 'btn btn-success';
+        alerteBtn.className = 'btn btn-label-secondary';
     } else if (section === 'alerte') {
         alerteSection.style.display = 'block';
         alerteTemplate.style.display = 'block';
-        document.getElementById('alerteBtn').classList.remove('btn-label-primary');
-        document.getElementById('alerteBtn').classList.add('btn-primary');
-        document.getElementById('rapportBtn').classList.remove('btn-primary');
-        document.getElementById('rapportBtn').classList.add('btn-label-primary');
+
+        // Set Alerte as active and Rapport as inactive
+        alerteBtn.className = 'btn btn-success';
+        rapportBtn.className = 'btn btn-label-secondary';
     }
 }
 
@@ -2195,39 +2201,39 @@ document.addEventListener('DOMContentLoaded', function() {
     toggleSections('rapport'); // Affiche par défaut la section Rapport
 });
 
+// Function to toggle visibility of URL and Button Title sections
 function toggleReportSection() {
-    const checkbox = document.getElementById('report-open');
-    const urlSection = document.getElementById('urlSection');
-    const buttonTitleSection = document.getElementById('buttonTitleSection');
-    const reportTemplate = document.getElementById('reportTemplate');
+    const checkbox = document.getElementById('report-open'); // Get the checkbox element
+    const urlSection = document.getElementById('urlSection'); // URL section
+    const buttonTitleSection = document.getElementById('buttonTitleSection'); // Button title section
 
-    // Affiche ou masque la section d'URL de rapport, le titre et le bouton
-    urlSection.style.display = checkbox.checked ? 'block' : 'none';
-    buttonTitleSection.style.display = checkbox.checked ? 'block' : 'none';
-    reportTemplate.style.display = checkbox.checked ? 'block' : 'none';
+    // Display the sections only if the checkbox is checked
+    const displayStyle = checkbox.checked ? 'block' : 'none';
+    urlSection.style.display = displayStyle;
+    buttonTitleSection.style.display = displayStyle;
 
-    console.log(checkbox.checked ? 'URL section, button title, and button displayed' : 'Sections hidden');
+    console.log(checkbox.checked ? 'Sections displayed' : 'Sections hidden');
 }
 
-
-
-
-
-
-
+// Function to update the button text dynamically
 function updateReportButtonText() {
-    const buttonText = document.getElementById('button-title').value;
-    const actionLink = document.getElementById('action-link');
-    actionLink.innerText = buttonText || "Voir le Rapport"; // Texte par défaut
+    const buttonText = document.getElementById('button-rr').value; // Input for button text
+    const actionLink = document.getElementById('action-link2'); // The button to update
+
+    // Update the button text or use a default
+    actionLink.innerText = buttonText || "Voir le Rapport"; // Default text
     console.log('Button text updated to:', actionLink.innerText);
 }
 
+// Function to update the button URL dynamically
 function updateReportButtonUrl() {
-    const reportUrl = document.getElementById('report-url').value;
-    console.log('Report URL updated to:', reportUrl);
+    const reportUrl = document.getElementById('report-url').value; // Input for URL
+    const actionLink = document.getElementById('action-link2'); // The button to update
+
+    // Update the href attribute of the button
+    actionLink.href = reportUrl || "https://example.com/"; // Default URL
+    console.log('Button URL updated to:', actionLink.href);
 }
-
-
 
 
 
@@ -2238,13 +2244,16 @@ function updateReportButtonUrl() {
 
 
 function updateReportTitle() {
-    // Get the value from the input field
-    const titleInput = document.getElementById('rapport-title').value;
-    // Get the template title element
-    const reportTitle = document.getElementById('report-title');
-    // Update the title or set default if input is empty
+    // Retrieve the user input from the input field
+    const titleInput = document.getElementById('rapport-title').value.trim();
+
+    // Retrieve the element where the title should be displayed
+    const reportTitle = document.getElementById('report-title2');
+
+    // Update the content or set a default value if the input is empty
     reportTitle.innerText = titleInput || "Titre du rapport par défaut"; // Default title
 }
+
 
 function updateRapportContent() {
     // Get the value from the textarea
@@ -2262,11 +2271,6 @@ function toggleTitle() {
     titleElement.style.display = titleCheckbox.checked ? 'block' : 'none'; // Show or hide title
 }
 
-function toggleParagraph() {
-    const contentElement = document.getElementById('rapport-template-text');
-    const paragraphCheckbox = document.getElementById('show-paragraph');
-    contentElement.style.display = paragraphCheckbox.checked ? 'block' : 'none'; // Show or hide content
-}
 
 
 
