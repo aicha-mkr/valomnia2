@@ -69,7 +69,7 @@
                                 </td>
                             </tr>
                         @endforeach
-                        
+
                         </tbody>
                     </table>
                 </div>
@@ -77,63 +77,45 @@
         </div>
 
         <!-- Offcanvas pour éditer un enregistrement-->
-        <div class="offcanvas offcanvas-end" tabindex="-1" id="editRecord" aria-labelledby="editRecordLabel">
-            <div class="offcanvas-header">
-                <h5 id="editRecordLabel">Edit Record</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-            </div>
-            <div class="offcanvas-body">
-                <form id="editForm" method="POST" action="">
-                    @csrf
-                    @method('PUT')
-                    <div class="mb-3">
-                        <label for="editTitle" class="form-label">Title</label>
-                        <input type="text" class="form-control" id="editTitle" placeholder="Title" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="editType" class="form-label">Type</label>
-                        <input type="text" class="form-control" id="editType" placeholder="Type" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="editDate" class="form-label">Last Updated</label>
-                        <input type="date" class="form-control" id="editDate" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="rapport-email-footer" class="form-label">Pied de page d'Email</label>
-                        <input type="text" class="form-control" id="rapport-email-footer" placeholder="Pied de page de l'email" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="rapport-available-reports" class="form-label">Rapports Disponibles</label>
-                        <select class="form-select" id="rapport-available-reports" aria-label="Rapports Disponibles" required>
-                            <option selected>Choisir un rapport</option>
-                            <option value="performance">Performance Metrics</option>
-                            <option value="financial">Financial Summary</option>
-                            <option value="user-analytics">User Analytics</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Créer le Rapport</button>
-                </form>
-            </div>
+
+<div class="offcanvas offcanvas-end" tabindex="-1" id="editRecord" aria-labelledby="editRecordLabel">
+    <div class="offcanvas-header">
+        <h5 id="editRecordLabel">Modifier le Template</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <div id="editViewContainer">
+            <!-- La vue chargée dynamiquement s'affichera ici -->
         </div>
     </div>
 </div>
 
+
 <script>
-    function editRecord(title, type, lastUpdated, id) {
-        // Fill the edit form with current record data
-        document.getElementById('editTitle').value = title;
-        document.getElementById('editType').value = type;
-        document.getElementById('editDate').value = lastUpdated;
+   function editRecord(id) {
+    const container = document.getElementById('editViewContainer');
 
-        // Set the form action to the correct route for updating the record
-        const form = document.getElementById('editForm');
-        form.action = `/email/${id}`; // Set the action for the form to the update route
+    // Faire une requête AJAX pour récupérer le formulaire approprié
+    fetch("{{ route('email.edit', ':id') }}".replace(':id', id))
+    .then(response => {
+        console.log('Statut HTTP :', response.status);
+        if (!response.ok) {
+            throw new Error(`Erreur HTTP : ${response.status}`);
+        }
+        return response.text();
+    })
+    .then(html => {
+        container.innerHTML = html; // Insérer le formulaire dans le conteneur
 
-        // Open the offcanvas for editing
+        // Afficher l'Offcanvas
         var editOffcanvas = new bootstrap.Offcanvas(document.getElementById('editRecord'));
         editOffcanvas.show();
-    }
+    })
+    .catch(error => console.error("Erreur lors du chargement de la vue :", error));
+
+
 </script>
+
 
 
 @endsection

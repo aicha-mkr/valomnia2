@@ -14,7 +14,7 @@ class EmailTemplateController extends Controller
         $templates = EmailTemplate::all();
         return view('content.email.liste', compact('templates'));
     }
-   
+
     public function create()
     {
         return view('content.email.create');
@@ -35,8 +35,8 @@ class EmailTemplateController extends Controller
             'alert_message' => 'nullable|string|max:255', // Ajouter pour le message d'alerte
         ]);
 
-      
-    
+
+
         $templateData = [
             'user_id' => auth()->id(),
             'type' => $request->type,
@@ -50,10 +50,10 @@ class EmailTemplateController extends Controller
             'btn_link' => $request->btn_link,
             'has_btn' => !empty($request->btn_name) && !empty($request->btn_link),
         ];
-    
-       
+
+
         EmailTemplate::create($templateData);
-    
+
         return redirect()->route('email.liste')->with('success', 'Template créé avec succès !');
     }
 
@@ -62,27 +62,25 @@ class EmailTemplateController extends Controller
         $template = EmailTemplate::findOrFail($id);
         return view('content.email.show', compact('template'));
     }
-
     public function edit($id)
     {
         // Récupérer le template à partir de l'ID
         $template = EmailTemplate::findOrFail($id);
-    
-        // Vérifier le type de template
+
+        // Identifier la vue à retourner en fonction du type
         $view = '';
-        if ($template->name === 'Alert') {
-            $view = 'email_templates.edit_alert'; // Vue pour Alert
-        } elseif ($template->name === 'Report') {
-            $view = 'email_templates.edit_report'; // Vue pour Report
+        if ($template->type === 'Alert') {
+            $view = 'content.email.partials.edit_alert'; // Vue pour le formulaire d'Alert
+        } elseif ($template->type === 'Rapport') {
+            $view = 'content.email.partials.edit_rapport'; // Vue pour le formulaire de Rapport
         } else {
-            return redirect()->back()->with('error', 'Type de template inconnu.');
+            return response()->json(['error' => 'Type de template inconnu.'], 404);
         }
-    
-        // Retourner la vue appropriée avec les données
-        return view($view, compact('template'));
+
+        // Retourner la vue sous forme de HTML
+        return view($view, compact('template'))->render();
     }
-    
-    
+
 
     public function update(Request $request, $id)
     {
@@ -120,22 +118,22 @@ class EmailTemplateController extends Controller
     {
         $template = EmailTemplate::findOrFail($id);
         $template->delete();
-    
+
         // Redirect to the list route
         return redirect()->route('email.liste')->with('error', 'Template supprimé avec succès.');
     }
-    
 
- 
-    
-    
+
+
+
+
     public function sendEmail($id, $type)
     {
         \Log::info('sendEmail called with ID: ' . $id);
-    
+
         // Retrieve the email template
         $template = EmailTemplate::findOrFail($id);
-    
+
         // Prepare dynamic data for placeholders
         $data = [
             'subject' => $template->subject, // Subject of the email
@@ -150,7 +148,7 @@ class EmailTemplateController extends Controller
 
         // Log the prepared data for debugging
         \Log::info('Email data being sent: ', $data);
-    
+
         // Send the email
         try {
             Mail::to('mokhtaraichaa@gmail.com')->send(new Email($data, strtolower($type)));
@@ -161,7 +159,7 @@ class EmailTemplateController extends Controller
             return redirect()->route('email.liste')->with('error', 'Échec de l\'envoi de l\'email.');
         }
     }
-    
+
     private function replacePlaceholders(string $content, array $data): string
     {
         foreach ($data as $key => $value) {
@@ -169,7 +167,7 @@ class EmailTemplateController extends Controller
         }
         return $content;
     }
-    
 
-    
+
+
 }

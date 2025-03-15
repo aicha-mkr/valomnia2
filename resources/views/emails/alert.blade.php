@@ -1,5 +1,5 @@
 
-                      <html xmlns="http://www.w3.org/1999/xhtml"><head><style type="text/css">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><style type="text/css">
                         a { text-decoration: none; outline: none; }
                         @media (max-width: 449px) {
                           .o_col-full { max-width: 100% !important; }
