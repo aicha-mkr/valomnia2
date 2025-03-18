@@ -60,15 +60,15 @@ use App\Mail\email;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\OrgDashboardController;
 use App\Http\Controllers\TestMailController;
-
+Route::get('/test/send-email/{id}/{type}', [App\Http\Controllers\EmailTemplateController::class, 'sendEmail']);
 // Main Page Route
 //Route::get('/', [Analytics::class, 'index'])->name('dashboard-analytics');
 
 Route::get('/', [Login::class, 'index'])->name('auth-login');
-Route::get('/test_email', function(){$quantity="10000";$warehouse_name = "Tesla"; Mail::to('tahayassine28470618@gmail.com')->send(new \App\Mail\myTestEmail($warehouse_name,$quantity));});
-Route::get('/test_email200', function(){$quantity="10000";$warehouse_name = "Tesla"; Mail::to('tahayassine28470618@gmail.com')->send(new \App\Mail\Alert_Stock200($warehouse_name,$quantity));});
-Route::get('/test_email3', function(){Mail::to('tahayassine28470618@gmail.com')->send(new \App\Mail\Alert_Stock3());});
-Route::get('/test_emailCustomer', function(){$customer_name="taha zouari";$hour="22:30";Mail::to('tahayassine28470618@gmail.com')->send(new \App\Mail\Alert_customer($customer_name,$hour));});
+Route::get('/test_email', function(){$quantity="10000";$warehouse_name = "Tesla"; Mail::to('thabtiissam7@gmail.com')->send(new \App\Mail\myTestEmail($warehouse_name,$quantity));});
+Route::get('/test_email200', function(){$quantity="10000";$warehouse_name = "Tesla"; Mail::to('thabtiissam7@gmail.com')->send(new \App\Mail\Alert_Stock200($warehouse_name,$quantity));});
+Route::get('/test_email3', function(){Mail::to('')->send(new \App\Mail\Alert_Stock3());});
+Route::get('/test_emailCustomer', function(){$customer_name="taha zouari";$hour="22:30";Mail::to('thabtiissam7@gmail.com')->send(new \App\Mail\Alert_customer($customer_name,$hour));});
 Route::get('/user/{id}', [UserController::class, 'show'])->name('user.show');
 Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -82,6 +82,7 @@ Route::middleware(['auth', 'isOrgAdmin'])->group(function () {
 
 Route::post('/login', [Login::class, 'login'])->name('post-login');
 Route::get('/logout', [Login::class, 'logout'])->name('auth-logout');
+
 
 
 
@@ -118,20 +119,21 @@ Route::group(['prefix' => 'admin'], function () {
 
 
 Route::group(['prefix' => 'organisation'], function () {
-  Route::get('/dashboard', [Analytics::class, 'indexOrganisation'])->name('dashboard-organisation');
+    Route::get('/dashboard', [Analytics::class, 'indexOrganisation'])->name('dashboard-organisation');
+    Route::group(['prefix' => 'alerts'], function () {
+        Route::get('/history', [HistoriqueAlert::class, 'index'])->name('organisation-history-alerts');
+        Route::get('/history/{id}', [HistoriqueAlert::class, 'regenerate'])->name('organisation-history-details-alerts');
 
-  Route::group(['prefix' => 'alerts'], function () {
-      Route::get('/history', [HistoriqueAlert::class, 'index'])->name('organisation-history-alerts');
-      Route::get('/history/{id}', [HistoriqueAlert::class, 'regenerate'])->name('organisation-history-details-alerts');
+        Route::get('/', [Alert::class, 'indexOrganisation'])->name('organisation-alerts');;
+        Route::get('/create', [Alert::class, 'create'])->name('organisation-alerts-create');
+        Route::post('/store', [Alert::class, 'store'])->name('organisation-alerts-store');
+        Route::get('/update/{id}', [Alert::class, 'update'])->name('organisation-alerts-update');
+        Route::post('/update/{id}', [Alert::class, 'edit'])->name('organisation-alerts-edit');
+        Route::get('/delete/{id}', [Alert::class, 'destroy'])->name('organisation-alerts-destroy');
+        Route::get('/show/{id}', [Alert::class, 'show'])->name('organisation-alerts-show');
 
-      Route::get('/', [Alert::class, 'indexOrganisation'])->name('organisation-alerts');
-      Route::get('/create', [Alert::class, 'create'])->name('organisation-alerts-create');
-      Route::post('/store', [Alert::class, 'store'])->name('organisation-alerts-store');
-      Route::get('/update/{id}', [Alert::class, 'update'])->name('organisation-alerts-update');
-      Route::post('/update/{id}', [Alert::class, 'edit'])->name('organisation-alerts-edit');
-      Route::get('/delete/{id}', [Alert::class, 'destroy'])->name('organisation-alerts-destroy');
-      Route::get('/show/{id}', [Alert::class, 'show'])->name('organisation-alerts-show');
-  });
+
+    });
 
    Route::group(['prefix' => 'email'], function () {
     Route::get('/liste', [EmailTemplateController::class, 'index'])->name('email.liste');
@@ -139,7 +141,6 @@ Route::group(['prefix' => 'organisation'], function () {
     Route::post('/store', [EmailTemplateController::class, 'store'])->name('organisation.email.templates.store');
     Route::delete('/destroy/{id}', [EmailTemplateController::class, 'destroy'])->name('email.destroy');
 
-    //route teb3ak issam bch tthabet fyh m3a eddit
     Route::get('organisation/email/edit/{id}', [EmailTemplateController::class, 'edit'])->name('email.edit');    Route::put('/update/{id}', [EmailTemplateController::class, 'update'])->name('email.update');
     Route::get('/show/{id}', [EmailTemplateController::class, 'show'])->name('email.show');
 
@@ -235,4 +236,3 @@ Route::get('/tables/basic', [TablesBasic::class, 'index'])->name('tables-basic')
 
 
 
-Route::get('/test/send-email/{id}/{type}', [App\Http\Controllers\EmailTemplateController::class, 'sendEmail']);

@@ -210,7 +210,7 @@
                     <div class="row mb-3">
                         <label class="col-sm-2 col-form-label" for="status">Emails</label>
                         <div class="col-sm-10">
-                            <input class='customLook' value='laravelpfe12@gmail.com'>
+                            <input class='customLook' value='some.name@website.com'>
                             <button type="button">+</button>
                         </div>
                     </div>

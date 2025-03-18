@@ -11,7 +11,7 @@
         "name": "Type d'alerts",
         "icon": "menu-icon tf-icons bx bx-alarm-snooze",
         "slug": "admin-alerts",
-        "url": "/admin/alerts/"
+        "url": "/admin/alerts/types/"
     },
     {
         "url": "/admin/alerts/history",

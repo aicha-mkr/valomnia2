@@ -34,7 +34,7 @@
         {
           "name": "Repport",
           "icon": "menu-icon tf-icons bx bx-envelope",
-          "slug": "organisation-alerts",
+          "slug": "organisation-Repport",
           "submenu": [
               {
                   "url": "/organisation/email/liste",
