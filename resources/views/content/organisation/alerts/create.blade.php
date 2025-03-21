@@ -240,6 +240,23 @@
 
                         </div>
                     </div>
+                    <script>
+                        document.addEventListener("DOMContentLoaded", function () {
+                        const checkbox = document.getElementById("every_day");
+                        const dateTimeInput = document.getElementById("html5-datetime-local-input");
+                        const timeInput = document.getElementById("html5-time-input");
+
+                        checkbox.addEventListener("change", function () {
+                            if (this.checked) {
+                                dateTimeInput.style.display = "none";
+                                timeInput.style.display = "block";
+                            } else {
+                                dateTimeInput.style.display = "block";
+                                timeInput.style.display = "none";
+                            }
+                        });
+                        });
+                   </script>
 
 
                 </div>
