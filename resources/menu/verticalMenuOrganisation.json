@@ -6,9 +6,6 @@
             "icon": "menu-icon tf-icons bx bx-home-circle",
             "slug": "dashboard-organisation"
         },
-
-
-
         {
             "name": "Alerts",
             "icon": "menu-icon tf-icons bx bx-alarm-snooze",
@@ -26,18 +23,13 @@
                 }
             ]
         },
-
-
-
-
-
         {
           "name": "Repport",
           "icon": "menu-icon tf-icons bx bx-envelope",
           "slug": "organisation-Repport",
           "submenu": [
               {
-                  "url": "/organisation/email/liste",
+                  "url": "#",
                   "name": "List",
                   "slug": "organisation-alerts-list"
               },
@@ -48,6 +40,15 @@
               }
           ]
       },
+
+
+      {
+        "url": "/organisation/email/liste",
+        "name": "Email Setting",
+        "icon": "menu-icon tf-icons bx bx-envelope",
+        "slug": "organisation-Repport"
+
+    },
 
         {
             "name": "Account Settings",
