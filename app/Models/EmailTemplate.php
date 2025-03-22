@@ -25,12 +25,12 @@ class EmailTemplate extends Model
         'btn_link',
         'has_btn',
         'is_active',
+        'alert_id', 
+        'alert_title',
     ];
     public function getFormattedContent(array $data)
     {
-        $content = $this->content; // Assurez-vous que la colonne "content" contient le HTML
-
-        // Remplace les placeholders par les données dynamiques
+        $content = $this->content; 
         foreach ($data as $key => $value) {
             $placeholder = "{{" . $key . "}}";
             $content = str_replace($placeholder, $value, $content);

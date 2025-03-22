@@ -52,8 +52,8 @@ class AlertController extends Controller
             $data = $request->all();
             $data["user_id"] = $user->id;
             $data["status"] = $request->get("status") ? 1 : 0;
-            $data["every_day"] = $request->get("every_day") ? 1 : 0;
-            $data["warehouse_ids"] = $request->get("warehouse_ids") ? ','.implode(',',$request->get("warehouse_ids")).',' : null;
+            $data["every_day"] = $request->get("every_day") ? 1 : 0;$data["warehouse_ids"] = $request->get("warehouse_ids");
+            //$data["warehouse_ids"] = $request->get("warehouse_ids") ? ','.implode(',',$request->get("warehouse_ids")).',' : null;
             //emails _users
             $alert = Alert::create($data);
             if (isset($alert)) {

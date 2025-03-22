@@ -35,12 +35,13 @@ class AlertStock implements ShouldQueue
         echo "user_id : ".$alert->user_id."\n"; ;
         echo "organisation : ".$alert->user->organisation."\n"; ;
         if(isset($alert)){
-            $warhouses_user=Warehouse::ListStockWarhouse(array("user_id"=>$alert->user_id,"organisation"=>$alert->user->organisation));
+            // setting_template
+            $warhouses_user=Warehouse::ListStockWarhouse(array("user_id"=>$alert->user_id,"organisation"=>$alert->user->organisation,"warhouseRef"=>$alert->warehouse_ids));
             $warhouses_user_ar=json_decode($warhouses_user,TRUE);
             if(isset($warhouses_user_ar["data"])){
                 foreach ($warhouses_user_ar["data"] as $warhouse){
                     if(isset($warhouse["quantity"]) && $warhouse["quantity"]<= $alert->quantity){
-
+                      // send email
                     }
                 }
             }

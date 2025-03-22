@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Models\Alert;
 use App\Mail\Email; // Assurez-vous d'importer votre classe Mailable
 use Illuminate\Support\Facades\Mail;
 use App\Models\EmailTemplate;
@@ -15,48 +15,66 @@ class EmailTemplateController extends Controller
         return view('content.email.liste', compact('templates'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        return view('content.email.create');
+        $type = $request->query('type', 'Alert'); 
+        if ($type === 'Alert') {
+            $alerts = Alert::where('user_id', auth()->id())->get(); 
+            return view('content.email.create', compact('alerts', 'type'));
+        }
+    
+        return view('content.email.create', ['type' => 'Rapport']);
     }
-
     public function store(Request $request)
     {
-        $request->validate([
-            'type' => 'required|string|max:255',
+        $rules = [
+            'type' => 'required|string|in:Alert,Rapport', 
             'subject' => 'required|string|max:255',
             'title' => 'required|string|max:255',
-            'content' => 'nullable|string', // Permettre un contenu vide
-            'total_revenue' => 'nullable|numeric',
-            'total_orders' => 'nullable|integer',
-            'total_employees' => 'nullable|integer',
+            'content' => 'nullable|string',
             'btn_name' => 'nullable|string|max:255',
             'btn_link' => 'nullable|url',
-            'alert_message' => 'nullable|string|max:255', // Ajouter pour le message d'alerte
-        ]);
-
-
-
+            'alert_message' => 'nullable|string|max:255',
+        ];
+    
+        if ($request->type === 'Alert') {
+            $rules['alert_id'] = 'required|exists:alerts,id';
+        }
+    
+        // Validate the incoming request
+        $request->validate($rules);
+    
+        // Fetch the selected alert title (only if type is 'Alert')
+        $alertTitle = null;
+        if ($request->type === 'Alert') {
+            $alert = Alert::find($request->alert_id); // Fetch the alert using its ID
+            $alertTitle = $alert ? $alert->title : null; // Use the title if the alert exists
+        }
+    
+        // Prepare data for template creation
         $templateData = [
-            'user_id' => auth()->id(),
+            'user_id' => auth()->id(), // Link the template to the authenticated user
             'type' => $request->type,
             'subject' => $request->subject,
-            'title' => $request->title, // Utilisez la valeur du champ
-            'content' => $request->content, // Utilisez la valeur du champ
-            'total_revenue' => $request->total_revenue,
-            'total_orders' => $request->total_orders,
-            'total_employees' => $request->total_employees,
+            'title' => $request->title,
+            'content' => $request->content,
+            'alert_id' => $request->type === 'Alert' ? $request->alert_id : null, // Include alert_id or null
+            'alert_title' => $alertTitle, // Save the title of the alert
             'btn_name' => $request->btn_name,
             'btn_link' => $request->btn_link,
-            'has_btn' => !empty($request->btn_name) && !empty($request->btn_link),
+            'has_btn' => !empty($request->btn_name) && !empty($request->btn_link), // Determine if the button is set
         ];
-
-
+    
+        // Log the prepared data for debugging
+        \Log::info('Creating Email Template:', $templateData);
+    
+        // Create the template
         EmailTemplate::create($templateData);
-
-        return redirect()->route('email.liste')->with('success', 'Template créé avec succès !');
+    
+        // Redirect back with a success message
+        return redirect()->route('email.liste')->with('success', 'Template créé avec succès, et l\'alerte est bien associée !');
     }
-
+    
     public function show($id)
     {
         $template = EmailTemplate::findOrFail($id);

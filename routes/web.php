@@ -233,6 +233,3 @@ Route::get('/form/layouts-horizontal', [HorizontalForm::class, 'index'])->name('
 
 // tables routes
 Route::get('/tables/basic', [TablesBasic::class, 'index'])->name('tables-basic');
-
-
-

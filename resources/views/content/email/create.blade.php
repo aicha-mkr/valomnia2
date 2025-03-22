@@ -22,7 +22,7 @@
     <button id="rapportBtn" class="btn rounded-pill btn-primary"
         onclick="toggleSections('rapport', this)">Rapport</button>
     <button id="alerteBtn" class="btn rounded-pill btn-label-primary"
-        onclick="toggleSections('alerte', this)">Alerte</button>
+        onclick="toggleSections('alerte', this)">Alert</button>
 </div>
 
 <div class="row">
@@ -1592,14 +1592,17 @@
                         </ul>
                     </div>
                     @endif
+                    @if ($type === 'Alert')
                     <div class="mb-4">
-                        <label for="alerte-type" class="form-label">Type d'Alerte</label>
-                        <select class="form-select" id="alerte-type" name="alert_type" required>
-                            <option value="">Sélectionnez un type</option>
-                            <option value="stock">Stock</option>
-                            <option value="prix">Prix</option>
+                        <label for="alert-id" class="form-label">Sélectionnez une Alerte</label>
+                        <select class="form-select" id="alert-id" name="alert_id" required>
+                            <option value="" disabled selected>Sélectionnez une alerte</option>
+                            @foreach ($alerts as $alert)
+                            <option value="{{ $alert->id }}">{{ $alert->title }}</option>
+                            @endforeach
                         </select>
                     </div>
+                    @endif
 
                     <input type="hidden" name="type" value="Alert" />
                     <div class="mb-4">
