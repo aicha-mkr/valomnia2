@@ -13,9 +13,11 @@ class WarehouseController extends Controller
      */
     public function index()
     {
-        $id=4;
+        $id=1;
        $user=User::find($id);
+       
       // echo json_encode(array("user_id"=>$id,"organisation"=>$user->organisation));die();
+      
        return Warehouse::ListStockWarhouse(array("user_id"=>$id,"organisation"=>$user->organisation,"cookies"=>"FCD1CE705B01E90DFC76270189A6D00E"));
     }
 

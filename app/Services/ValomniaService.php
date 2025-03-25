@@ -1,10 +1,5 @@
 <?php
 namespace App\Services;
-
-use Illuminate\Support\Facades\Mail;
-use App\Mail\WeeklySummary;
-use Illuminate\Support\Facades\Auth;
-use App\Models\Recapitulatif;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -54,50 +49,5 @@ class ValomniaService
         }
     }
 
-    // Calculate KPIs based on specific operation ID
-    public function calculateKPI($operationId)
-    {
-        $operation = $this->getOperations($operationId);
-        $employees = $this->getEmployees(Auth::id()); // Get current user's employee data
-
-        if (!$operation || !$employees) {
-            return [
-                'totalRevenue' => 0,
-                'totalOrders' => 0,
-                'totalEmployees' => 0,
-                'averageSales' => 0,
-            ];
-        }
-
-        // Calculate KPIs
-        $totalRevenue = $operation['totalDiscounted'] ?? 0;
-        $totalOrders = 1; // Since we are fetching a single operation
-        $totalEmployees = count($employees); // Count of employees related to the operation
-        $averageSales = $totalOrders > 0 ? $totalRevenue / $totalOrders : 0;
-
-        return [
-            'totalRevenue' => $totalRevenue,
-            'totalOrders' => $totalOrders,
-            'totalEmployees' => $totalEmployees,
-            'averageSales' => $averageSales,
-        ];
-    }
-
-    // Store recap data into the database
-    public function storeRecapData($recapData)
-    {
-        Log::info('Storing recap data:', $recapData);
-
-        Recapitulatif::updateOrCreate(
-            ['user_id' => Auth::id(), 'date' => now()->toDateString()],
-            [
-                'total_orders' => $recapData['totalOrders'],
-                'total_revenue' => $recapData['totalRevenue'],
-                'average_sales' => $recapData['averageSales'],
-                'total_quantities' => $recapData['totalQuantities'] ?? 0,
-                'total_clients' => $recapData['totalClients'] ?? 0,
-            ]
-        );
-    }
     
 }

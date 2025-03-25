@@ -19,9 +19,11 @@ class EmailTemplateController extends Controller
     {
         $type = $request->query('type', 'Alert'); 
         if ($type === 'Alert') {
-            $alerts = Alert::where('user_id', auth()->id())->get(); 
+            $alerts = Alert::where('user_id', auth()->id())->get();
+            \Log::info('Alerts passed to the view:', $alerts->toArray());
             return view('content.email.create', compact('alerts', 'type'));
         }
+        
     
         return view('content.email.create', ['type' => 'Rapport']);
     }
@@ -72,7 +74,7 @@ class EmailTemplateController extends Controller
         EmailTemplate::create($templateData);
     
         // Redirect back with a success message
-        return redirect()->route('email.liste')->with('success', 'Template créé avec succès, et l\'alerte est bien associée !');
+        return redirect()->route('email.liste')->with('success', 'Template created successfully!');
     }
     
     public function show($id)

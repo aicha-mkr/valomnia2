@@ -89,19 +89,19 @@
                     <h5>Sélectionner les KPI</h5>
                     <div class="mb-4">
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="total_revenue"
-                                id="totalRevenueCheckbox" name="kpi[]" checked />
-                            <label class="form-check-label" for="totalRevenueCheckbox">Total Revenue</label>
+                            <input class="form-check-input" type="checkbox" value="revenue_generated"
+                                id="revenueGeneratedCheckbox" name="kpi[]" checked />
+                            <label class="form-check-label" for="revenueGeneratedCheckbox">Revenue Generated</label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="total_orders"
-                                id="totalOrdersCheckbox" name="kpi[]" checked />
-                            <label class="form-check-label" for="totalOrdersCheckbox">Total Orders</label>
+                            <input class="form-check-input" type="checkbox" value="number_of_orders"
+                                id="numberOfOrdersCheckbox" name="kpi[]" checked />
+                            <label class="form-check-label" for="numberOfOrdersCheckbox">Number of Orders</label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="total_employees"
-                                id="totalEmployeesCheckbox" name="kpi[]" checked />
-                            <label class="form-check-label" for="totalEmployeesCheckbox">Total Employees</label>
+                            <input class="form-check-input" type="checkbox" value="average_basket_size"
+                                id="averageBasketSizeCheckbox" name="kpi[]" checked />
+                            <label class="form-check-label" for="averageBasketSizeCheckbox">Average Basket Size</label>
                         </div>
                     </div>
 
@@ -1628,13 +1628,13 @@
 
                     <div id="alert-url-section" class="mb-4">
                         <label for="alert-url" class="form-label">URL Spécifique</label>
-                        <input type="url" class="form-control" id="alert-url" name="alert_url"
+                        <input type="url" class="form-control" id="alert-url" name="btn_link"
                             placeholder="URL spécifique" oninput="updateButtonUrl()" />
                     </div>
 
                     <div id="alert-button-input" class="mb-4">
                         <label for="alert-button-text" class="form-label">Titre du Bouton</label>
-                        <textarea class="form-control" id="alert-button-text" name="alert_text" rows="3"
+                        <textarea class="form-control" id="alert-button-text" name="btn_name" rows="3"
                             placeholder="Entrez le titre du bouton ici" oninput="updateButtonText()"></textarea>
                     </div>
 
@@ -2286,21 +2286,35 @@ function updateAlertText() {
         "Welcome to B2B Valomnia! We're excited to have you on board."; // Texte par défaut
 }
 
+
+//alert chekbox visibility
+document.addEventListener('DOMContentLoaded', () => {
+    // Initialize the sections and button to be hidden by default
+    const urlSection = document.getElementById('alert-url-section');
+    const buttonInput = document.getElementById('alert-button-input');
+    const button = document.getElementById('alert-button');
+
+    urlSection.style.display = 'none';
+    buttonInput.style.display = 'none';
+    button.style.display = 'none';
+});
+
 function toggleUrlSection() {
     const checkbox = document.getElementById('alert-open');
     const urlSection = document.getElementById('alert-url-section');
     const buttonInput = document.getElementById('alert-button-input');
     const button = document.getElementById('alert-button');
 
+    // Toggle display based on the checkbox state
     const displayStyle = checkbox.checked ? 'block' : 'none';
 
-    // Afficher/Masquer les sections et le bouton
     urlSection.style.display = displayStyle;
     buttonInput.style.display = displayStyle;
-    button.style.display = checkbox.checked ? 'block' : 'none';
+    button.style.display = displayStyle;
 
     console.log(checkbox.checked ? 'Sections et bouton affichés' : 'Sections et bouton cachés');
 }
+
 
 // Fonction pour mettre à jour l'URL du bouton
 function updateButtonUrl() {

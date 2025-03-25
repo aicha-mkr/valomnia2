@@ -16,14 +16,7 @@
                     </ul>
                 </div>
                 @endif
-                <div class="mb-4">
-                    <label for="alerte-type" class="form-label">Alert Type</label>
-                    <select class="form-select" id="alerte-type" name="alert_type" required>
-                        <option value="">Select a type</option>
-                        <option value="stock" {{ $template->alert_type == 'stock' ? 'selected' : '' }}>Stock</option>
-                        <option value="price" {{ $template->alert_type == 'price' ? 'selected' : '' }}>Price</option>
-                    </select>
-                </div>
+
 
                 <input type="hidden" name="type" value="Alert" />
                 <div class="mb-4">

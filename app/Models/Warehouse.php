@@ -12,7 +12,7 @@ class Warehouse
         $url_api=str_replace("organisation",$data["organisation"],env('URL_API','https://organisation.valomnia.com'));
         //echo $url_api.'/api/v2.1/warehouseStocks';die();
         //echo json_encode($data);die();
-        $api_response =$api_call->GetResponse( $url_api.'/api/v2.1/warehouseStocks','GET',array('warehouseReference'=>$data["warhouseRef"]),false,"JSESSIONID=".$data["cookies"]) ;
+        $api_response =$api_call->GetResponse( $url_api.'/api/v2.1/warehouseStocks','GET',array(),false,"JSESSIONID=".$data["cookies"]) ;
         return $api_response;
 
     }
