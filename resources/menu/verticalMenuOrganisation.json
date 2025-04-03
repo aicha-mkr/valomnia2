@@ -45,7 +45,7 @@
       {
         "url": "/organisation/email/liste",
         "name": "Email Setting",
-        "icon": "menu-icon tf-icons bx bx-envelope",
+        "icon": "menu-icon tf-icons bx bx-cog",
         "slug": "organisation-Repport"
 
     },

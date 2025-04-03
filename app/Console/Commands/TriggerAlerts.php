@@ -5,11 +5,11 @@ namespace App\Console\Commands;
 use App\Jobs\AlertStock;
 use App\Models\Alert;
 use App\Models\AlertHistory;
-use App\Models\Warehouse;
 use Illuminate\Console\Command;
 use Carbon\Carbon;
 
-class TriggerAlerts extends Command
+class
+TriggerAlerts extends Command
 {
     /**
      * The name and signature of the console command.
@@ -23,7 +23,7 @@ class TriggerAlerts extends Command
      *
      * @var string
      */
-    protected $description = 'triggers alerts programmed';
+    protected $description = 'Triggers alerts programmed.';
 
     /**
      * Execute the console command.
@@ -31,48 +31,52 @@ class TriggerAlerts extends Command
     public function handle()
     {
         $currentDateTime = Carbon::now();
-        echo "time : ".$currentDateTime->format('H:i')."\n";
-        echo "Date : ".$currentDateTime->toDateString()."\n";
+        echo "time : " . $currentDateTime->format('H:i') . "\n";
+        echo "Date : " . $currentDateTime->toDateString() . "\n";
+
+        // Fetch alerts based on conditions
         $alerts = Alert::where(function ($query) use ($currentDateTime) {
-            $query->where('alerts.time','<=', $currentDateTime->format('H:i'))
-                ->where('alerts.every_day', 1);
+            $query->where('alerts.time', '<=', $currentDateTime->format('H:i'))
+                  ->where('alerts.every_day', 1); // Daily alerts
         })
-            ->orWhere('date','<=', $currentDateTime->toDateString())
-            ->join('historique_alerts', function ($join) {
-                $join->on('alerts.id', '=', 'historique_alerts.idalert');
-                $join->where('historique_alerts.status', 0);
-                $join->orwhere(function($q){
-                    $q->where('historique_alerts.status', 2);
-                    $q->where('historique_alerts.attempts','<', 3);
-                });
-            })
-            ->where("alerts.status", 1)
-            ->with(["type"])
-            ->get();
-        echo "*********** count_alerts : ".count($alerts)."\n"; ;
+        ->orWhere('alerts.date', '<=', $currentDateTime->toDateString())
+        ->join('alerts_history', function ($join) {
+            $join->on('alerts.id', '=', 'alerts_history.alert_id'); // Correct table and column
+            $join->where('alerts_history.status', 0); // Pending status
+            $join->orWhere(function ($q) {
+                $q->where('alerts_history.status', 2); // Failed attempts
+                $q->where('alerts_history.attempts', '<', 3); // Retry limit
+            });
+        })
+        ->where("alerts.status", 1) // Active alerts only
+        ->with(["type"])
+        ->get();
+
+        echo "*********** count_alerts : " . count($alerts) . "\n";
+
         if (count($alerts) > 0) {
             foreach ($alerts as $alert) {
-                $alert_history=AlertHistory::where("idalert",$alert->id)->first();
-                if(isset($alert_history)){
-                    $alert_history->attempts=intval($alert_history->attempts)+1;
-                    $alert_history->status=1;
-                    $alert_history->save();
-                }else{
+                $alertHistory = AlertHistory::where("alert_id", $alert->id)->first();
+                if (isset($alertHistory)) {
+                    $alertHistory->increment('attempts');
+                    $alertHistory->status = 1; // Set status to "in progress"
+                    $alertHistory->save();
+                } else {
                     AlertHistory::create([
-                        'idalert' => $alert->id,
+                        'alert_id' => $alert->id,
                         'iduser' => $alert->iduser,
                         'attempts' => 1,
-                        "status"=>1
+                        'status' => 1, // Set status to "in progress"
                     ]);
                 }
-                echo "*********** alert_type : ".$alert->type->slug."\n";
-                if (isset($alert->type->slug) && $alert->type->slug == "expired-stock") {
-                    echo "*********** alert expired_stock trigger  ID: ".$alert->id."\n"; ;
-                    dispatch((new AlertStock($alert->id))->onQueue('alert-stock')->onConnection('database'));
 
+                echo "*********** alert_type : " . $alert->type->slug . "\n";
+
+                if (isset($alert->type->slug) && $alert->type->slug === "expired-stock") {
+                    echo "*********** alert expired_stock trigger ID: " . $alert->id . "\n";
+                    dispatch(new AlertStock($alert->id))->onQueue('alert-stock')->onConnection('database');
                 }
             }
-
         }
     }
 }

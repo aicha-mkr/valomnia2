@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\EmailTemplate;
 use App\Models\TypeAlert;
 use App\Models\Warehouse;
 use Illuminate\Http\JsonResponse;
@@ -46,55 +47,88 @@ class AlertController extends Controller
     }
 
     public function store(Request $request)
-    {
-        try {
-            $user = session("user");
-            $data = $request->all();
-            $data["user_id"] = $user->id;
-            $data["status"] = $request->get("status") ? 1 : 0;
-            $data["every_day"] = $request->get("every_day") ? 1 : 0;$data["warehouse_ids"] = $request->get("warehouse_ids");
-            //$data["warehouse_ids"] = $request->get("warehouse_ids") ? ','.implode(',',$request->get("warehouse_ids")).',' : null;
-            //emails _users
-            $alert = Alert::create($data);
-            if (isset($alert)) {
-                AlertHistory::create([
-                    'alert_id' => $alert->id,
-                    'iduser' => $user->id,
-                    'attempts' => 0,
-                ]);
-                return redirect()->route('organisation-alerts')->with('success', 'Alert created successfully.');
-            } else {
-                return redirect()->route('organisation-alerts')->with('error', ' create alert failed.');
-            }
+{
+    try {
+        $user = session("user");
 
+        // Collect and process request data
+      $data['quantity'] = $request->input('quantity', null); // Default to null if not provided
 
-        } catch (Exception $ex) {
-            return redirect()->route('organisation-alerts')->with('error', $ex->getMessage());
-        }
-    }
+      $data = $request->all();
+        $data["user_id"] = $user->id;
+        $data["status"] = $request->get("status") ? 1 : 0;
+        $data["every_day"] = $request->get("every_day") ? 1 : 0;
 
-    public function create(Request $request)
-    {
-        try {
-            $has_error = false;
-            $user = session("user");
-            $type_alerts = TypeAlert::where("status", 1)->get(array("id", "name","slug"));
-            $warhouses_response = Warehouse::ListWarhouses(array("user_id" => $user->id, "organisation" => $user->organisation, "cookies" => $user->cookies));
-            $warhouses=[];
-            if (isset($api_response["error"])) {
-                $has_error = true;
-            }
-            if (isset($warhouses_response["data"])) {
-                $warhouses = $warhouses_response["data"];
-            }
-            return view('content.organisation.alerts.create', compact('type_alerts', 'warhouses','has_error'));
-        } catch (Exception $ex) {
-            return redirect()->route('organisation-alerts')->with('error', $ex->getMessage());
+        if ($request->boolean('every_day')) {
+            $validatedData["time"] = $request->input("time"); // Register only the time
+            $validatedData["date"] = null; // Nullify date
+        } else {
+            $validatedData["date"] = $request->input("date"); // Register the date
+            $validatedData["time"] = $request->input("time"); // Register the time
         }
 
-    }
+        // Handle warehouse_ids as a comma-separated string (optional)
+        $data["warehouse_ids"] = $request->has("warehouse_ids")
+            ? ',' . implode(',', $request->get("warehouse_ids")) . ','
+            : null;
 
-    public function show($id)
+        // Create the alert in the database
+        $alert = Alert::create($data);
+
+        if ($alert) {
+            // Log the creation in the AlertHistory table
+            AlertHistory::create([
+                'alert_id' => $alert->id,
+                'iduser' => $user->id,
+                'attempts' => 0,
+            ]);
+
+            return redirect()->route('organisation-alerts')->with('success', 'Alert created successfully.');
+        } else {
+            return redirect()->route('organisation-alerts')->with('error', 'Failed to create alert.');
+        }
+    } catch (Exception $ex) {
+        return redirect()->route('organisation-alerts')->with('error', $ex->getMessage());
+    }
+}
+
+  public function create(Request $request)
+  {
+    try {
+      $has_error = false;
+      $user = session("user");
+
+      // Fetch active alert types
+      $type_alerts = TypeAlert::where("status", 1)->get(["id", "name", "slug"]);
+
+      // Fetch warehouse data
+      $warhouses_response = Warehouse::ListWarhouses([
+        "user_id" => $user->id,
+        "organisation" => $user->organisation,
+        "cookies" => $user->cookies,
+      ]);
+
+      // Initialize warehouses
+      $warhouses = isset($warhouses_response["data"]) ? $warhouses_response["data"] : [];
+
+      // Check for errors in the warehouse response
+      if (isset($warhouses_response["error"])) {
+        $has_error = true;
+      }
+
+      // Fetch all templates for the dropdown
+      $templates = EmailTemplate::all();
+
+      // Pass data to the view
+      return view('content.organisation.alerts.create', compact('type_alerts', 'warhouses', 'templates', 'has_error'));
+    } catch (Exception $ex) {
+      // Handle exceptions
+      return redirect()->route('organisation-alerts')->with('error', $ex->getMessage());
+    }
+  }
+
+
+  public function show($id)
     {
         $alert = Alert::findOrFail($id);
 

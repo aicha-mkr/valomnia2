@@ -23,5 +23,5 @@ return new class extends Migration
             $table->dropColumn('alert_id');
         });
     }
-    
+
 };

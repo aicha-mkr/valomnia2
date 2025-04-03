@@ -52,7 +52,6 @@ use App\Http\Controllers\TypeAlertController as TypeAlerts;
 use App\Http\Controllers\HistoriqueAlertController as HistoriqueAlert;
 use App\Http\Controllers\Auth\LoginController as Login;
 use App\Http\Controllers\AdminController;
-
 use App\Http\Controllers\EmailTemplateController;
 use App\Http\Controllers\RecapitulatifController;
 
@@ -60,6 +59,7 @@ use App\Mail\email;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\OrgDashboardController;
 use App\Http\Controllers\TestMailController;
+
 Route::get('/test/send-email/{id}/{type}', [App\Http\Controllers\EmailTemplateController::class, 'sendEmail']);
 // Main Page Route
 //Route::get('/', [Analytics::class, 'index'])->name('dashboard-analytics');
@@ -74,6 +74,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
 });
+
+
+Route::get('/admin/alerts/history/regenerate/{id}', [HistoriqueAlert::class, 'regenerate'])->name('historiqueAlerts.regenerate');
+Route::delete('/admin/alerts/history/delete/{id}', [HistoriqueAlert::class, 'destroy'])->name('historiqueAlerts.destroy');;
+
+
+
 Route::get('/admin/recent-orders', [AdminController::class, 'fetchRecentOrders'])->name('admin.recentOrders');
 Route::middleware(['auth', 'isOrgAdmin'])->group(function () {
     Route::get('/org-dashboard', [OrgDashboardController::class, 'index'])->name('org.dashboard');

@@ -33,7 +33,6 @@ class Email extends Mailable
 {
     \Log::info('Building email with template type: ' . $this->templateType);
 
-    // Convertir en minuscule pour éviter les problèmes de casse
     $view = match (strtolower($this->templateType)) {
         'alert' => 'emails.alert',
         'rapport' => 'emails.rapport',

@@ -17,8 +17,21 @@
                 </div>
                 @endif
 
+              <div class="mb-4">
+                <label for="alert-id" class="form-label">Type d'alerte</label>
+                <select class="form-select" id="alert-id" name="alert_id">
+                  <option value="" disabled>Sélectionner un type d'alerte</option>
+                  @foreach ($alerts as $alert)
+                    <option value="{{ $alert->id }}" {{ $template->alert_id == $alert->id ? 'selected' : '' }}>
+                      {{ $alert->name }}
+                    </option>
+                  @endforeach
+                </select>
+                <div class="form-text">Type d'alerte actuel: {{ $template->alert_title ?? 'Non défini' }}</div>
+              </div>
 
-                <input type="hidden" name="type" value="Alert" />
+
+              <input type="hidden" name="type" value="Alert" />
                 <div class="mb-4">
                     <label for="alerte-title" class="form-label">Title</label>
                     <input type="text" class="form-control" id="alerte-title" name="title" placeholder="Alert title"
@@ -30,11 +43,27 @@
                     <input type="text" class="form-control" id="alerte-email-subject" name="subject"
                         placeholder="Email subject" value="{{ $template->subject }}" required />
                 </div>
-                <div class="mb-4">
-                    <h5>Configure Text</h5>
-                    <textarea class="form-control" id="alerte-content" name="content" rows="6"
-                        placeholder="Enter alert content here..." required>{{ $template->content }}</textarea>
+              <div class="mb-4">
+                <h5>Configurer le Texte</h5>
+                <div id="editor-container">
+                  <div contenteditable="true" id="rich-editor" class="form-control" style="min-height: 150px;">
+                    @php
+                      // Remplacer les variables par des spans non modifiables
+                      $content = $template->content ?? 'Le stock du produit [PRODUCT] est actuellement de [QUANTITY] unités.';
+                      $content = str_replace(
+                          ['[PRODUCT]', '[QUANTITY]'],
+                          [
+                              '<span class="variable" contenteditable="false" style="background-color: #e9f5ff; padding: 2px 5px; border-radius: 3px; font-weight: bold;">[PRODUCT]</span>',
+                              '<span class="variable" contenteditable="false" style="background-color: #ffe9e9; padding: 2px 5px; border-radius: 3px; font-weight: bold;">[QUANTITY]</span>'
+                          ],
+                          $content
+                      );
+                    @endphp
+                    {!! $content !!}
+                  </div>
+                  <input type="hidden" name="content" id="hidden-content">
                 </div>
+              </div>
 
                 <div class="mb-4">
                     <button type="submit" class="btn btn-warning">Edit Alert</button>
@@ -559,3 +588,21 @@
 </div>
 </div>
 </div>
+<script>
+  document.querySelector('form').addEventListener('submit', function(e) {
+    // Récupérer le contenu de l'éditeur
+    let editorContent = document.getElementById('rich-editor').innerHTML;
+
+    // Remplacer les spans par les variables simples pour le stockage
+    editorContent = editorContent.replace(/<span[^>]*>\[PRODUCT\]<\/span>/g, '[PRODUCT]');
+    editorContent = editorContent.replace(/<span[^>]*>\[QUANTITY\]<\/span>/g, '[QUANTITY]');
+
+    // Mettre le contenu nettoyé dans le champ caché
+    document.getElementById('hidden-content').value = editorContent;
+  });
+
+  // Initialiser l'éditeur si nécessaire
+  document.addEventListener('DOMContentLoaded', function() {
+    // Déjà fait par le code PHP ci-dessus
+  });
+</script>

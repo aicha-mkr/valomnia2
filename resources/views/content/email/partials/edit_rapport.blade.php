@@ -39,21 +39,22 @@
 
                 <h5>Select KPI</h5>
                 <div class="mb-4">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="total_revenue" id="totalRevenueCheckbox"
-                            name="kpi[]" {{ in_array('total_revenue', $template->kpi ?? []) ? 'checked' : '' }} />
-                        <label class="form-check-label" for="totalRevenueCheckbox">Total Revenue</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="total_orders" id="totalOrdersCheckbox"
-                            name="kpi[]" {{ in_array('total_orders', $template->kpi ?? []) ? 'checked' : '' }} />
-                        <label class="form-check-label" for="totalOrdersCheckbox">Total Orders</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="total_employees"
-                            id="totalEmployeesCheckbox" name="kpi[]"
-                            {{ in_array('total_employees', $template->kpi ?? []) ? 'checked' : '' }} />
-                        <label class="form-check-label" for="totalEmployeesCheckbox">Total Employees</label>
+
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="revenue_generated" id="totalOrdersCheckbox"
+                               name="kpi[]" {{ in_array('revenue_generated', $template->kpi ?? []) ? 'checked' : '' }} />
+                        <label class="form-check-label" for="totalOrdersCheckbox">Revenue Generated</label>
+                      </div>
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="number_of_orders"
+                               id="totalEmployeesCheckbox" name="kpi[]"
+                          {{ in_array('number_of_orders', $template->kpi ?? []) ? 'checked' : '' }} />
+                        <label class="form-check-label" for="number_of_orders">Number of Orders</label>
+                      </div>
+                  <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="average_basket_size" id="average_basket_sizeCheckbox"
+                            name="kpi[]" {{ in_array('average_basket_size', $template->kpi ?? []) ? 'checked' : '' }} />
+                        <label class="form-check-label" for="average_basket_sizeCheckbox">Average basket size</label>
                     </div>
                 </div>
 

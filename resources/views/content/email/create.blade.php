@@ -1592,19 +1592,22 @@
                         </ul>
                     </div>
                     @endif
-                    @if ($type === 'Alert')
+                  @if ($type === 'Alert')
                     <div class="mb-4">
-                        <label for="alert-id" class="form-label">Sélectionnez une Alerte</label>
-                        <select class="form-select" id="alert-id" name="alert_id" required>
-                            <option value="" disabled selected>Sélectionnez une alerte</option>
-                            @foreach ($alerts as $alert)
-                            <option value="{{ $alert->id }}">{{ $alert->title }}</option>
-                            @endforeach
-                        </select>
+                      <label for="alert-id" class="form-label">Select an Alert</label>
+                      <select class="form-select" id="alert-id" name="alert_id" required>
+                        <option value="" disabled selected>Select an Alert</option>
+                        @foreach ($alerts as $alert)
+                          <option value="{{ $alert->id }}">{{ $alert->name }}</option>
+                        @endforeach
+                      </select>
                     </div>
-                    @endif
+                  @endif
 
-                    <input type="hidden" name="type" value="Alert" />
+
+
+
+                  <input type="hidden" name="type" value="Alert" />
                     <div class="mb-4">
                         <label for="alerte-title" class="form-label">Titre</label>
                         <input type="text" class="form-control" id="alerte-title" name="title"
@@ -1616,12 +1619,29 @@
                         <input type="text" class="form-control" id="alerte-email-subject" name="subject"
                             placeholder="Sujet de l'email" required />
                     </div>
-                    <div class="mb-4">
-                        <h5>Configurer le Texte</h5>
-                        <textarea class="form-control" id="alerte-content" name="content" rows="6"
-                            placeholder="Entrez le contenu du alert ici..." required></textarea>
+                  <div class="mb-4">
+                    <h5>Configure Text</h5>
+                    <div id="editor-container">
+                      <div contenteditable="true" id="rich-editor" class="form-control" style="min-height: 150px;">
+                        @php
+                          // Replace variables with non-editable spans
+                          $content = $template->content ?? 'The stock of product "[PRODUCT]" is currently "[QUANTITY]" units.';
+                          $content = str_replace(
+                              ['[PRODUCT]', '[QUANTITY]'],
+                              [
+                                  '<span class="variable" contenteditable="false" style="background-color: #e9f5ff; padding: 2px 5px; border-radius: 3px; font-weight: bold;">[PRODUCT]</span>',
+                                  '<span class="variable" contenteditable="false" style="background-color: #ffe9e9; padding: 2px 5px; border-radius: 3px; font-weight: bold;">[QUANTITY]</span>'
+                              ],
+                              $content
+                          );
+                        @endphp
+                        {!! $content !!}
+                      </div>
+                      <input type="hidden" name="content" id="hidden-content">
                     </div>
-                    <div class="form-check">
+                  </div>
+
+                  <div class="form-check">
                         <input class="form-check-input" type="checkbox" id="alert-open" onclick="toggleUrlSection()" />
                         <label class="form-check-label" for="alert-open">Afficher Bouton</label>
                     </div>
@@ -2378,5 +2398,20 @@ function validateAlerteForm() {
     }
     return isValid;
 }
+
+
+document.querySelector('form').addEventListener('submit', function(e) {
+  // Récupérer le contenu de l'éditeur et le mettre dans le champ caché
+  const editorContent = document.getElementById('rich-editor').innerHTML;
+  document.getElementById('hidden-content').value = editorContent;
+});
+
+// Initialiser l'éditeur avec le contenu existant si nécessaire
+document.addEventListener('DOMContentLoaded', function() {
+  // Si vous modifiez un template existant, vous pouvez initialiser l'éditeur ici
+  // const existingContent = "{{ old('content', $template->content ?? '') }}";
+  // document.getElementById('rich-editor').innerHTML = existingContent;
+});
+
 </script>
 @endsection

@@ -10,7 +10,15 @@ class Kernel extends ConsoleKernel
     /**
      * Define the application's command schedule.
      */
-    protected function schedule(Schedule $schedule): void
+
+
+  public function setCommands(array $commands): Kernel
+  {
+    $this->commands = $commands;
+    return $this;
+  }
+
+  protected function schedule(Schedule $schedule): void
     {
         $schedule->command('app:trigger-alerts')->everyFiveMinutes();
 
