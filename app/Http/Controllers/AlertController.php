@@ -10,6 +10,9 @@ use Illuminate\Http\Request;
 use App\Models\Alert;
 use App\Models\AlertHistory;
 use Exception;
+use Illuminate\Support\Facades\Log;
+
+use App\Models\Employee;
 use App\Http\Resources\AlertResource;
 use App\Jobs\AlertStock;
 use App\Http\Requests\StoreAlertRequest;
@@ -47,88 +50,134 @@ class AlertController extends Controller
     }
 
     public function store(Request $request)
-{
-    try {
-        $user = session("user");
-
-        // Collect and process request data
-      $data['quantity'] = $request->input('quantity', null); // Default to null if not provided
-
-      $data = $request->all();
-        $data["user_id"] = $user->id;
-        $data["status"] = $request->get("status") ? 1 : 0;
-        $data["every_day"] = $request->get("every_day") ? 1 : 0;
-
-        if ($request->boolean('every_day')) {
-            $validatedData["time"] = $request->input("time"); // Register only the time
-            $validatedData["date"] = null; // Nullify date
-        } else {
-            $validatedData["date"] = $request->input("date"); // Register the date
-            $validatedData["time"] = $request->input("time"); // Register the time
-        }
-
-        // Handle warehouse_ids as a comma-separated string (optional)
-        $data["warehouse_ids"] = $request->has("warehouse_ids")
-            ? ',' . implode(',', $request->get("warehouse_ids")) . ','
-            : null;
-
-        // Create the alert in the database
-        $alert = Alert::create($data);
-
-        if ($alert) {
-            // Log the creation in the AlertHistory table
-            AlertHistory::create([
-                'alert_id' => $alert->id,
-                'iduser' => $user->id,
-                'attempts' => 0,
+    {
+        try {
+            $validated = $request->validate([
+                'title' => 'required|string|max:255',
+                'type_id' => 'required|exists:type_alerts,id',
+                'quantity' => 'nullable|numeric',
+                'template_id' => 'required|exists:email_templates,id',
+                'description' => 'required|string',
+                'users_email' => 'required|string',
+                'status' => 'sometimes|boolean',
+                'every_day' => 'sometimes|boolean',
+                'time' => 'required_if:every_day,true|nullable|date_format:H:i',
+                'date' => 'required_if:every_day,false|nullable|date',
+                'warehouse_ids' => 'nullable|array',
+                'warehouse_ids.*' => 'nullable|numeric',
+                'employee' => 'nullable|string',
             ]);
 
-            return redirect()->route('organisation-alerts')->with('success', 'Alert created successfully.');
-        } else {
-            return redirect()->route('organisation-alerts')->with('error', 'Failed to create alert.');
+            $user = session("user");
+            if (!$user) {
+                return redirect()->route('login')->with('error', 'Session expired. Please login again.');
+            }
+
+            // Récupérer le type d'alerte
+            $alertType = TypeAlert::findOrFail($validated['type_id']);
+            
+            // Préparer les données pour l'insertion
+            $data = [
+                'title' => $validated['title'],
+                'type_id' => $validated['type_id'],
+                'quantity' => $validated['quantity'],
+                'template_id' => $validated['template_id'],
+                'description' => $validated['description'],
+                'users_email' => $validated['users_email'],
+                'user_id' => $user->id,
+                'status' => $request->boolean("status", true),
+                'every_day' => $request->boolean("every_day", false),
+                'time' => $validated['time'],
+                'date' => $validated['date'],
+            ];
+
+            // Gérer les paramètres selon le type d'alerte
+            $parameters = [];
+            
+            if ($alertType->slug === 'expired-stock' && isset($validated['warehouse_ids'])) {
+                $warehousesResponse = Warehouse::ListWarhouses([
+                    'user_id' => $user->id,
+                    'organisation' => $user->organisation,
+                    'cookies' => $user->cookies
+                ]);
+
+                if (isset($warehousesResponse['data'])) {
+                    $selectedWarehouses = collect($warehousesResponse['data'])
+                        ->whereIn('id', $validated['warehouse_ids'])
+                        ->pluck('reference')
+                        ->toArray();
+
+                    $parameters['warehouse_refs'] = $selectedWarehouses;
+                }
+            } elseif ($alertType->slug === 'check-in-hors-heures' && isset($validated['employee'])) {
+                $parameters['employee_ref'] = $validated['employee'];
+            }
+
+            // Stocker les paramètres dans la colonne parameters
+            $data['parameters'] = json_encode($parameters);
+
+            // Créer l'alerte
+            $alert = Alert::create($data);
+
+            if ($alert) {
+                // Créer l'historique
+                AlertHistory::create([
+                    'alert_id' => $alert->id,
+                    'iduser' => $user->id,
+                    'attempts' => 0,
+                ]);
+
+                return redirect()->route('organisation-alerts')->with('success', 'Alert created successfully.');
+            } else {
+                return redirect()->back()->with('error', 'Failed to create alert.')->withInput();
+            }
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return redirect()->back()->withErrors($e->validator)->withInput();
+        } catch (Exception $ex) {
+            return redirect()->back()->with('error', 'An unexpected error occurred: ' . $ex->getMessage())->withInput();
         }
-    } catch (Exception $ex) {
-        return redirect()->route('organisation-alerts')->with('error', $ex->getMessage());
     }
-}
 
-  public function create(Request $request)
-  {
-    try {
-      $has_error = false;
-      $user = session("user");
+    public function create(Request $request)
+    {
+        try {
+            $has_error = false;
+            $user = session("user");
+            if (!$user) { return redirect()->route('login')->with('error', 'Session expired.'); }
 
-      // Fetch active alert types
-      $type_alerts = TypeAlert::where("status", 1)->get(["id", "name", "slug"]);
+            // Fetch active alert types (IDs and names/slugs for the dropdown)
+            $type_alerts = TypeAlert::where("status", 1)->get(["id", "name", "slug"]); // Ensure 'slug' exists if you use it
 
-      // Fetch warehouse data
-      $warhouses_response = Warehouse::ListWarhouses([
-        "user_id" => $user->id,
-        "organisation" => $user->organisation,
-        "cookies" => $user->cookies,
-      ]);
+            // Fetch warehouse data
+            $warhouses_response = Warehouse::ListWarhouses(["user_id" => $user->id,"organisation" => $user->organisation,"cookies" => $user->cookies]);
+            $warhouses = isset($warhouses_response["data"]) ? $warhouses_response["data"] : [];
+            if (isset($warhouses_response["error"])) { $has_error = true; Log::error('Error fetching warehouses', (array)$warhouses_response["error"]);} // Cast to array for logging
 
-      // Initialize warehouses
-      $warhouses = isset($warhouses_response["data"]) ? $warhouses_response["data"] : [];
+            // Fetch all templates for the dropdown
+            $templates = EmailTemplate::all(); // Consider filtering active ones: ->where('status', 1)->get();
 
-      // Check for errors in the warehouse response
-      if (isset($warhouses_response["error"])) {
-        $has_error = true;
-      }
+            // Fetch all employees for the dropdown (make sure 'reference' is included in the response)
+            $employees_response = \App\Models\Employee::ListEmployees(["user_id" => $user->id,"organisation" => $user->organisation,"cookies" => $user->cookies]);
+            $employees = isset($employees_response["data"]) ? $employees_response["data"] : [];
+            if (isset($employees_response["error"])) { $has_error = true; Log::error('Error fetching employees', (array)$employees_response["error"]); } // Cast to array for logging
 
-      // Fetch all templates for the dropdown
-      $templates = EmailTemplate::all();
 
-      // Pass data to the view
-      return view('content.organisation.alerts.create', compact('type_alerts', 'warhouses', 'templates', 'has_error'));
-    } catch (Exception $ex) {
-      // Handle exceptions
-      return redirect()->route('organisation-alerts')->with('error', $ex->getMessage());
+            // Pass data to the view
+            return view('content.organisation.alerts.create', compact(
+                'type_alerts',
+                'templates',
+                'warhouses',    // Array of warehouse data
+                'employees',    // Array of employee data
+                'has_error'
+            ));
+        } catch (Exception $ex) {
+            Log::error('Error in create alert form: ' . $ex->getMessage());
+            return redirect()->route('organisation-alerts')->with('error', 'Could not load the alert creation form: ' . $ex->getMessage());
+        }
     }
-  }
 
-
-  public function show($id)
+    public function show($id)
     {
         $alert = Alert::findOrFail($id);
 

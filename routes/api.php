@@ -12,7 +12,9 @@ use App\Http\Controllers\WarehouseController;
 use App\Http\Controllers\HistoriqueAlertController;
 
 use App\Models\Alert;
+use App\Http\Controllers\CheckInController;
 
+Route::get('/checkins', [CheckInController::class, 'index']);
 Route::get("/test-alert-stock",function (){
     $alert= \App\Models\Alert::with(["user","type"])->where("id",12)->first();
     if(isset($alert)){

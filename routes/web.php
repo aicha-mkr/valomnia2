@@ -60,6 +60,9 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\OrgDashboardController;
 use App\Http\Controllers\TestMailController;
 
+
+
+
 Route::get('/test/send-email/{id}/{type}', [App\Http\Controllers\EmailTemplateController::class, 'sendEmail']);
 // Main Page Route
 //Route::get('/', [Analytics::class, 'index'])->name('dashboard-analytics');
