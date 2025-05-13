@@ -20,10 +20,12 @@
         "slug": "admin-history-alerts"
     },
     {
-      "name": "Repport history",
+      "name": "Report history",
       "icon": "menu-icon tf-icons bx bx-alarm-snooze",
-      "slug": "admin-alerts"
-  },
+      "slug": "historiqueReports",
+      "url": "/admin/reports/types/"
+
+    },
       {
           "name": "Account Settings",
           "icon": "menu-icon tf-icons bx bx bx-dock-top",

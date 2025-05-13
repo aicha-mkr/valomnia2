@@ -1,75 +1,105 @@
 <?php
 
 namespace App\Http\Controllers\Auth;
-use Illuminate\Support\Facades\Auth;
 
-use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Requests\LoginRequest;
 use App\Models\User;
-use Exception;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Log;
 
 class LoginController extends Controller
 {
-    public function login(Request $request)
-{
-
+  public function login(LoginRequest $request)
+  {
     try {
-        $credentials = $request->all();
-        $response_found = User::FindUser($credentials);
-        $user = $response_found['data']["user"] ?? null;
+      // Use validated data from LoginRequest
+      $credentials = $request->validated();
 
-        if ($response_found["status"] == 200 && isset($user) && isset($user->token)) {
-            // Use Laravel's auth system
-            Auth::loginUsingId($user->id); // Log the user in and store the user ID in the session
+      // Check if user exists
+      $response_found = User::FindUser($credentials);
+      if ($response_found["status"] == 200 && isset($response_found["data"]["user"]) && isset($response_found["data"]["token"])) {
+        $user = $response_found["data"]["user"];
 
-            // Optional: You can still use custom session variables
-            Session::put('token_user', $response_found['data']["token"]);
-            Session::put('user', $response_found['data']["user"]);
+        // Log the user in using Laravel's Auth system
+        Auth::login($user);
 
-            $roles = explode(",", $user->role);
+        // Store additional session data
+        Session::put('token_user', $response_found["data"]["token"]);
+        Session::put('user', $user);
 
-            // Redirect based on roles
-            if (in_array("SUPER_ADMIN", $roles)) {
-                Session::put('isSuperAdmin', true);
-                Session::forget('isOrganisation');
-                return redirect()->route('dashboard-admin');
-            } else {
-                Session::put('isOrganisation', true);
-                Session::forget('isSuperAdmin');
-                return redirect()->route('dashboard-organisation');
-            }
+        $roles = explode(",", $user->role);
+        if (in_array("SUPER_ADMIN", $roles)) {
+          Session::put('isSuperAdmin', true);
+          Session::forget('isOrganisation');
+          return redirect()->route('dashboard-admin');
         } else {
-            // Invalid credentials or user not found
-            Log::warning('Failed login attempt - User not found.', ['credentials' => $credentials]);
-            return redirect()->route('auth-login')->with('error', 'Invalid credentials!');
+          Session::put('isOrganisation', true);
+          Session::forget('isSuperAdmin');
+          return redirect()->route('dashboard-organisation');
         }
-    } catch (Exception $ex) {
-        // Log error and redirect
-        Log::error('Exception during login.', ['message' => $ex->getMessage()]);
-        return redirect()->route('auth-login')->with('error', 'Something went wrong!');
-    }
-}
+      }
 
-    public function index()
-    {
-        if (session()->has('user') && session()->has('token_user')) {
-            if (session()->has('isOrganisation')) {
-                return redirect()->route('dashboard-organisation');
-            } else {
-                return redirect()->route('dashboard-admin');
-            }
+      // If user not found, attempt login
+      $response = User::UserLogin($credentials);
+      if ($response["status"] == 200 && isset($response["data"]["user"])) {
+        $user_data = $response["data"];
+        $user_data["cookies"] = $response["cookies"] ?? '';
+        $user_data["organisation"] = $credentials["organisation"];
+        $user_data["password"] = $credentials["password"];
+
+        // Create or update user
+        $response_created = User::UpdateOrCreated($user_data);
+        if ($response_created["status"] == 200 && isset($response_created["user"])) {
+          $user = $response_created["user"];
+
+          // Log the user in using Laravel's Auth system
+          Auth::login($user);
+
+          // Store additional session data
+          Session::put('user', $user);
+
+          $roles = explode(",", $user->role);
+          if (in_array("SUPER_ADMIN", $roles)) {
+            Session::put('isSuperAdmin', true);
+            Session::forget('isOrganisation');
+            return redirect()->route('dashboard-admin');
+          } else {
+            Session::put('isOrganisation', true);
+            Session::forget('isSuperAdmin');
+            return redirect()->route('dashboard-organisation');
+          }
+        } else {
+          $error_message = $response_created["error"] ?? 'Failed to create or update user';
+          Log::error('UpdateOrCreated failed:', $response_created);
+          return redirect()->route('auth-login')->with('error', $error_message);
         }
-        return view('content.authentications.login');
+      } else {
+        $error_message = $response["error"] ?? 'Invalid credentials';
+        Log::error('UserLogin failed:', $response);
+        return redirect()->route('auth-login')->with('error', $error_message);
+      }
+    } catch (\Exception $ex) {
+      Log::error('Login error:', ['exception' => $ex->getMessage()]);
+      return redirect()->route('auth-login')->with('error', 'An error occurred: ' . $ex->getMessage());
     }
+  }
 
-    public function logout()
-    {
-        Session::forget('isSuperAdmin');
-        Session::forget('token_user');
-        Session::forget('user');
-        Session::forget('isOrganisation');
-        return redirect()->route('auth-login');
+  public function index()
+  {
+    if (Auth::check()) {
+      return session()->has('isOrganisation')
+        ? redirect()->route('dashboard-organisation')
+        : redirect()->route('dashboard-admin');
     }
+    return view('content.authentications.login');
+  }
+
+  public function logout()
+  {
+    Auth::logout(); // Clear the authenticated user
+    Session::flush(); // Clear all session data
+    return redirect()->route('auth-login');
+  }
 }

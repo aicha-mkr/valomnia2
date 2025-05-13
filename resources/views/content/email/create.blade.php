@@ -2226,7 +2226,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Function to toggle visibility of URL and Button Title sections
 function toggleReportSection() {
-    const checkbox = document.getElementById('report-open'); // Get the checkbox element
+    const checkbox = document.getElementById('reports-open'); // Get the checkbox element
     const urlSection = document.getElementById('urlSection'); // URL section
     const buttonTitleSection = document.getElementById('buttonTitleSection'); // Button title section
 
@@ -2250,7 +2250,7 @@ function updateReportButtonText() {
 
 // Function to update the button URL dynamically
 function updateReportButtonUrl() {
-    const reportUrl = document.getElementById('report-url').value; // Input for URL
+    const reportUrl = document.getElementById('reports-url').value; // Input for URL
     const actionLink = document.getElementById('action-link2'); // The button to update
 
     // Update the href attribute of the button
@@ -2271,7 +2271,7 @@ function updateReportTitle() {
     const titleInput = document.getElementById('rapport-title').value.trim();
 
     // Retrieve the element where the title should be displayed
-    const reportTitle = document.getElementById('report-title2');
+    const reportTitle = document.getElementById('reports-title2');
 
     // Update the content or set a default value if the input is empty
     reportTitle.innerText = titleInput || "Titre du rapport par défaut"; // Default title
@@ -2289,7 +2289,7 @@ function updateRapportContent() {
 }
 
 function toggleTitle() {
-    const titleElement = document.getElementById('report-title');
+    const titleElement = document.getElementById('reports-title');
     const titleCheckbox = document.getElementById('show-title');
     titleElement.style.display = titleCheckbox.checked ? 'block' : 'none'; // Show or hide title
 }

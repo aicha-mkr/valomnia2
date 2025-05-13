@@ -54,7 +54,9 @@ use App\Http\Controllers\Auth\LoginController as Login;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\EmailTemplateController;
 use App\Http\Controllers\RecapitulatifController;
-
+use App\Http\Controllers\RecapsController;
+use App\Http\Controllers\TypeReportsController;
+use App\Http\Controllers\HistoriqueReportController;
 use App\Mail\email;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\OrgDashboardController;
@@ -121,6 +123,29 @@ Route::group(['prefix' => 'admin'], function () {
             Route::get('/show/{id}', [TypeAlerts::class, 'show'])->name('alerts-types-show');
         });
 
+
+
+      Route::group(['prefix' => 'reports'], function () {
+        Route::get('/history', [HistoriqueReportController::class, 'index'])->name('history-reports');
+        Route::get('/history/{id}', [HistoriqueReportController::class, 'regenerate'])->name('history-details-reports');
+
+        Route::get('/', [RecapsController::class, 'index'])->name('reports-list');
+        Route::get('/create', [RecapsController::class, 'create'])->name('reports-list-create');
+        Route::post('/store', [RecapsController::class, 'store'])->name('reports-list-store');
+        Route::get('/update/{id}', [RecapsController::class, 'update'])->name('reports-list-update');
+        Route::post('/update/{id}', [RecapsController::class, 'edit'])->name('reports-list-edit');
+        Route::get('/delete/{id}', [RecapsController::class, 'destroy'])->name('reports-list-delete');
+        Route::get('/show/{id}', [RecapsController::class, 'show'])->name('reports-list-show');
+        Route::group(['prefix' => 'types'], function () {
+          Route::get('/', [TypeReportsController::class, 'index'])->name('reports-types');
+          Route::get('/create', [TypeReportsController::class, 'create'])->name('reports-types-create');
+          Route::post('/store', [TypeReportsController::class, 'store'])->name('reports-types-store');
+          Route::get('/update/{id}', [TypeReportsController::class, 'edit'])->name('reports-types-update');
+          Route::post('/update/{id}', [TypeReportsController::class, 'update'])->name('reports-types-edit');
+          Route::get('/delete/{id}', [TypeReportsController::class, 'destroy'])->name('reports-types-delete');
+          Route::get('/show/{id}', [TypeReportsController::class, 'show'])->name('reports-types-show');
+        });
+      });
     });
 
 });
@@ -155,6 +180,24 @@ Route::group(['prefix' => 'organisation'], function () {
     Route::get('/show/{id}', [EmailTemplateController::class, 'show'])->name('email.show');
 
 });
+
+  Route::group(['prefix' => 'reports'], function () {
+    Route::get('/history', [HistoriqueReportController::class, 'index'])->name('organisation-history-reports');
+    Route::get('/history/{id}', [HistoriqueReportController::class, 'regenerate'])->name('organisation-history-details-reports');
+
+    Route::get('/', [RecapsController::class, 'indexOrganisation'])->name('organisation-reports');
+    Route::get('createReport', [RecapsController::class, 'create'])->name('organisation-reports-create');
+    Route::post('/store', [RecapsController::class, 'store'])->name('organisation-reports-store');
+    Route::get('/update/{id}', [RecapsController::class, 'update'])->name('organisation-reports-update');
+    Route::post('/update/{id}', [RecapsController::class, 'edit'])->name('organisation-reports-edit');
+    Route::get('/delete/{id}', [RecapsController::class, 'destroy'])->name('organisation-reports-destroy');
+    Route::get('/show/{id}', [RecapsController::class, 'show'])->name('organisation-reports-show');
+
+    Route::get('/generate', [RecapsController::class, 'generateForm'])->name('reports.generate.form');
+    Route::post('/generate', [RecapsController::class, 'generateReport'])->name('reports.generate');
+  });
+
+
 });
 
 

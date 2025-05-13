@@ -13,7 +13,8 @@
     "laravel/framework": "^11.0",
     "laravel/passport": "^12.3",
     "laravel/sanctum": "^4.0",
-    "laravel/tinker": "^2.9"
+    "laravel/tinker": "^2.9",
+    "select2/select2": "4.0.13"
   },
   "require-dev": {
     "fakerphp/faker": "^1.23",

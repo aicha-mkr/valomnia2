@@ -24,7 +24,7 @@ class Employee
     );
 
     if (isset($api_response["error"]) && $api_response["error"] == "no_credentials") {
-      $refresh_token_response = User::RefreshAccessToken($data["user_id"]);
+      $refresh_token_response = User::RefreshAcessToken($data["user_id"]);
 
       if (isset($refresh_token_response["status"]) &&
         $refresh_token_response["status"] == 200 &&

@@ -24,19 +24,19 @@
             ]
         },
         {
-          "name": "Repport",
+          "name": "Report",
           "icon": "menu-icon tf-icons bx bx-envelope",
-          "slug": "organisation-Repport",
+          "slug": "organisation-reports",
           "submenu": [
               {
-                  "url": "#",
+                  "url": "organisation/reports/",
                   "name": "List",
-                  "slug": "organisation-alerts-list"
+                  "slug": "history-reports"
               },
               {
                   "url": "#",
                   "name": "History",
-                  "slug": "organisation-history-alerts"
+                  "slug": "organisation-history-reports"
               }
           ]
       },
