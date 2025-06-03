@@ -182,17 +182,13 @@ Route::group(['prefix' => 'organisation'], function () {
 });
 
   Route::group(['prefix' => 'reports'], function () {
-    Route::get('/history', [HistoriqueReportController::class, 'index'])->name('organisation-history-reports');
-    Route::get('/history/{id}', [HistoriqueReportController::class, 'regenerate'])->name('organisation-history-details-reports');
-
     Route::get('/', [RecapsController::class, 'indexOrganisation'])->name('organisation-reports');
     Route::get('createReport', [RecapsController::class, 'create'])->name('organisation-reports-create');
     Route::post('/store', [RecapsController::class, 'store'])->name('organisation-reports-store');
-    Route::get('/update/{id}', [RecapsController::class, 'update'])->name('organisation-reports-update');
+    Route::get('/update/{id}', [RecapsController::class, 'updateForm'])->name('organisation-reports-update');
     Route::post('/update/{id}', [RecapsController::class, 'edit'])->name('organisation-reports-edit');
     Route::get('/delete/{id}', [RecapsController::class, 'destroy'])->name('organisation-reports-destroy');
     Route::get('/show/{id}', [RecapsController::class, 'show'])->name('organisation-reports-show');
-
     Route::get('/generate', [RecapsController::class, 'generateForm'])->name('reports.generate.form');
     Route::post('/generate', [RecapsController::class, 'generateReport'])->name('reports.generate');
   });

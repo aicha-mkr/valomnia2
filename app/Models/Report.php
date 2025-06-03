@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -9,8 +8,6 @@ class Report extends Model
 {
   use HasFactory;
 
-  protected $table = 'reports';
-
   protected $fillable = [
     'user_id',
     'date',
@@ -19,18 +16,26 @@ class Report extends Model
     'average_sales',
     'total_quantities',
     'total_clients',
-
+    'top_selling_items',
+    'startDate',
+    'endDate',
+    'schedule',
+    'users_email',
+    'time',
+    'status',
   ];
+
   protected $casts = [
-    'startDate' => 'date',
-    'endDate' => 'date',
+    'startDate' => 'datetime',
+    'endDate' => 'datetime',
+    'date' => 'datetime',
+    'total_revenue' => 'decimal:2',
+    'average_sales' => 'decimal:2',
+    'status' => 'boolean',
   ];
 
-  /**
-   * Get the user that owns the report.
-   */
-  public function type()
+  public function user()
   {
-    return $this->belongsTo(ReportType::class);
+    return $this->belongsTo(User::class);
   }
 }

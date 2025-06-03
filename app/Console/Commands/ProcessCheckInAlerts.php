@@ -10,42 +10,90 @@ use Carbon\Carbon;
 
 class ProcessCheckInAlerts extends Command
 {
-  protected $signature = 'alerts:check-in';
-  protected $description = 'Process all active check-in alerts to detect after-hours check-ins';
+  protected $signature = 'alerts:check-in {alert_id? : The ID of a specific alert to process}';
+  protected $description = 'Process active check-in alerts to detect out-of-hours check-ins, optionally for a specific alert ID';
 
   public function handle()
   {
     Log::info('Démarrage de la commande alerts:check-in');
 
-    $currentDateTime = Carbon::now();
-    $alerts = Alert::where('status', 1)
-      ->where('type_id', function ($query) {
-        $query->select('id')
-          ->from('type_alerts')
-          ->where('slug', 'check-in-hors-heures');
-      })
-      ->where(function ($query) use ($currentDateTime) {
-        $query->where('every_day', 1)
-          ->where('time', '<=', $currentDateTime->format('H:i:s'))
-          ->orWhere(function ($q) use ($currentDateTime) {
-            $q->where('every_day', 0)
-              ->where('date', '<=', $currentDateTime->toDateString())
-              ->where('time', '<=', $currentDateTime->format('H:i:s'));
-          });
-      })
-      ->get();
+    $alertId = $this->argument('alert_id');
+    $currentDateTime = Carbon::now(config('app.timezone'));
 
-    $count = $alerts->count();
-    Log::info("Nombre d'alertes de check-in actives trouvées: {$count}");
-    $this->info("Traitement de {$count} alertes de check-in");
+    if ($alertId) {
+      // Traiter une alerte spécifique
+      $alert = Alert::where('id', $alertId)
+        ->where('status', 1)
+        ->whereHas('type', function ($query) {
+          // Filtrer par le slug correct
+          $query->where('slug', 'checkin-out-of-hours');
+        })
+        ->first();
 
-    foreach ($alerts as $alert) {
-      Log::info("Dispatch du job AlertCheckInOutOfHours pour l'alerte ID: {$alert->id}");
-      AlertCheckInOutOfHours::dispatch($alert->id);
-      $this->line("Job dispatché pour l'alerte ID: {$alert->id}");
+      if (!$alert) {
+        Log::warning("Aucune alerte active trouvée pour l'ID {$alertId} ou type incorrect (checkin-out-of-hours).");
+        $this->error("Aucune alerte active trouvée pour l'ID {$alertId} ou le type n'est pas 'checkin-out-of-hours'.");
+        return 1; // Code d'erreur
+      }
+
+      // Vérifier si l'alerte est applicable aujourd'hui (sans vérifier l'heure)
+      $shouldDispatch = false;
+      if ($alert->every_day) {
+        // Si tous les jours, toujours applicable
+        $shouldDispatch = true;
+        Log::info("L'alerte ID {$alertId} est applicable car configurée pour tous les jours");
+      } else {
+        // Si jour spécifique, vérifier uniquement la date (pas l'heure)
+        if ($currentDateTime->toDateString() == $alert->date) {
+          $shouldDispatch = true;
+          Log::info("L'alerte ID {$alertId} est applicable car la date actuelle ({$currentDateTime->toDateString()}) correspond à la date configurée ({$alert->date})");
+        } else {
+          Log::info("L'alerte ID {$alertId} n'est pas applicable car la date actuelle ({$currentDateTime->toDateString()}) ne correspond pas à la date configurée ({$alert->date})");
+        }
+      }
+
+      if ($shouldDispatch) {
+        Log::info("Dispatch du job AlertCheckInOutOfHours pour l'alerte ID: {$alert->id} avec heure limite: {$alert->time}");
+        // Dispatcher sur la queue 'alerts'
+        AlertCheckInOutOfHours::dispatch($alert->id)->onQueue('alerts');
+        $this->line("Job dispatché pour l'alerte ID: {$alert->id}");
+      } else {
+        $this->info("L'alerte ID {$alertId} n'est pas applicable pour la date actuelle ({$currentDateTime->toDateString()}).");
+      }
+
+    } else {
+      // Traiter toutes les alertes actives
+      $currentDate = $currentDateTime->toDateString();
+
+      $alerts = Alert::where('status', 1)
+        ->whereHas('type', function ($query) {
+          // Filtrer par le slug correct
+          $query->where('slug', 'checkin-out-of-hours');
+        })
+        ->where(function ($query) use ($currentDate) {
+          // Condition pour les alertes quotidiennes ou celles dont la date correspond à aujourd'hui
+          $query->where('every_day', 1)
+            ->orWhere(function ($q) use ($currentDate) {
+              $q->where('every_day', 0)
+                ->where('date', $currentDate);
+            });
+        })
+        ->get();
+
+      $count = $alerts->count();
+      Log::info("Nombre d'alertes 'checkin-out-of-hours' actives et applicables trouvées: {$count}");
+      $this->info("Traitement de {$count} alertes 'checkin-out-of-hours'");
+
+      foreach ($alerts as $alert) {
+        Log::info("Dispatch du job AlertCheckInOutOfHours pour l'alerte ID: {$alert->id} avec heure limite: {$alert->time}");
+        // Dispatcher sur la queue 'alerts'
+        AlertCheckInOutOfHours::dispatch($alert->id)->onQueue('alerts');
+        $this->line("Job dispatché pour l'alerte ID: {$alert->id}");
+      }
     }
 
     Log::info('Fin de la commande alerts:check-in');
     $this->info('Traitement des alertes de check-in terminé');
+    return 0; // Succès
   }
 }
