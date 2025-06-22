@@ -29,12 +29,11 @@
           <div class="app-brand justify-content-center">
             <a href="{{url('/')}}" class="app-brand-link gap-2">
               <span class="app-brand-logo demo">@include('_partials.macros',["width"=>200,"withbg"=>'var(--bs-primary)'])</span>
-              <span class="app-brand-text demo text-body fw-bold">{{config('variables.templateName')}}</span>
             </a>
           </div>
           <!-- /Logo -->
-          <h4 class="mb-2">Welcome to {{config('variables.templateName')}}! 👋</h4>
-          <p class="mb-4">Please sign-in to your account and start the adventure</p>
+          <h4 class="mb-2">Welcome to Valomnia Alert and Report 👋</h4>
+          <p class="mb-4">Please sign-in to your account</p>
 
           <form id="formAuthentication" class="mb-3" action="{{url('/login')}}" method="POST">
               @csrf

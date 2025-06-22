@@ -3,9 +3,8 @@
 namespace App\Jobs;
 
 use App\Models\Alert;
-use App\Models\CheckIn;
-use App\Models\EmailTemplate;
 use App\Models\AlertHistory;
+use App\Models\EmailTemplate;
 use App\Mail\Email;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -15,7 +14,9 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
-use Exception;
+use App\Models\Employee;
+use App\Models\CheckIn; // Ajout de l'importation correcte
+use Throwable;
 
 class AlertCheckInOutOfHours implements ShouldQueue
 {
@@ -26,7 +27,6 @@ class AlertCheckInOutOfHours implements ShouldQueue
   public function __construct($alertId)
   {
     $this->alertId = $alertId;
-    Log::info("Initialisation du job AlertCheckInOutOfHours avec alert ID: {$alertId}");
   }
 
   public function handle(): void
@@ -50,7 +50,6 @@ class AlertCheckInOutOfHours implements ShouldQueue
     }
 
     Log::info("✅ Alerte ID {$this->alertId} active et de type 'checkin-out-of-hours'");
-    Log::info("Heure limite configurée: {$alert->time}");
 
     // Extract employee reference
     $employeeReference = null;
@@ -66,12 +65,8 @@ class AlertCheckInOutOfHours implements ShouldQueue
         }
       } catch (Exception $e) {
         Log::error("❌ Erreur lors du décodage JSON des paramètres: " . $e->getMessage());
+        return;
       }
-    }
-
-    if (empty($employeeReference) && $alert->employee) {
-      $employeeReference = $alert->employee->reference ?? null;
-      Log::info("✅ Référence employé extraite de la relation employee: {$employeeReference}");
     }
 
     if (empty($employeeReference)) {
@@ -118,6 +113,7 @@ class AlertCheckInOutOfHours implements ShouldQueue
     $endDateFilter = $endOfDay->copy()->setTimezone('UTC')->format('Y-m-d\TH:i:s\Z');
 
     Log::info("Période de filtrage: de {$startDateFilter} à {$endDateFilter}");
+    Log::info("Heure actuelle: " . Carbon::now($timezone)->format('Y-m-d H:i:s'));
 
     try {
       $allCheckIns = [];
@@ -132,50 +128,23 @@ class AlertCheckInOutOfHours implements ShouldQueue
         'organisation' => $alert->user->organisation ?? 'default',
         'cookies' => $alert->user->cookies,
         'employeeReference' => $employeeReference,
-        'max' => 5,
+        'max' => 5, // Limite à 5 check-ins
         'offset' => $offset,
-        'sort' => 'startDate',
         'order' => 'desc',
-        'startDate_gte' => $startDateFilter,
-        'startDate_lte' => $endDateFilter
+        'startDate' => $startDateFilter,
+        'endDate' => $endDateFilter
       ];
 
-      Log::info("Récupération des check-ins...");
+      Log::info("Appel à ListCheckIns avec paramètres: " . json_encode($apiParams));
       $api_response = CheckIn::ListCheckIns($apiParams);
-
+      Log::info("Réponse API CheckIn: " . json_encode($api_response));
       if (isset($api_response['data'])) {
         $allCheckIns = $api_response['data'];
-        $nextPage = $api_response['paging']['next'] ?? null;
-
-        while ($nextPage && count($processedOffsets) < $maxPages && (time() - $startTime) < $timeLimit) {
-          preg_match('/offset=(\d+)/', $nextPage, $matches);
-          $offset = isset($matches[1]) ? (int)$matches[1] : 0;
-
-          if (in_array($offset, $processedOffsets)) {
-            Log::warning("Offset déjà traité ($offset), arrêt de la pagination");
-            break;
-          }
-          $processedOffsets[] = $offset;
-
-          Log::info("Récupération de la page suivante avec offset: $offset");
-          $apiParams['offset'] = $offset;
-          $nextPageData = CheckIn::ListCheckIns($apiParams);
-
-          if (isset($nextPageData['data']) && !empty($nextPageData['data'])) {
-            $allCheckIns = array_merge($allCheckIns, $nextPageData['data']);
-            $nextPage = $nextPageData['paging']['next'] ?? null;
-          } else {
-            Log::info("Aucune donnée supplémentaire trouvée, fin de la pagination");
-            $nextPage = null;
-          }
-        }
-
-        if (count($processedOffsets) >= $maxPages) {
-          Log::warning("Limite de pages atteinte ($maxPages), arrêt de la pagination");
-        }
-        if ((time() - $startTime) >= $timeLimit) {
-          Log::warning("Limite de temps atteinte ($timeLimit secondes), arrêt de la pagination");
-        }
+      } elseif (isset($api_response)) {
+        $allCheckIns = $api_response;
+      } else {
+        $allCheckIns = [];
+        Log::warning("Aucune donnée retournée par l'API CheckIn.");
       }
 
       Log::info("Nombre total de check-ins récupérés: " . count($allCheckIns));
@@ -185,59 +154,72 @@ class AlertCheckInOutOfHours implements ShouldQueue
         return;
       }
 
-      // Process check-ins
-      $outOfHoursCheckIns = [];
-      $alertTimeLimit = Carbon::parse($alert->time, $timezone)->format('H:i:s');
+      // Take the last 5 check-ins (or all if less than 5)
+      $lastCheckIns = array_slice($allCheckIns, -5);
+      Log::info("Derniers check-ins préparés pour email: " . json_encode($lastCheckIns));
 
-      foreach ($allCheckIns as $index => $checkIn) {
-        $checkInStartDateStr = $checkIn['startDate'] ?? null;
-        if (!$checkInStartDateStr) {
-          Log::warning("⚠️ Check-in #$index: Date de début ('startDate') manquante. Check-in ignoré.");
-          continue;
-        }
-
-        $checkInDateTime = Carbon::parse($checkInStartDateStr)->setTimezone($timezone);
-        $checkInTime = $checkInDateTime->format('H:i:s');
-
-        Log::info("Check-in #$index: Date {$checkInDateTime->format('Y-m-d')}, Heure {$checkInTime}");
-        Log::info("Comparaison: Heure du check-in ($checkInTime) vs Heure limite ($alertTimeLimit)");
-
-        if ($checkInTime > $alertTimeLimit) {
-          Log::notice("🚨 CHECK-IN HORS HEURES DÉTECTÉ: {$checkInTime} > {$alertTimeLimit}");
-          $outOfHoursCheckIns[] = [
-            'datetime' => $checkInDateTime->format('Y-m-d H:i:s T'),
-            'time' => $checkInTime,
-            'data' => $checkIn
-          ];
-        }
+      // Fetch employee details
+      $employeeApiParams = [
+        'user_id' => $alert->user_id,
+        'organisation' => $alert->user->organisation ?? 'default',
+        'cookies' => $alert->user->cookies
+      ];
+      $employeesResponse = Employee::ListEmployees($employeeApiParams);
+      Log::info("Réponse API Employees: " . json_encode($employeesResponse));
+      $employee = null;
+      if (isset($employeesResponse['data']) && is_array($employeesResponse['data'])) {
+        $employee = collect($employeesResponse['data'])->firstWhere('reference', $employeeReference);
       }
+      $employeeName = $employee ? trim(($employee['firstName'] ?? '') . ' ' . ($employee['lastName'] ?? '')) : $employeeReference;
 
-      Log::info("Nombre de check-ins hors heures: " . count($outOfHoursCheckIns));
+      // Build HTML table for top 5 check-ins with employee name and check-in hours
+      $checkinTable = '';
+      if (!empty($lastCheckIns)) {
+        $checkinTable = '<p style="margin-top: 16px; margin-bottom: 16px;">Out of Hours Check-In Detected</p>';
+        $checkinTable .= '<table class="stock-table" width="100%" cellspacing="0" cellpadding="0" style="border-collapse: collapse;">';
+        $checkinTable .= '<thead><tr>';
+        $checkinTable .= '<th style="padding: 8px; text-align: left; font-weight: bold; border: 1px solid #d3dce0;">Nom de l\'employé</th>';
+        $checkinTable .= '<th style="padding: 8px; text-align: left; font-weight: bold; border: 1px solid #d3dce0;">Heure de check-in</th>';
+        $checkinTable .= '</tr></thead><tbody>';
 
-      if (empty($outOfHoursCheckIns)) {
-        Log::info("Aucun check-in hors heures détecté.");
-        return;
+        foreach ($lastCheckIns as $checkin) {
+          $checkinTime = isset($checkin['startDate']) ? Carbon::parse($checkin['startDate'])->format('H:i') : 'N/A';
+
+          $checkinTable .= '<tr>';
+          $checkinTable .= '<td style="padding: 8px; border: 1px solid #d3dce0;">' . htmlspecialchars($employeeName) . '</td>';
+          $checkinTable .= '<td style="padding: 8px; border: 1px solid #d3dce0;">' . htmlspecialchars($checkinTime) . '</td>';
+          $checkinTable .= '</tr>';
+        }
+
+        $checkinTable .= '</tbody></table>';
       }
 
       // Prepare email
-      Log::info("Préparation de l'envoi d'email...");
+      Log::info("Préparation de l'envoi d'email avec " . count($lastCheckIns) . " derniers check-ins...");
       $content = $template->content;
 
-      if (strpos($content, '[CHECKIN_DATETIME]') === false && strpos($content, '[EMPLOYEE_NAME]') === false) {
-        $content .= "<p>Les check-ins suivants ont eu lieu hors des heures autorisées :</p>";
-      }
+      // Remove unwanted phrases more aggressively
+      $content = preg_replace('/Employee\s*\[EMPLOYEE_NAME\]\s*checked in at\s*\[CHECKIN_DATETIME\]\./i', '', $content);
+      $content = preg_replace('/Aucun produit avec stock bas détecté\./i', '', $content);
 
+      // Ensure no residual unwanted text
+      $content = trim($content);
+
+      $content .= $checkinTable; // Append the check-in table to the content
+
+      // Add empty $expired_products to bypass the default message in the template
       $data = [
         'subject' => $template->subject,
         'title' => $template->title,
         'content' => $content,
-        'checkins' => $outOfHoursCheckIns,
+        'checkins' => $lastCheckIns,
+        'expired_products' => [], // Empty array to avoid the default message
         'btn_name' => $template->btn_name ?? null,
         'btn_link' => $template->btn_link ?? null,
       ];
 
-      Log::info("Envoi d'email avec " . count($outOfHoursCheckIns) . " check-ins hors heures");
-      Mail::to('mokhtaraichaa@gmail.com')->send(new Email($data, 'alert'));
+      Log::info("Envoi d'email avec " . count($lastCheckIns) . " check-ins");
+      Mail::to('thabtiissam7@gmail.com')->send(new Email($data, 'alert'));
       Log::info("Email envoyé avec succès");
 
       // Update alert history
@@ -260,32 +242,17 @@ class AlertCheckInOutOfHours implements ShouldQueue
 
     } catch (Exception $e) {
       Log::error("Erreur lors du traitement de l'alerte: " . $e->getMessage());
-      Log::error("Trace: " . $e->getTraceAsString());
       $this->fail($e);
     }
   }
-
-  public function failed(Exception $exception): void
+  /**
+   * Handle a job failure.
+   *
+   * @param \Throwable $exception
+   * @return void
+   */
+  public function failed(Throwable $exception): void
   {
-    Log::error("Erreur lors du traitement de l'alerte: " . $exception->getMessage());
-    Log::error("Trace: " . $exception->getTraceAsString());
-
-    try {
-      $alertHistory = AlertHistory::where("alert_id", $this->alertId)->latest()->first();
-      if ($alertHistory) {
-        $alertHistory->status = -1;
-        $alertHistory->save();
-        Log::info("Historique d'alerte mis à jour avec statut d'échec");
-      } else {
-        AlertHistory::create([
-          'alert_id' => $this->alertId,
-          'status' => -1,
-        ]);
-        Log::info("Nouvelle entrée d'historique créée avec statut d'échec");
-      }
-    } catch (Exception $e) {
-      Log::error("❌ Erreur lors de la mise à jour de l'historique en cas d'échec du job pour l'alerte ID {$this->alertId}: " . $e->getMessage());
-    }
+    Log::error("Job AlertCheckInOutOfHours failed for alert ID {$this->alertId}: " . $exception->getMessage());
   }
 }
-?>

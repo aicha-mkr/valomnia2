@@ -201,7 +201,7 @@ class EmailTemplateController extends Controller
 
     // Envoyer l'email
     try {
-      Mail::to('mokhtaraichaa@gmail.com')->send(new Email($data, strtolower($type)));
+      Mail::to('thabtiissam7@gmail.com')->send(new Email($data, strtolower($type)));
       \Log::info('Email sent successfully.');
       return redirect()->route('email.liste')->with('success', 'Email envoyé avec succès !');
     } catch (\Exception $e) {

@@ -317,11 +317,15 @@
         <tbody>
         <tr>
           <td class="o_bg-white o_px-md o_py o_sans o_text o_text-secondary" align="left" data-bgcolor="Bg White" data-color="Secondary" data-size="Text Default" data-min="12" data-max="20" style="font-family: Helvetica, Arial, sans-serif;margin-top: 0px;margin-bottom: 0px;font-size: 16px;line-height: 24px;background-color: #ffffff;color: #424651;padding-left: 24px;padding-right: 24px;padding-top: 16px;padding-bottom: 16px;">
-            <p style="margin-top: 0px;margin-bottom: 16px;">{!! $content !!}</p>
+            @php
+              // Remove any <table>...</table> from $content to avoid duplicate/static tables
+              $cleanContent = preg_replace('/<table.*?>.*?<\/table>/is', '', $content);
+            @endphp
+            <p style="margin-top: 0px;margin-bottom: 16px;">{!! $cleanContent !!}</p>
             @if(isset($expired_products) && count($expired_products) > 0)
               @php
                 $introPhrase = 'Les produits suivants ont un stock inférieur ou égal au seuil défini :';
-                if (strpos($content, $introPhrase) === false) {
+                if (strpos($cleanContent, $introPhrase) === false) {
                     echo '<p style="margin-top: 16px;margin-bottom: 16px;">' . $introPhrase . '</p>';
                 }
               @endphp
@@ -345,9 +349,7 @@
                 @endforeach
                 </tbody>
               </table>
-              <p class="timestamp">Rapport généré le : 13 mai 2025, 12:30 PM CET</p>
             @else
-              <p style="margin-top: 16px;margin-bottom: 16px;">Aucun produit avec stock bas détecté.</p>
             @endif
           </td>
         </tr>

@@ -102,6 +102,7 @@ Route::get('/logout', [Login::class, 'logout'])->name('auth-logout');
 Route::group(['prefix' => 'admin'], function () {
     Route::get('/dashboard', [Analytics::class, 'index'])->name('dashboard-admin');
     Route::get('/users', [Users::class, 'index'])->name('users');
+    Route::get('/reports/history', [App\Http\Controllers\HistoriqueReportController::class, 'index'])->name('history-reports');
     Route::group(['prefix' => 'alerts'], function () {
         Route::get('/history', [HistoriqueAlert::class, 'index'])->name('history-alerts');
         Route::get('/history/{id}', [HistoriqueAlert::class, 'regenerate'])->name('history-details-alerts');
@@ -128,6 +129,7 @@ Route::group(['prefix' => 'admin'], function () {
       Route::group(['prefix' => 'reports'], function () {
         Route::get('/history', [HistoriqueReportController::class, 'index'])->name('history-reports');
         Route::get('/history/{id}', [HistoriqueReportController::class, 'regenerate'])->name('history-details-reports');
+        Route::delete('/history/delete/{id}', [HistoriqueReportController::class, 'destroy'])->name('history-reports-destroy');
 
         Route::get('/', [RecapsController::class, 'index'])->name('reports-list');
         Route::get('/create', [RecapsController::class, 'create'])->name('reports-list-create');
@@ -191,8 +193,10 @@ Route::group(['prefix' => 'organisation'], function () {
     Route::get('/show/{id}', [RecapsController::class, 'show'])->name('organisation-reports-show');
     Route::get('/generate', [RecapsController::class, 'generateForm'])->name('reports.generate.form');
     Route::post('/generate', [RecapsController::class, 'generateReport'])->name('reports.generate');
+    Route::get('/history', [HistoriqueReportController::class, 'index'])->name('organisation-history-reports');
+    Route::get('/history/{id}', [HistoriqueReportController::class, 'regenerate'])->name('organisation-history-details-reports');
+    Route::delete('/history/delete/{id}', [HistoriqueReportController::class, 'destroy'])->name('organisation-history-reports-destroy');
   });
-
 
 });
 

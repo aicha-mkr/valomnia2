@@ -90,6 +90,16 @@ class AlertStock implements ShouldQueue
     $warehouseReferences = array_map('trim', $warehouseReferences);
     Log::info("Références d'entrepôts à vérifier: " . implode(', ', $warehouseReferences));
 
+    // Récupérer les références d'entrepôt depuis parameters (JSON)
+    $warehouseRefs = [];
+    if (!empty($alert->parameters)) {
+        $params = json_decode($alert->parameters, true);
+        if (isset($params['warehouse_refs'])) {
+            $warehouseRefs = $params['warehouse_refs'];
+        }
+    }
+    Log::info('Références d\'entrepôt à filtrer : ' . implode(', ', $warehouseRefs));
+
     try {
       if (!isset($alert->user->cookies) || empty($alert->user->cookies)) {
         Log::error("Cookies de session non disponibles pour l'utilisateur: " . $alert->user_id);
@@ -177,8 +187,8 @@ class AlertStock implements ShouldQueue
       $filteredCount = 0;
 
       foreach ($allData as $warhouse) {
-        $warehouseRef = isset($warhouse["warehouseReference"]) ? trim($warhouse["warehouseReference"]) : "";
-        if (!empty($warehouseReferences) && !in_array($warehouseRef, $warehouseReferences)) {
+        $warehouseRef = isset($warhouse["warehouse"]["reference"]) ? $warhouse["warehouse"]["reference"] : null;
+        if (!empty($warehouseRefs) && !in_array($warehouseRef, $warehouseRefs)) {
           continue;
         }
 

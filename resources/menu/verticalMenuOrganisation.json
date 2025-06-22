@@ -34,8 +34,8 @@
                   "slug": "history-reports"
               },
               {
-                  "url": "#",
-                  "name": "History",
+                  "url": "/organisation/reports/history",
+                  "name": "Historique Rapports",
                   "slug": "organisation-history-reports"
               }
           ]

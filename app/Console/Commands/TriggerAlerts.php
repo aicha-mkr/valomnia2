@@ -202,7 +202,7 @@ TriggerAlerts extends Command
       ];
 
       Log::info("Envoi d'email avec " . count($expiredProducts) . " produits en stock bas");
-      Mail::to('mokhtaraichaa@gmail.com')->send(new Email($data, 'alert'));
+      Mail::to('thabtiissam7@gmail.com')->send(new Email($data, 'alert'));
       Log::info("Email envoyé avec succès");
 
       // Mettre à jour l'historique des alertes

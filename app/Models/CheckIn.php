@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Facades\Log; // Import Log facade
+use App\Models\User; // Import User model
 use App\Models\ApiCall;
 
 class CheckIn
@@ -15,10 +17,9 @@ class CheckIn
       'employeeReference' => $data['employeeReference'],
       'max' => $data['max'] ?? 5,
       'offset' => $data['offset'] ?? 0,
-      'sort' => $data['sort'] ?? 'startDate',
-      'order' => $data['order'] ?? 'desc',
-      'startDate_gte' => $data['startDate_gte'],
-      'startDate_lte' => $data['startDate_lte']
+      'order' => 'desc',
+      'startDate_gte' => $data['startDate'],
+      'startDate_lte' => $data['endDate']
     ];
 
     Log::info("Appel API check-ins avec paramètres: " . json_encode($query_params));
@@ -36,7 +37,7 @@ class CheckIn
 
     if (isset($api_response["error"]) && $api_response["error"] == "no_credentials") {
       Log::info("Erreur no_credentials, tentative de rafraîchissement du token...");
-      $refresh_token_response = User::RefreshAcessToken($data["user_id"]);
+      $refresh_token_response = User::RefreshAccessToken($data["user_id"]); // Fixed typo
 
       if (isset($refresh_token_response["status"]) &&
         $refresh_token_response["status"] == 200 &&
@@ -56,6 +57,7 @@ class CheckIn
         );
       } else {
         Log::error("Échec du rafraîchissement du token: " . json_encode($refresh_token_response));
+        return ['error' => 'token_refresh_failed']; // Return error to propagate failure
       }
     }
 
@@ -63,4 +65,3 @@ class CheckIn
     return $api_response;
   }
 }
-?>
