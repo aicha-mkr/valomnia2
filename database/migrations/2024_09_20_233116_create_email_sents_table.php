@@ -11,13 +11,11 @@ class CreateEmailSentsTable extends Migration
         if (!Schema::hasTable('email_sents')) {
             Schema::create('email_sents', function (Blueprint $table) {
                 $table->id();
-                $table->unsignedBigInteger('recap_id');
+                // $table->foreignId('recap_id')->constrained('recaps')->onDelete('cascade');
                 $table->string('recipient_email');
                 $table->timestamp('sent_at')->nullable();
                 $table->enum('status', ['sent', 'failed']);
                 $table->timestamps();
-
-                $table->foreign('recap_id')->references('id')->on('recaps')->onDelete('cascade');
             });
         }
     }

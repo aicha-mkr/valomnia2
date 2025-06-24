@@ -19,32 +19,19 @@
         "slug": "admin-history-alerts"
     },
     {
-      "name": "Historique Rapports",
+      "name": "Reports History",
       "icon": "menu-icon tf-icons bx bx-history",
       "slug": "history-reports",
       "url": "/admin/reports/history"
     },
-      {
-          "name": "Account Settings",
-          "icon": "menu-icon tf-icons bx bx bx-dock-top",
-          "slug": "pages-account-settings",
-          "submenu": [
-              {
-                  "url": "/admin/pages/account-settings-account",
-                  "name": "Account",
-                  "slug": "pages-account-settings-account"
-              },
-              {
-                  "url": "/admin/pages/account-settings-notifications",
-                  "name": "Notifications",
-                  "slug": "pages-account-settings-notifications"
-              },
+     
+             
               {
                   "url": "logout",
                   "name": "Logout",
+                  "icon": "menu-icon tf-icons bx bx-login",
                   "slug": "logout"
               }
-          ]
-      }
+          
   ]
 }

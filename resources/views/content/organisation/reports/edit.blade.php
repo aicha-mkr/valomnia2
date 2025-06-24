@@ -20,7 +20,6 @@
       <div class="card-body">
         <form action="{{ route('organisation-reports-edit', $report->id) }}" method="POST">
           @csrf
-          @method('PUT')
           <!-- Date Range -->
           <div class="row mb-3">
             <label class="col-sm-2 col-form-label" for="startDate">Date Range</label>
@@ -90,7 +89,7 @@
           <div class="row mb-3" id="time-row" style="display: {{ in_array(old('schedule', $report->schedule), ['daily', 'weekly', 'monthly']) ? 'block' : 'none' }};">
             <label class="col-sm-2 col-form-label" for="time">Time</label>
             <div class="col-sm-10">
-              <input type="time" name="time" id="time" class="form-control" value="{{ old('time', $report->time) }}">
+              <input type="time" name="time" id="time" class="form-control" value="{{ old('time', $report->time ? (is_string($report->time) ? substr($report->time, 0, 5) : $report->time->format('H:i')) : '') }}">
               @error('time')<div class="text-danger">{{ $message }}</div>@enderror
             </div>
           </div>
@@ -128,14 +127,35 @@
           dropdown: { enabled: 1 },
           whitelist: ["example@example.com", "john.doe@company.co", "jane.smith@workplace.org"]
         });
+        
         // Pre-populate Tagify with existing emails
         const emails = '{{ $report->users_email }}'.split(',').filter(email => email.trim() !== '');
-        tagify.addTags(emails.map(email => ({ value: email.trim() })));
+        if (emails.length > 0) {
+          tagify.addTags(emails.map(email => ({ value: email.trim() })));
+        }
 
         const button = input.nextElementSibling;
         if (button) {
           button.addEventListener("click", function () {
             tagify.addEmptyTag();
+          });
+        }
+
+        // Ensure emails are properly formatted before form submission
+        const form = input.closest('form');
+        if (form) {
+          form.addEventListener('submit', function(e) {
+            // Get all tags from Tagify
+            const tags = tagify.value;
+            if (tags && tags.length > 0) {
+              // Convert tags to comma-separated string
+              const emailString = tags.map(tag => tag.value).join(',');
+              // Update the hidden input with the formatted emails
+              input.value = emailString;
+            } else {
+              // If no tags, clear the input
+              input.value = '';
+            }
           });
         }
       }

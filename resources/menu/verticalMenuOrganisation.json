@@ -35,7 +35,7 @@
               },
               {
                   "url": "/organisation/reports/history",
-                  "name": "Historique Rapports",
+                  "name": "History",
                   "slug": "organisation-history-reports"
               }
           ]
@@ -59,11 +59,6 @@
                     "url": "pages/account-settings-account",
                     "name": "Account",
                     "slug": "pages-account-settings-account"
-                },
-                {
-                    "url": "pages/account-settings-notifications",
-                    "name": "Notifications",
-                    "slug": "pages-account-settings-notifications"
                 },
                 {
                     "url": "logout",

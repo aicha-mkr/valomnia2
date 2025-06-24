@@ -2,3 +2,75 @@
 @import 'bootstrap-extended';
 @import 'components';
 @import 'colors';
+
+/* --- Sidebar Enhancements --- */
+.layout-menu {
+    width: 280px !important;
+}
+.layout-page {
+    padding-left: 280px !important;
+}
+.layout-menu .menu-link {
+    font-size: 1.05rem !important;
+}
+
+/* --- Always Open Submenu Enhancements --- */
+.menu-vertical .menu-sub {
+    display: block !important; /* Keep submenus always open */
+}
+.menu-vertical .menu-toggle::after {
+    display: none !important; /* Hide the dropdown arrow */
+}
+.menu-vertical .menu-sub .menu-link {
+    color: #a4a2b2 !important; /* Make submenu text lighter */
+    font-size: 0.95rem !important; /* Make submenu text slightly smaller */
+}
+.menu-vertical .menu-sub .menu-link:hover {
+    color: #696cff !important; /* Keep a hover effect */
+}
+.menu-vertical .menu-sub .menu-item.active > .menu-link {
+    color: #696cff !important; /* Style for active submenu item */
+    font-weight: bold;
+}
+
+/* --- Correct Active Menu Item Styling --- */
+/* Ensure any active menu link has the correct background and text color */
+.menu-vertical .menu-item.active > .menu-link:not(.menu-toggle) {
+    background-color: #696cff !important;
+    color: #fff !important;
+    font-weight: bold;
+    border-radius: 0.375rem;
+}
+
+/* Specific styling for active Dashboard link */
+.menu-vertical .menu-item.menu-slug-dashboard-organisation.active > .menu-link {
+    color: #000 !important; /* Black text for dashboard */
+}
+/* Specific styling for active Email Setting link */
+.menu-vertical .menu-item.menu-slug-organisation-Repport.active > .menu-link {
+    color: #000 !important; /* Black text for email settings */
+}
+
+/* Prevent parent menu item from being highlighted when submenu item is active */
+.menu-vertical .menu-item.active > .menu-link.menu-toggle {
+    background-color: transparent !important;
+}
+
+/* --- Hide Notifications Dropdown --- */
+.layout-navbar .navbar-nav-right .dropdown-notifications {
+    display: none !important;
+}
+
+/* --- Sidebar Footer --- */
+.layout-menu .menu-footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+    padding: 1.5rem 0;
+}
+.layout-menu .copyright-text {
+    color: #a4a2b2;
+    font-size: 0.85rem;
+    margin: 0;
+}

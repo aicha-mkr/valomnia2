@@ -27,28 +27,22 @@
 
       {{-- Active menu method --}}
       @php
-      $activeClass = null;
-      $currentRouteName = Route::currentRouteName();
-
-      if ($currentRouteName === $menu->slug) {
-        $activeClass = 'active';
-      } elseif (isset($menu->submenu)) {
-        if (gettype($menu->slug) === 'array') {
-          foreach ($menu->slug as $slug) {
-            if (str_contains($currentRouteName, $slug) && strpos($currentRouteName, $slug) === 0) {
-              $activeClass = 'active open';
-            }
-          }
-        } else {
-          if (str_contains($currentRouteName, $menu->slug) && strpos($currentRouteName, $menu->slug) === 0) {
-            $activeClass = 'active open';
-          }
+        $activeClass = null;
+        if (isset($menu->url) && request()->is(trim($menu->url, '/'))) {
+            $activeClass = 'active';
         }
-      }
+        elseif (isset($menu->submenu)) {
+            foreach ($menu->submenu as $submenu) {
+                if (isset($submenu->url) && request()->is(trim($submenu->url, '/'))) {
+                    $activeClass = 'active open';
+                    break;
+                }
+            }
+        }
       @endphp
 
       {{-- Main menu --}}
-      <li class="menu-item {{ $activeClass }}">
+      <li class="menu-item {{ $activeClass }} menu-slug-{{ $menu->slug }}">
         <a href="{{ isset($menu->url) ? url($menu->url) : 'javascript:void(0);' }}" class="{{ isset($menu->submenu) ? 'menu-link menu-toggle' : 'menu-link' }}" @if (isset($menu->target) && !empty($menu->target)) target="_blank" @endif>
           @isset($menu->icon)
             <i class="{{ $menu->icon }}"></i>
@@ -69,5 +63,9 @@
 
     
   </ul>
+
+  <div class="menu-footer">
+    <p class="copyright-text">©2025 Valomnia</p>
+  </div>
 
 </aside>

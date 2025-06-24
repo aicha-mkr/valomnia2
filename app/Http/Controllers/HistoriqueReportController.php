@@ -12,7 +12,7 @@ class HistoriqueReportController extends Controller
   // Afficher la liste des historiques
   public function index()
   {
-    $historiqueReports = ReportHistory::with(['report.type', 'user'])
+    $historiqueReports = ReportHistory::with(['report', 'user'])
       ->orderBy('created_at', 'desc')
       ->paginate(15);
 

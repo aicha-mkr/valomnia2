@@ -519,28 +519,36 @@ style="max-width: 632px; margin: 0 auto">
 <tbody>
   <tr>
     <td
-      class="o_bg-white o_px-md o_py o_sans o_text o_text-secondary"
+      class="o_re o_bg-white o_px o_pb-md"
       align="center"
       data-bgcolor="Bg White"
-      data-color="Secondary"
-      data-size="Text Default"
-      data-min="12"
-      data-max="20"
-      style="
-        font-family: Helvetica, Arial, sans-serif;
-        margin-top: 0px;
-        margin-bottom: 0px;
-        font-size: 16px;
-        line-height: 24px;
-        background-color: #ffffff;
-        color: #424651;
-        padding-left: 24px;
-        padding-right: 24px;
-        padding-top: 16px;
-        padding-bottom: 16px;
-      ">
-
-      <p id="rapport-template-text" style="margin-top: 0px; margin-bottom: 0px">{{ $content }}</p>
+      style="font-size: 0; vertical-align: top; background-color: #ffffff; padding-left: 16px; padding-right: 16px; padding-bottom: 24px">
+      <!--[if mso]><table width="584" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td align="left"><![endif]-->
+      <div class="o_col_i" style="display: inline-block; vertical-align: top; width: 100%; max-width: 584px">
+        <table width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+          <tbody>
+            <tr>
+              <td
+                class="o_sans o_text o_text-secondary"
+                align="left"
+                data-size="Text Default"
+                data-min="12"
+                data-max="20"
+                style="
+                  font-family: Helvetica, Arial, sans-serif;
+                  margin-top: 0px;
+                  margin-bottom: 0px;
+                  font-size: 16px;
+                  line-height: 24px;
+                  color: #424651;
+                ">
+                <p id="rapport-template-text" style="margin-top: 0px; margin-bottom: 0px">{!! $content !!}</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <!--[if mso]></td></tr></table><![endif]-->
     </td>
   </tr>
 </tbody>
@@ -576,14 +584,14 @@ border="0"
 role="presentation"
 style="max-width: 632px; margin: 0 auto">
 <tbody>
-<tr>
-  <td
-    class="o_bg-white"
-    style="font-size: 24px; line-height: 24px; height: 24px; background-color: #ffffff"
-    data-bgcolor="Bg White">
-    &nbsp;
-  </td>
-</tr>
+  <tr>
+    <td
+      class="o_bg-white"
+      style="font-size: 24px; line-height: 24px; height: 24px; background-color: #ffffff"
+      data-bgcolor="Bg White">
+      &nbsp;
+    </td>
+  </tr>
 </tbody>
 </table>
 <!--[if mso]></td></tr></table><![endif]-->

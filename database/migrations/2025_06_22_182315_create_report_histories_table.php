@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('report_id');
             $table->unsignedBigInteger('user_id');
-            $table->boolean('status')->default(0);
+            $table->string('status')->default('pending');
             $table->integer('attempts')->default(0);
             $table->timestamps();
 

@@ -14,6 +14,20 @@ class UsersTableSeeder extends Seeder
      */
     public function run(): void
     {
+        // Add the connector user for agro organisation first (ID 1)
+        $connectorToken = Str::random(40);
+        DB::table('users')->insert([
+            'name' => 'connector valomnia',
+            'email' => 'connector@valomnia.com',
+            'password' => Hash::make('password'),
+            'role' => 'ROLE_USER',
+            'organisation' => 'agro',
+            'token' => $connectorToken,
+            'password_valomnia' => 'password',
+            'cookies' => $connectorToken,
+        ]);
+
+        // Then add the Super ADMIN
         $token = Str::random(40); // 40 character random string
         DB::table('users')->insert([
             'name' => 'Super ADMIN',

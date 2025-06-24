@@ -232,8 +232,22 @@ class AlertStock implements ShouldQueue
       ];
 
       Log::info("Envoi d'email avec " . count($expiredProducts) . " produits en stock bas");
-      Mail::to('mokhtaraichaa@gmail.com')->send(new Email($data, 'alert'));
-      Log::info("Email envoyé avec succès");
+
+      // Récupère les emails depuis la colonne users_email (format JSON: [{"value":"email"}, ...])
+      $emails = [];
+      if (!empty($alert->users_email)) {
+          $emailsArray = json_decode($alert->users_email, true);
+          if (is_array($emailsArray)) {
+              foreach ($emailsArray as $entry) {
+                  if (isset($entry['value'])) {
+                      $emails[] = trim($entry['value']);
+                  }
+              }
+          }
+      }
+      if (!empty($emails)) {
+          Mail::to($emails)->send(new Email($data, 'alert'));
+      }
 
       // Mettre à jour l'historique des alertes
       $alertHistory = AlertHistory::where("alert_id", $alert->id)->latest()->first();

@@ -15,7 +15,6 @@
     <table class="table">
       <thead class="table-light">
         <tr>
-          <th>Type de Rapport</th>
           <th>Utilisateur</th>
           <th>Status</th>
           <th>Tentatives</th>
@@ -26,9 +25,6 @@
       <tbody class="table-border-bottom-0">
         @forelse ($historiqueReports as $historique)
         <tr>
-          <td>
-            <span class="fw-medium">{{ $historique->report->type->name ?? 'N/A' }}</span>
-          </td>
           <td>{{ $historique->user->name ?? 'N/A' }}</td>
           <td>
             @if($historique->status == 1)
@@ -59,7 +55,7 @@
         </tr>
         @empty
         <tr>
-          <td colspan="6" class="text-center">Aucun historique de rapport trouvé.</td>
+          <td colspan="5" class="text-center">Aucun historique de rapport trouvé.</td>
         </tr>
         @endforelse
       </tbody>

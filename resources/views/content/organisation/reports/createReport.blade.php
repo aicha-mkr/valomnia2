@@ -56,10 +56,10 @@
           <div class="row mb-3">
             <label class="col-sm-2 col-form-label" for="startDate">Date Range</label>
             <div class="col-sm-5">
-              <input type="date" name="startDate" id="startDate" class="form-control" required>
+              <input type="date" name="startDate" id="startDate" class="form-control" value="{{ old('startDate', $defaultData['startDate'] ?? '') }}" required>
             </div>
             <div class="col-sm-5">
-              <input type="date" name="endDate" id="endDate" class="form-control" required>
+              <input type="date" name="endDate" id="endDate" class="form-control" value="{{ old('endDate', $defaultData['endDate'] ?? '') }}" required>
             </div>
           </div>
 
@@ -67,7 +67,7 @@
           <div class="row mb-3">
             <label class="col-sm-2 col-form-label" for="users_email">Emails</label>
             <div class="col-sm-10 d-flex align-items-center">
-              <input class="customLook form-control" name="users_email" id="users_email" placeholder="Add recipient emails">
+              <input class="customLook form-control" name="users_email" id="users_email" placeholder="Add recipient emails" value="{{ old('users_email', $defaultData['users_email'] ?? '') }}">
               <button type="button" class="ms-2 btn btn-outline-primary btn-icon">
                 <i class="bx bx-plus"></i>
               </button>
@@ -79,27 +79,27 @@
             <label class="col-sm-2 col-form-label">Select KPIs</label>
             <div class="col-sm-10">
               <div class="form-check form-check-success">
-                <input class="form-check-input" type="checkbox" name="fields[]" value="total_orders" id="total_orders" checked>
+                <input class="form-check-input kpi-checkbox" type="checkbox" name="fields[]" value="total_orders" id="total_orders" {{ in_array('total_orders', $kpis ?? []) ? 'checked' : '' }}>
                 <label class="form-check-label" for="total_orders">Total Orders</label>
               </div>
               <div class="form-check form-check-success">
-                <input class="form-check-input" type="checkbox" name="fields[]" value="total_revenue" id="total_revenue" checked>
+                <input class="form-check-input kpi-checkbox" type="checkbox" name="fields[]" value="total_revenue" id="total_revenue" {{ in_array('total_revenue', $kpis ?? []) ? 'checked' : '' }}>
                 <label class="form-check-label" for="total_revenue">Total Revenue</label>
               </div>
               <div class="form-check form-check-success">
-                <input class="form-check-input" type="checkbox" name="fields[]" value="average_sales" id="average_sales">
+                <input class="form-check-input kpi-checkbox" type="checkbox" name="fields[]" value="average_sales" id="average_sales" {{ in_array('average_sales', $kpis ?? []) ? 'checked' : '' }}>
                 <label class="form-check-label" for="average_sales">Average Sales</label>
               </div>
               <div class="form-check form-check-success">
-                <input class="form-check-input" type="checkbox" name="fields[]" value="total_quantities" id="total_quantities">
+                <input class="form-check-input kpi-checkbox" type="checkbox" name="fields[]" value="total_quantities" id="total_quantities" {{ in_array('total_quantities', $kpis ?? []) ? 'checked' : '' }}>
                 <label class="form-check-label" for="total_quantities">Total Quantities Sold</label>
               </div>
               <div class="form-check form-check-success">
-                <input class="form-check-input" type="checkbox" name="fields[]" value="total_clients" id="total_clients">
+                <input class="form-check-input kpi-checkbox" type="checkbox" name="fields[]" value="total_clients" id="total_clients" {{ in_array('total_clients', $kpis ?? []) ? 'checked' : '' }}>
                 <label class="form-check-label" for="total_clients">Total Clients</label>
               </div>
               <div class="form-check form-check-success">
-                <input class="form-check-input" type="checkbox" name="fields[]" value="top_selling_items" id="top_selling_items">
+                <input class="form-check-input kpi-checkbox" type="checkbox" name="fields[]" value="top_selling_items" id="top_selling_items" {{ in_array('top_selling_items', $kpis ?? []) ? 'checked' : '' }}>
                 <label class="form-check-label" for="top_selling_items">Top Selling Items</label>
               </div>
             </div>
@@ -111,19 +111,19 @@
             <div class="col-sm-10">
               <select name="schedule" id="schedule" class="form-select" required>
                 <option value="">Choose schedule</option>
-                <option value="none">Send Now</option>
-                <option value="daily">Daily</option>
-                <option value="weekly" selected>Weekly (Every Monday)</option>
-                <option value="monthly">Monthly</option>
+                <option value="none" {{ ($defaultData['schedule'] ?? '') == 'none' ? 'selected' : '' }}>Send Now</option>
+                <option value="daily" {{ ($defaultData['schedule'] ?? '') == 'daily' ? 'selected' : '' }}>Daily</option>
+                <option value="weekly" {{ ($defaultData['schedule'] ?? '') == 'weekly' ? 'selected' : '' }}>Weekly (Every Monday)</option>
+                <option value="monthly" {{ ($defaultData['schedule'] ?? '') == 'monthly' ? 'selected' : '' }}>Monthly</option>
               </select>
             </div>
           </div>
 
           <!-- Time Field -->
-          <div class="row mb-3" id="time-row" style="display: none;">
+          <div class="row mb-3" id="time-row" style="display: {{ in_array($defaultData['schedule'] ?? '', ['daily', 'weekly', 'monthly']) ? 'block' : 'none' }};">
             <label class="col-sm-2 col-form-label" for="time">Time</label>
             <div class="col-sm-10">
-              <input type="time" name="time" id="time" class="form-control" value="08:00">
+              <input type="time" name="time" id="time" class="form-control" value="{{ old('time', $defaultData['time'] ?? '08:00') }}">
             </div>
           </div>
 
@@ -132,7 +132,7 @@
             <label class="col-sm-2 col-form-label" for="status">Status</label>
             <div class="col-sm-10">
               <div class="form-check form-check-success">
-                <input class="form-check-input" type="checkbox" name="status" id="status" checked>
+                <input class="form-check-input" type="checkbox" name="status" id="status" {{ ($defaultData['status'] ?? true) ? 'checked' : '' }}>
                 <label class="form-check-label" for="status">Active</label>
               </div>
             </div>
@@ -170,6 +170,15 @@
           ]
         });
 
+        // Pre-populate Tagify with existing emails if any
+        const existingEmails = '{{ $defaultData["users_email"] ?? "" }}';
+        if (existingEmails && existingEmails.trim() !== '') {
+          const emails = existingEmails.split(',').filter(email => email.trim() !== '');
+          if (emails.length > 0) {
+            tagify.addTags(emails.map(email => ({ value: email.trim() })));
+          }
+        }
+
         const button = input.nextElementSibling;
         if (button) {
           button.addEventListener("click", function () {
@@ -184,15 +193,16 @@
       const timeInput = document.getElementById("time");
 
       if (scheduleSelect && timeRow && timeInput) {
-        scheduleSelect.addEventListener("change", function () {
+        const updateTimeRow = () => {
           const selected = scheduleSelect.value;
-          if (selected === "daily" || selected === "weekly" || selected === "monthly") {
-            timeRow.style.display = "block";
-          } else {
-            timeRow.style.display = "none";
-            timeInput.value = ""; // Clear time if not scheduled
+          timeRow.style.display = (selected === "daily" || selected === "weekly" || selected === "monthly") ? "block" : "none";
+          if (selected !== "daily" && selected !== "weekly" && selected !== "monthly") {
+            timeInput.value = "";
           }
-        });
+        };
+        
+        scheduleSelect.addEventListener("change", updateTimeRow);
+        updateTimeRow(); // Call once on page load
       }
     });
   </script>

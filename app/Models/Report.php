@@ -32,10 +32,20 @@ class Report extends Model
     'total_revenue' => 'decimal:2',
     'average_sales' => 'decimal:2',
     'status' => 'boolean',
+    'time' => 'datetime:H:i',
   ];
 
   public function user()
   {
     return $this->belongsTo(User::class);
+  }
+  public static function reportValomnia($data){
+    $api_call=new ApiCall(true,$data["user_id"]);
+    $url_api=str_replace("organisation",$data["organisation"],env('URL_API','https://organisation.valomnia.com'));
+    //echo $url_api.'/api/v2.1/warehouseStocks';die();
+    //echo json_encode($data);die();
+    $api_response =$api_call->GetResponse( $url_api.'/api/v2.1/report','GET',array('startDate'=>$data["startDate"],'endDate'=>$data["endDate"]),false,"JSESSIONID=".$data["cookies"]) ;
+    return $api_response;
+
   }
 }

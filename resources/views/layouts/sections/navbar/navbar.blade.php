@@ -3,6 +3,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 $containerNav = $containerNav ?? 'container-fluid';
 $navbarDetached = ($navbarDetached ?? '');
+$user = Auth::user();
 @endphp
 
 <!-- Navbar -->
@@ -52,43 +53,77 @@ $navbarDetached = ($navbarDetached ?? '');
           <li class="nav-item navbar-dropdown dropdown-user dropdown">
             <a class="nav-link dropdown-toggle hide-arrow p-0" href="javascript:void(0);" data-bs-toggle="dropdown">
                 <div class="avatar avatar-online">
-                    <img src="{{ asset('assets/img/avatars/1.png') }}" alt class="w-px-40 h-auto rounded-circle">
+                    @if(session('isSuperAdmin'))
+                        <img src="{{ asset('assets/img/logo/OIP.jpg') }}" alt class="w-px-40 h-auto rounded-circle">
+                    @else
+                        <img src="{{ asset('assets/img/avatars/1.png') }}" alt class="w-px-40 h-auto rounded-circle">
+                    @endif
                 </div>
             </a>
             <ul class="dropdown-menu dropdown-menu-end">
-                <li>
-                    <a class="dropdown-item" href="javascript:void(0);">
-                        <div class="d-flex">
-                            <div class="flex-shrink-0 me-3">
-                                <div class="avatar avatar-online">
-                                    <img src="{{ asset('assets/img/avatars/1.png') }}" alt class="w-px-40 h-auto rounded-circle">
+                @if(session('isSuperAdmin'))
+                    <li>
+                        <a class="dropdown-item" href="javascript:void(0);">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0 me-3">
+                                    <div class="avatar avatar-online">
+                                        <img src="{{ asset('assets/img/logo/OIP.jpg') }}" alt class="w-px-40 h-auto rounded-circle">
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-0">Administrator</h6>
                                 </div>
                             </div>
-                            <div class="flex-grow-1">
-                                <h6 class="mb-0">Agro</h6>
-                                <small class="text-muted">Organisation</small>
+                        </a>
+                    </li>
+                    <li>
+                        <div class="dropdown-divider my-1"></div>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="{{ route('auth-logout') }}"
+                           onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                            <i class="bx bx-power-off bx-md me-3"></i><span>Log Out</span>
+                        </a>
+                        <form id="logout-form" action="{{ route('auth-logout') }}" method="GET" class="d-none">
+                        </form>
+                    </li>
+                @else
+                    <!-- Ancien menu pour les autres utilisateurs -->
+                    <li>
+                        <a class="dropdown-item" href="javascript:void(0);">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0 me-3">
+                                    <div class="avatar avatar-online">
+                                        <img src="{{ asset('assets/img/avatars/1.png') }}" alt class="w-px-40 h-auto rounded-circle">
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-0">Agro</h6>
+                                    <small class="text-muted">Organisation</small>
+                                </div>
                             </div>
-                        </div>
-                    </a>
-                </li>
-                <li>
-                    <div class="dropdown-divider my-1"></div>
-                </li>
-                <li>
-                    <a class="dropdown-item" href="{{ route('account.settings') }}">
-                        <i class="bx bx-user bx-md me-3"></i><span>My Profile</span>
-                    </a>
-                </li>
-
-
-                <li>
-                    <div class="dropdown-divider my-1"></div>
-                </li>
-                <li>
-                    <a class="dropdown-item" href="javascript:void(0);">
-                        <i class="bx bx-power-off bx-md me-3"></i><span>Log Out</span>
-                    </a>
-                </li>
+                        </a>
+                    </li>
+                    <li>
+                        <div class="dropdown-divider my-1"></div>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="{{ route('account.settings') }}">
+                            <i class="bx bx-user bx-md me-3"></i><span>My Profile</span>
+                        </a>
+                    </li>
+                    <li>
+                        <div class="dropdown-divider my-1"></div>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="{{ route('auth-logout') }}"
+                           onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                            <i class="bx bx-power-off bx-md me-3"></i><span>Log Out</span>
+                        </a>
+                        <form id="logout-form" action="{{ route('auth-logout') }}" method="GET" class="d-none">
+                        </form>
+                    </li>
+                @endif
             </ul>
         </li>
 
