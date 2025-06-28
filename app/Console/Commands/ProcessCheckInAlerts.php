@@ -10,7 +10,7 @@ use Carbon\Carbon;
 
 class ProcessCheckInAlerts extends Command
 {
-  protected $signature = 'alerts:check-in {alert_id? : The ID of a specific alert to process}';
+  protected $signature = 'alerts:check-in {alert_id? : The ID of a specific alert to process} {--test : Test mode for specific alert}';
   protected $description = 'Process active check-in alerts to detect out-of-hours check-ins, optionally for a specific alert ID';
 
   public function handle()
@@ -18,6 +18,7 @@ class ProcessCheckInAlerts extends Command
     Log::info('Démarrage de la commande alerts:check-in');
 
     $alertId = $this->argument('alert_id');
+    $isTest = $this->option('test');
     $currentDateTime = Carbon::now(config('app.timezone'));
 
     if ($alertId) {
@@ -36,27 +37,34 @@ class ProcessCheckInAlerts extends Command
         return 1; // Code d'erreur
       }
 
-      // Vérifier si l'alerte est applicable aujourd'hui (sans vérifier l'heure)
-      $shouldDispatch = false;
-      if ($alert->every_day) {
-        // Si tous les jours, toujours applicable
+      // En mode test, ignorer les vérifications de date
+      if ($isTest) {
+        Log::info("Mode test activé - Exécution de l'alerte ID {$alertId} sans vérification de date");
         $shouldDispatch = true;
-        Log::info("L'alerte ID {$alertId} est applicable car configurée pour tous les jours");
       } else {
-        // Si jour spécifique, vérifier uniquement la date (pas l'heure)
-        if ($currentDateTime->toDateString() == $alert->date) {
+        // Vérifier si l'alerte est applicable aujourd'hui (sans vérifier l'heure)
+        $shouldDispatch = false;
+        if ($alert->every_day) {
+          // Si tous les jours, toujours applicable
           $shouldDispatch = true;
-          Log::info("L'alerte ID {$alertId} est applicable car la date actuelle ({$currentDateTime->toDateString()}) correspond à la date configurée ({$alert->date})");
+          Log::info("L'alerte ID {$alertId} est applicable car configurée pour tous les jours");
         } else {
-          Log::info("L'alerte ID {$alertId} n'est pas applicable car la date actuelle ({$currentDateTime->toDateString()}) ne correspond pas à la date configurée ({$alert->date})");
+          // Si jour spécifique, vérifier uniquement la date (pas l'heure)
+          if ($currentDateTime->toDateString() == $alert->date) {
+            $shouldDispatch = true;
+            Log::info("L'alerte ID {$alertId} est applicable car la date actuelle ({$currentDateTime->toDateString()}) correspond à la date configurée ({$alert->date})");
+          } else {
+            Log::info("L'alerte ID {$alertId} n'est pas applicable car la date actuelle ({$currentDateTime->toDateString()}) ne correspond pas à la date configurée ({$alert->date})");
+          }
         }
       }
 
       if ($shouldDispatch) {
-        Log::info("Dispatch du job AlertCheckInOutOfHours pour l'alerte ID: {$alert->id} avec heure limite: {$alert->time}");
-        // Dispatcher sur la queue 'alerts'
-        AlertCheckInOutOfHours::dispatch($alert->id)->onQueue('alerts');
-        $this->line("Job dispatché pour l'alerte ID: {$alert->id}");
+        Log::info("Exécution du job AlertCheckInOutOfHours pour l'alerte ID: {$alert->id} avec heure limite: {$alert->time}");
+        // Exécuter le job de manière synchrone
+        $job = new AlertCheckInOutOfHours($alert->id);
+        $job->handle();
+        $this->line("Job exécuté pour l'alerte ID: {$alert->id}");
       } else {
         $this->info("L'alerte ID {$alertId} n'est pas applicable pour la date actuelle ({$currentDateTime->toDateString()}).");
       }
@@ -85,10 +93,11 @@ class ProcessCheckInAlerts extends Command
       $this->info("Traitement de {$count} alertes 'checkin-out-of-hours'");
 
       foreach ($alerts as $alert) {
-        Log::info("Dispatch du job AlertCheckInOutOfHours pour l'alerte ID: {$alert->id} avec heure limite: {$alert->time}");
-        // Dispatcher sur la queue 'alerts'
-        AlertCheckInOutOfHours::dispatch($alert->id)->onQueue('alerts');
-        $this->line("Job dispatché pour l'alerte ID: {$alert->id}");
+        Log::info("Exécution du job AlertCheckInOutOfHours pour l'alerte ID: {$alert->id} avec heure limite: {$alert->time}");
+        // Exécuter le job de manière synchrone
+        $job = new AlertCheckInOutOfHours($alert->id);
+        $job->handle();
+        $this->line("Job exécuté pour l'alerte ID: {$alert->id}");
       }
     }
 

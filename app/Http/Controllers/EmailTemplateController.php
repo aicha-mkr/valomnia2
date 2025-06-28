@@ -57,6 +57,21 @@ class EmailTemplateController extends Controller
       $alertTitle = $alert ? $alert->name : null;
     }
 
+    \Log::info('KPI debug', [
+        'kpi' => $request->input('kpi', []),
+        'all' => $request->all()
+    ]);
+
+    \Log::info('KPIs from request', [
+        'kpi' => $request->input('kpi', []),
+        'total_orders' => in_array('total_orders', $request->input('kpi', [])),
+        'total_revenue' => in_array('total_revenue', $request->input('kpi', [])),
+        'average_sales' => in_array('average_sales', $request->input('kpi', [])),
+        'total_quantities' => in_array('total_quantities', $request->input('kpi', [])),
+        'total_clients' => in_array('total_clients', $request->input('kpi', [])),
+        'top_selling_items' => in_array('top_selling_items', $request->input('kpi', [])),
+    ]);
+
     $templateData = [
       'user_id' => auth()->id(),
       'type' => $validated['type'],
@@ -68,6 +83,12 @@ class EmailTemplateController extends Controller
       'btn_name' => $validated['btn_name'] ?? null,
       'btn_link' => $validated['btn_link'] ?? null,
       'has_btn' => !empty($validated['btn_name']) && !empty($validated['btn_link']),
+      'total_orders' => in_array('total_orders', $request->input('kpi', [])),
+      'total_revenue' => in_array('total_revenue', $request->input('kpi', [])),
+      'average_sales' => in_array('average_sales', $request->input('kpi', [])),
+      'total_quantities' => in_array('total_quantities', $request->input('kpi', [])),
+      'total_clients' => in_array('total_clients', $request->input('kpi', [])),
+      'top_selling_items' => in_array('top_selling_items', $request->input('kpi', [])),
     ];
 
     \Log::info('Email Template Data:', $templateData);

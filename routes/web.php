@@ -157,6 +157,11 @@ Route::group(['prefix' => 'admin'], function () {
 
 Route::group(['prefix' => 'organisation'], function () {
     Route::get('/dashboard', [Analytics::class, 'indexOrganisation'])->name('dashboard-organisation');
+    
+    // AJAX routes for dashboard data management
+    Route::post('/dashboard/refresh', [Analytics::class, 'refreshData'])->name('dashboard.refresh');
+    Route::get('/dashboard/cached', [Analytics::class, 'getCachedData'])->name('dashboard.cached');
+    
     Route::group(['prefix' => 'alerts'], function () {
         Route::get('/history', [HistoriqueAlert::class, 'index'])->name('organisation-history-alerts');
         Route::get('/history/{id}', [HistoriqueAlert::class, 'regenerate'])->name('organisation-history-details-alerts');
@@ -286,3 +291,5 @@ Route::get('/form/layouts-horizontal', [HorizontalForm::class, 'index'])->name('
 
 // tables routes
 Route::get('/tables/basic', [TablesBasic::class, 'index'])->name('tables-basic');
+
+Route::get('/dashboard/download-report', [\App\Http\Controllers\dashboard\Analytics::class, 'downloadReport'])->name('dashboard.downloadReport');

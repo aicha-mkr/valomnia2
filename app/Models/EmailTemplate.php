@@ -27,7 +27,20 @@ class EmailTemplate extends Model
         'is_active',
         'alert_id', 
         'alert_title',
+        'average_sales',
+        'total_quantities',
+        'total_clients',
     ];
+
+    protected $casts = [
+        'total_orders' => 'boolean',
+        'total_revenue' => 'boolean',
+        'average_sales' => 'boolean',
+        'total_quantities' => 'boolean',
+        'total_clients' => 'boolean',
+        'top_selling_items' => 'boolean',
+    ];
+
     public function getFormattedContent(array $data)
     {
         $content = $this->content; 

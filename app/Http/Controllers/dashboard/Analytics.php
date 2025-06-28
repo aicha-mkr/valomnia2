@@ -10,8 +10,12 @@ use App\Models\TypeAlert;
 use App\Models\User;
 use App\Models\ReportHistory;
 use App\Models\EmailTemplate;
+use App\Services\DashboardCacheService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
+use Barryvdh\DomPDF\Facade\Pdf as PDF;
 
 class Analytics extends Controller
 {
@@ -23,16 +27,113 @@ class Analytics extends Controller
     $totalUpcomingAlerts = Alert::where('date', '>', now())->count();
     $totalAlertType = TypeAlert::count();
 
-    // Alerts Sent Over Time Chart
-    $alertsSentResult = AlertHistory::selectRaw('DATE_FORMAT(created_at, "%b") as month, COUNT(id) as count')
-                                    ->whereYear('created_at', date('Y'))
-                                    ->groupBy('month')
-                                    ->orderByRaw('MIN(created_at)')
-                                    ->get();
+    // Emails envoyés aujourd'hui
+    $emailsSentToday = AlertHistory::whereDate('created_at', today())
+        ->where(function($q) {
+            $q->where('status', 1)  // encours
+              ->orWhere('status', 3)  // completed
+              ->orWhere('status', 'sent')  // sent
+              ->orWhere('attempts', '>', 0);
+        })
+        ->count();
 
-    $alertsSent = [
-      'labels' => $alertsSentResult->pluck('month'),
-      'series' => $alertsSentResult->pluck('count'),
+    $emailsSentToday += ReportHistory::whereDate('created_at', today())
+        ->where('status', 'sent')
+        ->count();
+
+    // Alerts Sent Over Time Chart (2 courbes : alertes et rapports)
+    $alertQuery = AlertHistory::selectRaw('DATE_FORMAT(created_at, "%d") as day, COUNT(id) as count')
+        ->whereYear('created_at', date('Y'))
+        ->whereMonth('created_at', date('m'))
+        ->where(function($q) {
+            $q->where('status', 1)  // encours
+              ->orWhere('status', 3)  // completed
+              ->orWhere('status', 'sent')  // sent
+              ->orWhere('attempts', '>', 0);
+        })
+        ->groupBy('day')
+        ->orderByRaw('MIN(created_at)')
+        ->get();
+
+    $reportQuery = ReportHistory::selectRaw('DATE_FORMAT(created_at, "%d") as day, COUNT(id) as count')
+        ->whereYear('created_at', date('Y'))
+        ->whereMonth('created_at', date('m'))
+        ->where('status', 'sent')  // Seulement les rapports envoyés
+        ->groupBy('day')
+        ->orderByRaw('MIN(created_at)')
+        ->get();
+
+    // Calculer le vrai total des emails envoyés ce mois
+    $totalEmailsSentThisMonth = AlertHistory::whereYear('created_at', date('Y'))
+        ->whereMonth('created_at', date('m'))
+        ->where(function($q) {
+            $q->where('status', 1)  // encours
+              ->orWhere('status', 3)  // completed
+              ->orWhere('status', 'sent')  // sent
+              ->orWhere('attempts', '>', 0);
+        })
+        ->count();
+
+    $totalEmailsSentThisMonth += ReportHistory::whereYear('created_at', date('Y'))
+        ->whereMonth('created_at', date('m'))
+        ->where('status', 'sent')
+        ->count();
+
+    // Debug: Log les données récupérées
+    \Log::info('Dashboard Analytics - Data retrieved', [
+        'alertQuery_count' => $alertQuery->count(),
+        'reportQuery_count' => $reportQuery->count(),
+        'alertQuery_data' => $alertQuery->toArray(),
+        'reportQuery_data' => $reportQuery->toArray(),
+        'alert_statuses' => AlertHistory::select('status')->distinct()->pluck('status')->toArray(),
+        'report_statuses' => ReportHistory::select('status')->distinct()->pluck('status')->toArray(),
+        'total_alert_histories' => AlertHistory::count(),
+        'total_report_histories' => ReportHistory::count(),
+        'alert_histories_this_month' => AlertHistory::whereYear('created_at', date('Y'))->whereMonth('created_at', date('m'))->count(),
+        'report_histories_this_month' => ReportHistory::whereYear('created_at', date('Y'))->whereMonth('created_at', date('m'))->count(),
+        'total_emails_sent_this_month' => $totalEmailsSentThisMonth
+    ]);
+
+    // Vérifier si on a des données réelles, sinon générer des données de démonstration
+    $hasRealData = $alertQuery->count() > 0 || $reportQuery->count() > 0;
+    
+    if (!$hasRealData) {
+        // Générer des données de démonstration pour le mois en cours
+        $alertQuery = collect();
+        $reportQuery = collect();
+        
+        $daysInMonth = date('t'); // Nombre de jours dans le mois
+        for ($i = 1; $i <= $daysInMonth; $i++) {
+            $day = sprintf('%02d', $i); // Format 01, 02, etc.
+            $alertQuery->push((object)['day' => $day, 'count' => rand(0, 8)]);
+            $reportQuery->push((object)['day' => $day, 'count' => rand(0, 5)]);
+        }
+    }
+
+    // Générer la liste des jours du mois en cours
+    $days = [];
+    $daysInMonth = date('t'); // Nombre de jours dans le mois
+    for ($i = 1; $i <= $daysInMonth; $i++) {
+        $days[] = sprintf('%02d', $i); // Format 01, 02, etc.
+    }
+
+    // Indexer les résultats par jour
+    $alertCounts = $alertQuery->pluck('count', 'day')->all();
+    $reportCounts = $reportQuery->pluck('count', 'day')->all();
+
+    $alertsSeries = [];
+    $reportsSeries = [];
+    foreach ($days as $day) {
+        $alertsSeries[] = (int) ($alertCounts[$day] ?? 0);
+        $reportsSeries[] = (int) ($reportCounts[$day] ?? 0);
+    }
+
+    $emailsEvolution = [
+        'labels' => $days,
+        'series' => [
+            [ 'name' => 'Alert Emails', 'data' => $alertsSeries ],
+            [ 'name' => 'Report Emails', 'data' => $reportsSeries ]
+        ]
     ];
 
     // Alert Types Distribution Donut Chart
@@ -50,20 +151,74 @@ class Analytics extends Controller
         }),
     ];
 
-    // Recent Reports
-    $recentReports = Report::with('user')->latest()->take(5)->get();
+    // Email Types Distribution (nouveau graphique)
+    $emailTypesData = [
+        'alert_emails' => AlertHistory::where(function($q) {
+            $q->where('status', 1)  // encours
+              ->orWhere('status', 3)  // completed
+              ->orWhere('status', 'sent')  // sent
+              ->orWhere('attempts', '>', 0);
+        })->count(),
+        'report_emails' => ReportHistory::where('status', 'sent')->count()
+    ];
+
+    $totalEmails = $emailTypesData['alert_emails'] + $emailTypesData['report_emails'];
+    
+    // Debug: Log les données d'emails pour comprendre d'où viennent les 100%
+    \Log::info('Email Types Distribution Debug', [
+        'alert_emails_count' => $emailTypesData['alert_emails'],
+        'report_emails_count' => $emailTypesData['report_emails'],
+        'total_emails' => $totalEmails,
+        'alert_percentage' => $totalEmails > 0 ? round(($emailTypesData['alert_emails'] / $totalEmails) * 100) : 0,
+        'report_percentage' => $totalEmails > 0 ? round(($emailTypesData['report_emails'] / $totalEmails) * 100) : 0,
+        'alert_history_total' => AlertHistory::count(),
+        'report_history_total' => ReportHistory::count(),
+        'alert_statuses' => AlertHistory::select('status')->distinct()->pluck('status')->toArray(),
+        'report_statuses' => ReportHistory::select('status')->distinct()->pluck('status')->toArray(),
+    ]);
+
+    $emailTypesDistribution = [
+        'labels' => ['Alert Emails', 'Report Emails'],
+        'series' => $totalEmails > 0 ? [
+            round(($emailTypesData['alert_emails'] / $totalEmails) * 100),
+            round(($emailTypesData['report_emails'] / $totalEmails) * 100)
+        ] : [0, 0]
+    ];
+
+    // Emails envoyés récents (nouvelle section)
+    $recentEmails = $this->getRecentEmails();
 
     return view('content.dashboard.dashboards-analytics', compact(
       'totalReports',
       'totalAlerts',
       'totalUpcomingAlerts',
       'totalAlertType',
-      'alertsSent',
+      'emailsSentToday',
+      'emailsEvolution',
       'alertTypes',
       'totalAlertsForPercentage',
-      'recentReports'
+      'totalEmailsSentThisMonth',
+      'recentEmails',
+      'emailTypesDistribution',
+      'emailTypesData'
     ));
   }
+
+  /**
+   * Get the total number of orders from Valomnia API
+   */
+  public function getOrdersCount($user_id, $organisation, $cookies)
+  {
+    $api_call = new \App\Models\ApiCall(true, $user_id);
+    $url_api = str_replace("organisation", $organisation, env('URL_API', 'https://organisation.valomnia.com'));
+    $response = $api_call->GetResponse($url_api . '/api/v2.1/orders', 'GET', [], false, "JSESSIONID=" . $cookies);
+    $orders = json_decode($response, true);
+    if (isset($orders['data']) && is_array($orders['data'])) {
+      return count($orders['data']);
+    }
+    return 0;
+  }
+
     public function indexOrganisation()
     {
         // Get the current user from session
@@ -73,251 +228,331 @@ class Analytics extends Controller
             return redirect()->route('auth-login')->with('error', 'Session expired.');
         }
 
-        // Toujours charger le tout dernier rapport généré pour l'utilisateur, même s'il est vide
-        $latestReport = \App\Models\Report::where('user_id', $user->id)
-            ->orderBy('id', 'desc')
-            ->first();
-
-        // If no report with revenue found, get the most recent report with any data
-        if (!$latestReport) {
-            $latestReport = \App\Models\Report::where('user_id', $user->id)
-                ->where(function($query) {
-                    $query->whereNotNull('total_revenue')
-                          ->orWhereNotNull('total_orders')
-                          ->orWhereNotNull('total_clients');
-                })
-                ->orderBy('date', 'desc')
-                ->first();
-        }
-
-        // Debug log
-        if ($latestReport) {
-            \Log::info('Dashboard - Latest report selected', [
-                'report_id' => $latestReport->id,
-                'user_id' => $latestReport->user_id,
-                'date' => $latestReport->date,
-                'total_revenue' => $latestReport->total_revenue,
-                'total_orders' => $latestReport->total_orders,
-                'total_clients' => $latestReport->total_clients,
-                'average_sales' => $latestReport->average_sales
-            ]);
-        } else {
-            \Log::warning('Dashboard - No report found for user', ['user_id' => $user->id]);
-        }
-
-        // Fetch the previous report for growth calculation
-        $previousReport = \App\Models\Report::where('user_id', $user->id)
-            ->where('id', '!=', $latestReport ? $latestReport->id : 0)
-            ->whereNotNull('total_revenue')
-            ->where('total_revenue', '>', 0)
-            ->orderBy('date', 'desc')
-            ->first();
-
-        // Calculate real profile growth
-        $profileGrowth = 0;
-        if ($latestReport && $previousReport && $previousReport->total_revenue > 0) {
-            $profileGrowth = round((($latestReport->total_revenue - $previousReport->total_revenue) / $previousReport->total_revenue) * 100, 1);
-        }
-
-        // Fetch last 12 reports for the revenue chart
-        $revenueHistory = \App\Models\Report::where('user_id', $user->id)
-            ->orderBy('date', 'asc')
-            ->take(12)
-            ->get(['date', 'total_revenue']);
+        // OPTIMIZATION: Use DashboardCacheService for persistent caching
+        $dashboardService = new DashboardCacheService($user);
         
-        if ($revenueHistory->isEmpty()) {
-            // If no data, generate placeholder for the last 7 days
-            $revenueHistoryLabels = [];
-            $revenueHistoryData = [];
-            for ($i = 6; $i >= 0; $i--) {
-                $revenueHistoryLabels[] = now()->subDays($i)->format('Y-m-d');
-                // Add some variation to the placeholder data
-                $revenueHistoryData[] = rand(500, 2000) - ($i * rand(50, 100));
-            }
+        // Check if user wants to force refresh
+        $forceRefresh = request()->get('refresh', false);
+        
+        if ($forceRefresh) {
+            $dashboardData = $dashboardService->refreshDashboardData();
         } else {
-            $revenueHistoryLabels = $revenueHistory->map(function($r) { return $r->date ? $r->date->format('Y-m-d') : ''; })->toArray();
-            $revenueHistoryData = $revenueHistory->pluck('total_revenue')->toArray();
+            $dashboardData = $dashboardService->getDashboardData();
         }
 
-        // If no report exists, create default values
-        if (!$latestReport) {
-            $dashboardData = [
-                'total_revenue' => 0,
-                'total_clients' => 0,
-                'average_sales' => 0,
-                'total_orders' => 0,
-                'total_quantities' => 0,
-                'top_selling_items' => [],
-                'growth_percentage' => 0,
-                'payments' => 0,
-                'transactions' => 0,
-                'profile_revenue' => 0,
-                'profile_growth' => 0,
-                'order_statistics' => [
-                    'total_orders' => 0,
-                    'electronic' => 0,
-                    'fashion' => 0,
-                    'decor' => 0,
-                    'sports' => 0
-                ],
-                'expense_overview' => [
-                    'total_balance' => 0,
-                    'growth_percentage' => 0
-                ],
-                'emails_sent' => 0,
-                'email_templates' => \App\Models\EmailTemplate::count(),
-                'email_success_rate' => 0,
-                'total_emails' => 0,
-                'alert_sent' => 0,
-                'alert_failed' => 0,
-                'alert_success_rate' => 0,
-                'report_sent' => 0,
-                'report_failed' => 0,
-                'report_success_rate' => 0,
-                'template_count' => \App\Models\EmailTemplate::count(),
-                'activity_feed' => [],
-            ];
-            
-            // Initialize empty arrays for top items when no report exists
-            $topItemsLabels = [];
-            $topItemsData = [];
-        } else {
-            // Parse top selling items if it's JSON
-            $topSellingItems = [];
-            if ($latestReport->top_selling_items) {
-                $items = json_decode($latestReport->top_selling_items, true);
-                if (is_array($items)) {
-                    $topSellingItems = $items;
-                }
-            }
+        // Extract data from cached structure
+        $metrics = $dashboardData['metrics'];
+        $chartData = $dashboardData['chartData'];
+        $lists = $dashboardData['lists'];
 
-            // Calculate growth percentage (mock calculation for demo)
-            $growthPercentage = rand(5, 25); // In real app, calculate from historical data
-
-            // Calculate additional metrics based on the report data
-            $payments = $latestReport->total_revenue * 0.15; // 15% of total revenue
-            $transactions = $latestReport->total_orders * 1.5; // 1.5x orders
-            $profileRevenue = $latestReport->total_revenue * 0.8; // 80% of total revenue
-
-            // Email-related metrics (mock data for now - replace with real email data)
-            $emailsSent = rand(50, 200); // Mock: emails sent this period
-            $emailTemplates = \App\Models\EmailTemplate::count(); // Real: count of email templates
-            $emailSuccessRate = rand(85, 98); // Mock: email success rate
-            $totalEmails = $emailsSent + rand(10, 50); // Mock: total emails (sent + failed)
-
-            // Order statistics breakdown (mock data based on total orders)
-            $totalOrders = $latestReport->total_orders ?? 0;
-            $orderStatistics = [
-                'total_orders' => $totalOrders,
-                'electronic' => round($totalOrders * 0.4),
-                'fashion' => round($totalOrders * 0.3),
-                'decor' => round($totalOrders * 0.2),
-                'sports' => round($totalOrders * 0.1)
-            ];
-
-            // Expense overview
-            $expenseOverview = [
-                'total_balance' => $latestReport->total_revenue * 0.12, // 12% of revenue
+        // Prepare data for view
+        $dashboardData = [
+            'total_revenue' => $metrics['total_revenue'],
+            'total_clients' => $metrics['total_clients'],
+            'average_sales' => $metrics['average_sales'],
+            'total_orders' => $metrics['total_orders'],
+            'total_quantities' => $metrics['total_quantities'],
+            'top_selling_items' => [],
+            'growth_percentage' => $metrics['growth_percentage'],
+            'payments' => $metrics['payments'],
+            'transactions' => $metrics['transactions'],
+            'profile_revenue' => $metrics['profile_revenue'],
+            'profile_growth' => $metrics['profile_growth'],
+            'order_statistics' => [
+                'total_orders' => $metrics['total_orders'],
+                'electronic' => round($metrics['total_orders'] * 0.4),
+                'fashion' => round($metrics['total_orders'] * 0.3),
+                'decor' => round($metrics['total_orders'] * 0.2),
+                'sports' => round($metrics['total_orders'] * 0.1)
+            ],
+            'expense_overview' => [
+                'total_balance' => $metrics['total_revenue'] * 0.12,
                 'growth_percentage' => rand(40, 50)
-            ];
+            ],
+            'emails_sent' => rand(50, 200),
+            'email_templates' => $metrics['email_templates'],
+            'email_success_rate' => rand(85, 98),
+            'total_emails' => rand(60, 250),
+            'alert_sent' => $metrics['alert_sent'],
+            'alert_failed' => $metrics['alert_failed'],
+            'alert_success_rate' => $metrics['alert_success_rate'],
+            'report_sent' => $metrics['report_sent'],
+            'report_failed' => $metrics['report_failed'],
+            'report_success_rate' => $metrics['report_success_rate'],
+            'template_count' => $metrics['template_count'],
+            'activity_feed' => $this->generateActivityFeed($user),
+            'lastUpdated' => $dashboardData['lastUpdated'],
+            'cacheExpires' => $dashboardData['cacheExpires'],
+        ];
 
-            // Email Alerts
-            $alertSent = AlertHistory::whereIn('status', [1, 3])->count();
-            $alertFailed = AlertHistory::where('status', 2)->count();
-            $alertSuccessRate = ($alertSent + $alertFailed) > 0 ? round($alertSent / ($alertSent + $alertFailed) * 100) : 0;
-
-            // Email Reports
-            $reportSent = ReportHistory::where('status', 1)->count();
-            $reportFailed = ReportHistory::where('status', 2)->count();
-            $reportSuccessRate = ($reportSent + $reportFailed) > 0 ? round($reportSent / ($reportSent + $reportFailed) * 100) : 0;
-
-            // Templates
-            $templateCount = EmailTemplate::count();
-
-            // Prepare data for Top Items chart
-            $topItemsLabels = [];
-            $topItemsData = [];
-            if(!empty($topSellingItems)){
-                // Sort by revenue desc to be sure
-                usort($topSellingItems, function($a, $b) {
-                    return $b['revenue'] <=> $a['revenue'];
-                });
-                foreach($topSellingItems as $item){
-                    $topItemsLabels[] = $item['name'] ?? 'Unknown';
-                    $topItemsData[] = $item['revenue'] ?? 0;
-                }
-            }
-            
-            // --- Build Real Activity Feed ---
-            $activityFeed = [];
-
-            // Get recent reports created
-            $recentReports = \App\Models\Report::where('user_id', $user->id)->latest()->take(5)->get();
-            foreach ($recentReports as $report) {
-                $activityFeed[] = [
-                    'date' => $report->created_at,
-                    'message' => 'New report generated with revenue of <strong>' . number_format($report->total_revenue, 2) . ' TND</strong>.',
-                    'type' => 'report'
-                ];
-            }
-
-            // Get recent alert histories
-            $recentAlerts = \App\Models\AlertHistory::with('alert')->latest()->take(5)->get();
-            foreach ($recentAlerts as $history) {
-                $status = $history->status == 1 ? 'successfully sent' : 'failed to send';
-                $activityFeed[] = [
-                    'date' => $history->created_at,
-                    'message' => 'Email alert "'.($history->alert->name ?? 'N/A').'" was <strong>'.$status.'</strong>.',
-                    'type' => 'alert'
-                ];
-            }
-            
-            // Get recent report histories
-            $recentReportHistories = \App\Models\ReportHistory::where('user_id', $user->id)->latest()->take(5)->get();
-            foreach ($recentReportHistories as $history) {
-                 $status = $history->status == 1 ? 'successfully sent' : 'failed to send';
-                 $activityFeed[] = [
-                    'date' => $history->created_at,
-                    'message' => 'A report was <strong>'.$status.'</strong> to <strong>'.$history->email_to.'</strong>.',
-                    'type' => 'report_history'
-                ];
-            }
-
-            // Sort all activities by date and take the latest 5
-            usort($activityFeed, function($a, $b) {
-                return $b['date'] <=> $a['date'];
-            });
-            $activityFeed = array_slice($activityFeed, 0, 5);
-
-            $dashboardData = [
-                'total_revenue' => $latestReport->total_revenue ?? 0,
-                'total_clients' => $latestReport->total_clients ?? 0,
-                'average_sales' => $latestReport->average_sales ?? 0,
-                'total_orders' => $latestReport->total_orders ?? 0,
-                'total_quantities' => $latestReport->total_quantities ?? 0,
-                'top_selling_items' => $topSellingItems,
-                'growth_percentage' => $growthPercentage,
-                'payments' => $payments,
-                'transactions' => $transactions,
-                'profile_revenue' => $profileRevenue,
-                'profile_growth' => $profileGrowth,
-                'order_statistics' => $orderStatistics,
-                'expense_overview' => $expenseOverview,
-                'emails_sent' => $emailsSent,
-                'email_templates' => $emailTemplates,
-                'email_success_rate' => $emailSuccessRate,
-                'total_emails' => $totalEmails,
-                'alert_sent' => $alertSent,
-                'alert_failed' => $alertFailed,
-                'alert_success_rate' => $alertSuccessRate,
-                'report_sent' => $reportSent,
-                'report_failed' => $reportFailed,
-                'report_success_rate' => $reportSuccessRate,
-                'template_count' => $templateCount,
-                'activity_feed' => $activityFeed,
+        // Prepare lists for view
+        $ordersList = [];
+        foreach ($lists['orders'] as $order) {
+            $ordersList[] = [
+                'reference' => $order['reference'] ?? '',
+                'customer' => $order['customer']['name'] ?? '',
+                'total' => $order['total'] ?? '',
+                'status' => $order['status'] ?? '',
             ];
         }
 
-        return view('content.dashboard.dashboards-organisation', compact('dashboardData', 'revenueHistoryLabels', 'revenueHistoryData', 'topItemsLabels', 'topItemsData'));
+        $itemsList = $lists['items'];
+        $topEmployeesList = $chartData['topEmployeesList'];
+        $recentCategories = collect($lists['categories'])
+            ->map(function($cat) {
+                return [
+                    'name' => $cat['name'] ?? 'Unknown',
+                    'date' => isset($cat['dateCreated']) ? \Carbon\Carbon::parse($cat['dateCreated'])->format('Y-m-d') : ''
+                ];
+            })->values()->all();
+
+        // Chart data
+        $statusLabels = $chartData['statusLabels'];
+        $statusData = $chartData['statusData'];
+        $emailsEvolution = $chartData['emailsEvolution'];
+        $revenueHistoryLabels = $chartData['revenueHistory']['labels'];
+        $revenueHistoryData = $chartData['revenueHistory']['data'];
+        $ordersHistoryLabelsDay = $chartData['ordersHistory']['day']['labels'];
+        $ordersHistoryDataDay = $chartData['ordersHistory']['day']['data'];
+        $ordersHistoryLabelsMonth = $chartData['ordersHistory']['month']['labels'];
+        $ordersHistoryDataMonth = $chartData['ordersHistory']['month']['data'];
+
+        // Mock data for remaining charts
+        $topItemsLabels = [];
+        $topItemsData = [];
+        $mainLabels = ['Category 1', 'Category 2', 'Category 3'];
+        $mainData = [30, 25, 20];
+        $clientsHistoryLabels = [];
+        $clientsHistoryData = [];
+        for ($i = 29; $i >= 0; $i--) {
+            $clientsHistoryLabels[] = now()->subDays($i)->format('Y-m-d');
+            $clientsHistoryData[] = rand(0, 5);
+        }
+
+        $alertsCreatedEvolution = ['labels' => $emailsEvolution['labels'], 'data' => $emailsEvolution['series'][0]['data']];
+        $reportsCreatedEvolution = ['labels' => $emailsEvolution['labels'], 'data' => $emailsEvolution['series'][1]['data']];
+
+        // Add missing variables for the view
+        $topProductLabels = ['Product 1', 'Product 2', 'Product 3', 'Product 4', 'Product 5'];
+        $topProductData = [rand(10, 50), rand(10, 50), rand(10, 50), rand(10, 50), rand(10, 50)];
+        $allAlerts = \App\Models\Alert::with('type')->get();
+        $allReports = \App\Models\Report::all();
+        $categories = $lists['categories'];
+
+        // Store in session for PDF export
+        session([
+            'dashboardData' => $dashboardData,
+            'itemsList' => $itemsList,
+            'recentCategories' => $recentCategories,
+            'statusLabels' => $statusLabels,
+            'statusData' => $statusData,
+        ]);
+
+        return view('content.dashboard.dashboards-organisation', compact(
+            'dashboardData',
+            'revenueHistoryLabels',
+            'revenueHistoryData',
+            'topItemsLabels',
+            'topItemsData',
+            'ordersList',
+            'clientsHistoryLabels',
+            'clientsHistoryData',
+            'ordersHistoryLabelsDay',
+            'ordersHistoryDataDay',
+            'ordersHistoryLabelsMonth',
+            'ordersHistoryDataMonth',
+            'statusLabels',
+            'statusData',
+            'topEmployeesList',
+            'topProductLabels',
+            'topProductData',
+            'itemsList',
+            'emailsEvolution',
+            'allAlerts',
+            'allReports',
+            'alertsCreatedEvolution',
+            'reportsCreatedEvolution',
+            'recentCategories',
+            'mainLabels',
+            'mainData',
+            'categories'
+        ));
     }
+
+    /**
+     * Generate activity feed
+     */
+    private function generateActivityFeed($user)
+    {
+        $activityFeed = [];
+        
+        // Get recent reports created
+        $recentReports = \App\Models\Report::where('user_id', $user->id)->latest()->take(3)->get();
+        foreach ($recentReports as $report) {
+            $activityFeed[] = [
+                'date' => $report->created_at,
+                'message' => 'New report generated with revenue of <strong>' . number_format($report->total_revenue, 2) . ' TND</strong>.',
+                'type' => 'report'
+            ];
+        }
+
+        // Sort and limit
+        usort($activityFeed, function($a, $b) {
+            return $b['date'] <=> $a['date'];
+        });
+        
+        return array_slice($activityFeed, 0, 5);
+    }
+
+  public function downloadReport()
+  {
+    $user = session('user');
+    // Use the same data as the dashboard view if available in session
+    $dashboardData = session('dashboardData', [
+        'total_revenue' => 0,
+        'total_orders' => 0,
+        'total_clients' => 0,
+    ]);
+    $itemsList = session('itemsList', []);
+    $recentCategories = session('recentCategories', []);
+    $statusLabels = session('statusLabels', []);
+    $statusData = session('statusData', []);
+    // Pass all to the PDF view
+    $pdf = PDF::loadView('content.dashboard.report-pdf', compact('dashboardData', 'itemsList', 'recentCategories', 'statusLabels', 'statusData'));
+    return $pdf->download('dashboard-report.pdf');
+  }
+
+  /**
+   * AJAX endpoint to refresh dashboard data
+   */
+  public function refreshData()
+  {
+    $user = session('user');
+    
+    if (!$user) {
+        return response()->json(['error' => 'Session expired'], 401);
+    }
+
+    $dashboardService = new DashboardCacheService($user);
+    $data = $dashboardService->refreshDashboardData();
+
+    return response()->json([
+        'success' => true,
+        'data' => $data,
+        'message' => 'Dashboard data refreshed successfully'
+    ]);
+  }
+
+  /**
+   * AJAX endpoint to get cached data only
+   */
+  public function getCachedData()
+  {
+    $user = session('user');
+    
+    if (!$user) {
+        return response()->json(['error' => 'Session expired'], 401);
+    }
+
+    $dashboardService = new DashboardCacheService($user);
+    $data = $dashboardService->getCachedData();
+
+    if (!$data) {
+        return response()->json(['error' => 'No cached data available'], 404);
+    }
+
+    return response()->json([
+        'success' => true,
+        'data' => $data,
+        'message' => 'Cached data retrieved successfully'
+    ]);
+  }
+
+  /**
+   * Get recent emails sent (alerts and reports)
+   */
+  private function getRecentEmails()
+  {
+    // Récupérer les alertes envoyées récemment
+    $alertEmails = AlertHistory::with(['alert.type', 'user'])
+        ->where(function($q) {
+            $q->where('status', 1)  // encours
+              ->orWhere('status', 3)  // completed
+              ->orWhere('status', 'sent')  // sent
+              ->orWhere('attempts', '>', 0);
+        })
+        ->latest()
+        ->take(10)
+        ->get()
+        ->map(function($item) {
+            return [
+                'type' => 'Alert',
+                'title' => $item->alert->title ?? 'N/A',
+                'alert_type' => $item->alert->type->name ?? 'N/A',
+                'recipient' => $item->user->email ?? 'N/A',
+                'status' => $this->getAlertStatusText($item->status),
+                'status_class' => $this->getAlertStatusClass($item->status),
+                'attempts' => $item->attempts ?? 0,
+                'sent_at' => $item->created_at,
+                'response' => $item->response ?? null
+            ];
+        });
+
+    // Récupérer les rapports envoyés récemment
+    $reportEmails = ReportHistory::with(['report.user'])
+        ->where('status', 'sent')
+        ->latest()
+        ->take(10)
+        ->get()
+        ->map(function($item) {
+            return [
+                'type' => 'Report',
+                'title' => 'Report #' . $item->report_id,
+                'alert_type' => 'Monthly Report',
+                'recipient' => $item->report->users_email ?? 'N/A',
+                'status' => 'Sent',
+                'status_class' => 'success',
+                'attempts' => $item->attempts ?? 1,
+                'sent_at' => $item->created_at,
+                'response' => null
+            ];
+        });
+
+    // Combiner et trier par date
+    $allEmails = $alertEmails->concat($reportEmails)
+        ->sortByDesc('sent_at')
+        ->take(15);
+
+    return $allEmails;
+  }
+
+  /**
+   * Get alert status text
+   */
+  private function getAlertStatusText($status)
+  {
+    switch($status) {
+        case 0: return 'Pending';
+        case 1: return 'In Progress';
+        case 2: return 'Failed';
+        case 3: return 'Completed';
+        case 'sent': return 'Sent';
+        default: return 'Unknown';
+    }
+  }
+
+  /**
+   * Get alert status class for styling
+   */
+  private function getAlertStatusClass($status)
+  {
+    switch($status) {
+        case 0: return 'warning';
+        case 1: return 'info';
+        case 2: return 'danger';
+        case 3: return 'success';
+        case 'sent': return 'success';
+        default: return 'secondary';
+    }
+  }
 }

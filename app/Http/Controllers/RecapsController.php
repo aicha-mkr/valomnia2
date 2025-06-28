@@ -94,8 +94,9 @@ class RecapsController extends Controller
       
       $type_alerts = TypeAlert::all();
       $templates = EmailTemplate::all();
+      $reportTemplates = EmailTemplate::where('type', 'Rapport')->get();
       
-      return view('content.organisation.reports.createReport', compact('type_alerts', 'templates', 'kpis', 'defaultData'));
+      return view('content.organisation.reports.createReport', compact('type_alerts', 'templates', 'kpis', 'defaultData', 'reportTemplates'));
     } catch (Exception $ex) {
       Log::error('Error loading create report form: ' . $ex->getMessage());
       return redirect()->route('organisation-reports')->with('error', 'Could not load the form: ' . $ex->getMessage());

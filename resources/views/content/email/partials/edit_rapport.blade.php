@@ -28,7 +28,7 @@
                 <div class="mb-4">
                     <label for="rapport-title" class="form-label">Title</label>
                     <input type="text" class="form-control" id="rapport-title" name="title" placeholder="Report title"
-                        value="{{ $template->title }}" required />
+                        value="{{ $template->title }}" required oninput="updateReportTitleEdit()" />
                 </div>
 
                 <div class="mb-4">
@@ -41,21 +41,35 @@
                 <div class="mb-4">
 
                       <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="revenue_generated" id="totalOrdersCheckbox"
-                               name="kpi[]" {{ in_array('revenue_generated', $template->kpi ?? []) ? 'checked' : '' }} />
-                        <label class="form-check-label" for="totalOrdersCheckbox">Revenue Generated</label>
+                        <input class="form-check-input" type="checkbox" value="total_orders" id="editTotalOrdersCheckbox"
+                               name="kpi[]" {{ in_array('total_orders', $template->kpi ?? []) ? 'checked' : '' }} />
+                        <label class="form-check-label" for="editTotalOrdersCheckbox">Total Orders</label>
                       </div>
                       <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="number_of_orders"
-                               id="totalEmployeesCheckbox" name="kpi[]"
-                          {{ in_array('number_of_orders', $template->kpi ?? []) ? 'checked' : '' }} />
-                        <label class="form-check-label" for="number_of_orders">Number of Orders</label>
+                        <input class="form-check-input" type="checkbox" value="total_revenue" id="editTotalRevenueCheckbox"
+                               name="kpi[]" {{ in_array('total_revenue', $template->kpi ?? []) ? 'checked' : '' }} />
+                        <label class="form-check-label" for="editTotalRevenueCheckbox">Total Revenue</label>
                       </div>
-                  <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="average_basket_size" id="average_basket_sizeCheckbox"
-                            name="kpi[]" {{ in_array('average_basket_size', $template->kpi ?? []) ? 'checked' : '' }} />
-                        <label class="form-check-label" for="average_basket_sizeCheckbox">Average basket size</label>
-                    </div>
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="average_sales" id="editAverageSalesCheckbox"
+                               name="kpi[]" {{ in_array('average_sales', $template->kpi ?? []) ? 'checked' : '' }} />
+                        <label class="form-check-label" for="editAverageSalesCheckbox">Average Sales</label>
+                      </div>
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="total_quantities" id="editTotalQuantitiesCheckbox"
+                               name="kpi[]" {{ in_array('total_quantities', $template->kpi ?? []) ? 'checked' : '' }} />
+                        <label class="form-check-label" for="editTotalQuantitiesCheckbox">Total Quantities</label>
+                      </div>
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="total_clients" id="editTotalClientsCheckbox"
+                               name="kpi[]" {{ in_array('total_clients', $template->kpi ?? []) ? 'checked' : '' }} />
+                        <label class="form-check-label" for="editTotalClientsCheckbox">Total Clients</label>
+                      </div>
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="top_selling_items" id="editTopSellingItemsCheckbox"
+                               name="kpi[]" {{ in_array('top_selling_items', $template->kpi ?? []) ? 'checked' : '' }} />
+                        <label class="form-check-label" for="editTopSellingItemsCheckbox">Top Selling Items</label>
+                      </div>
                 </div>
 
                 <div class="mb-4">
@@ -422,8 +436,9 @@
                         color: #242b3d;
                         font-size: 30px;
                         line-height: 39px;">
-                                                            Report Title
+                                                            {{ $template->title }}
                                                         </h2>
+                                                        <p id="rapport-content-preview">{{ $template->content }}</p>
                                                     </td>
                                                 </tr>
                                             </tbody>
@@ -1544,3 +1559,22 @@
 </div>
 </div>
 </div>
+
+<script>
+function updateReportTitleEdit() {
+    const title = document.getElementById("rapport-title").value;
+    const previewTitle = document.getElementById("report-title");
+    if (previewTitle) previewTitle.innerText = title;
+}
+function updateRapportContentEdit() {
+    const content = document.getElementById("rapport-content").value;
+    const previewContent = document.getElementById("rapport-content-preview");
+    if (previewContent) previewContent.innerText = content;
+}
+document.addEventListener("DOMContentLoaded", function () {
+    updateReportTitleEdit();
+    updateRapportContentEdit();
+    document.getElementById("rapport-title").addEventListener("input", updateReportTitleEdit);
+    document.getElementById("rapport-content").addEventListener("input", updateRapportContentEdit);
+});
+</script>

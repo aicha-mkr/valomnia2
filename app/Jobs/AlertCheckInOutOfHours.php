@@ -192,6 +192,7 @@ class AlertCheckInOutOfHours implements ShouldQueue
         }
 
         $checkinTable .= '</tbody></table>';
+        $checkinTable .= '<p class="timestamp">Rapport généré le : ' . now()->setTimezone('UTC')->format('d F Y, H:i A T') . '</p>';
       }
 
       // Prepare email

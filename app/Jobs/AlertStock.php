@@ -251,10 +251,18 @@ class AlertStock implements ShouldQueue
 
       // Mettre à jour l'historique des alertes
       $alertHistory = AlertHistory::where("alert_id", $alert->id)->latest()->first();
-      if ($alertHistory) {
+      if (!$alertHistory) {
+        $alertHistory = new AlertHistory();
+        $alertHistory->alert_id = $alert->id;
         $alertHistory->status = 1;
+        $alertHistory->attempts = 1;
         $alertHistory->save();
-        Log::info("Alerte " . $alert->id . " marquée comme traitée avec succès");
+        Log::info("Nouvelle entrée AlertHistory créée pour l'alerte " . $alert->id . " (attempts=1)");
+      } else {
+        $alertHistory->status = 1;
+        $alertHistory->attempts = ($alertHistory->attempts ?? 0) + 1;
+        $alertHistory->save();
+        Log::info("AlertHistory mis à jour pour l'alerte " . $alert->id . " (attempts=" . $alertHistory->attempts . ")");
       }
 
       echo "warhouses_user response\n";
@@ -264,6 +272,22 @@ class AlertStock implements ShouldQueue
     } catch (\Exception $e) {
       Log::error("Erreur lors du traitement de l'alerte: " . $e->getMessage());
       Log::error("Trace: " . $e->getTraceAsString());
+      
+      // Enregistrer l'échec dans l'historique
+      $alertHistory = AlertHistory::where("alert_id", $alert->id)->latest()->first();
+      if (!$alertHistory) {
+        $alertHistory = new AlertHistory();
+        $alertHistory->alert_id = $alert->id;
+        $alertHistory->status = 2; // 2 = failed
+        $alertHistory->attempts = 1;
+        $alertHistory->save();
+        Log::info("Nouvelle entrée AlertHistory créée pour l'échec de l'alerte " . $alert->id . " (attempts=1)");
+      } else {
+        $alertHistory->status = 2; // 2 = failed
+        $alertHistory->attempts = ($alertHistory->attempts ?? 0) + 1;
+        $alertHistory->save();
+        Log::info("AlertHistory mis à jour pour l'échec de l'alerte " . $alert->id . " (attempts=" . $alertHistory->attempts . ")");
+      }
     }
   }
 }

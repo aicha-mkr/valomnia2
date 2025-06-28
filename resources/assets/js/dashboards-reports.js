@@ -23,15 +23,12 @@
           show: false
         }
       },
-      series: [{
-        name: 'Alerts Sent',
-        data: alertsSentData.series
-      }],
+      series: emailsEvolution.series,
       markers: {
         strokeWidth: 7,
         strokeOpacity: 1,
         strokeColors: [cardColor],
-        colors: ['#71dd37']
+        colors: ['#71dd37', '#03c3ec']
       },
       dataLabels: {
         enabled: false
@@ -39,7 +36,7 @@
       stroke: {
         curve: 'straight'
       },
-      colors: ['#71dd37'],
+      colors: ['#71dd37', '#03c3ec'],
       grid: {
         borderColor: borderColor,
         xaxis: {
@@ -52,17 +49,16 @@
         }
       },
       tooltip: {
-        custom: function({
-          series,
-          seriesIndex,
-          dataPointIndex,
-          w
-        }) {
-          return '<div class="px-3 py-2">' + '<span>' + series[seriesIndex][dataPointIndex] + ' alerts sent</span>' + '</div>';
+        shared: true,
+        intersect: false,
+        y: {
+          formatter: function(val) {
+            return val + ' emails sent';
+          }
         }
       },
       xaxis: {
-        categories: alertsSentData.labels,
+        categories: emailsEvolution.labels,
         axisBorder: {
           show: false
         },
@@ -90,13 +86,13 @@
     alertsSentChart.render();
   }
 
-  // Alert Types Distribution Donut Chart
+  // Alert Types Distribution Pie Chart
   // --------------------------------------------------------------------
   const alertTypeChartEl = document.querySelector('#alertTypeChart'),
     alertTypeChartOptions = {
       chart: {
         height: 380,
-        type: 'donut'
+        type: 'pie'
       },
       labels: alertTypesData.labels,
       series: alertTypesData.series,
@@ -109,7 +105,86 @@
         '#a8aaae'
       ],
       stroke: {
-        width: 5,
+        width: 2,
+        colors: [cardColor]
+      },
+      dataLabels: {
+        enabled: true,
+        formatter: function(val, opt) {
+          return parseInt(val) + '%';
+        }
+      },
+      legend: {
+        show: true,
+        position: 'bottom',
+        markers: {
+          offsetX: -3
+        },
+        itemMargin: {
+          vertical: 3,
+          horizontal: 10
+        },
+        labels: {
+          colors: axisColor,
+          useSeriesColors: false
+        }
+      },
+      plotOptions: {
+        pie: {
+          dataLabels: {
+            offset: -5
+          }
+        }
+      },
+      responsive: [{
+        breakpoint: 992,
+        options: {
+          chart: {
+            height: 380
+          },
+          legend: {
+            show: true,
+            position: 'bottom'
+          }
+        }
+      }, {
+        breakpoint: 576,
+        options: {
+          chart: {
+            height: 320
+          },
+          legend: {
+            show: true,
+            position: 'bottom',
+            labels: {
+              colors: axisColor,
+              useSeriesColors: false
+            }
+          }
+        }
+      }]
+    };
+  if (typeof alertTypeChartEl !== 'undefined' && alertTypeChartEl !== null) {
+    const alertTypeChart = new ApexCharts(alertTypeChartEl, alertTypeChartOptions);
+    alertTypeChart.render();
+  }
+
+  // Email Types Distribution Donut Chart
+  // --------------------------------------------------------------------
+  const emailTypesChartEl = document.querySelector('#emailTypesChart'),
+    emailTypesChartOptions = {
+      chart: {
+        height: 380,
+        type: 'donut'
+      },
+      labels: emailTypesDistribution.labels,
+      series: emailTypesDistribution.series,
+      colors: [
+        '#ffab00',
+        '#03c3ec'
+      ],
+      stroke: {
+        width: 2,
         colors: [cardColor]
       },
       dataLabels: {
@@ -136,27 +211,35 @@
       plotOptions: {
         pie: {
           donut: {
+            size: '65%',
             labels: {
               show: true,
               name: {
-                fontSize: '2rem',
-                fontFamily: 'Public Sans'
+                show: true,
+                fontSize: '14px',
+                fontFamily: 'Public Sans',
+                color: headingColor,
+                offsetY: -10
               },
               value: {
-                fontSize: '1.2rem',
-                color: axisColor,
+                show: true,
+                fontSize: '16px',
                 fontFamily: 'Public Sans',
+                color: headingColor,
+                offsetY: 16,
                 formatter: function(val) {
-                  return parseInt(val);
+                  return parseInt(val) + '%';
                 }
               },
               total: {
                 show: true,
-                fontSize: '1.5rem',
-                color: headingColor,
                 label: 'Total',
+                fontSize: '16px',
+                fontFamily: 'Public Sans',
+                color: headingColor,
                 formatter: function(w) {
-                  return alertTypesTotalCount;
+                  const total = emailTypesDistribution.series.reduce((a, b) => a + b, 0);
+                  return Math.round(total) + ' emails';
                 }
               }
             }
@@ -180,24 +263,6 @@
           chart: {
             height: 320
           },
-          plotOptions: {
-            pie: {
-              donut: {
-                labels: {
-                  show: true,
-                  name: {
-                    fontSize: '1.5rem'
-                  },
-                  value: {
-                    fontSize: '1rem'
-                  },
-                  total: {
-                    fontSize: '1.5rem'
-                  }
-                }
-              }
-            }
-          },
           legend: {
             show: true,
             position: 'bottom',
@@ -209,8 +274,8 @@
         }
       }]
     };
-  if (typeof alertTypeChartEl !== 'undefined' && alertTypeChartEl !== null) {
-    const alertTypeChart = new ApexCharts(alertTypeChartEl, alertTypeChartOptions);
-    alertTypeChart.render();
+  if (typeof emailTypesChartEl !== 'undefined' && emailTypesChartEl !== null) {
+    const emailTypesChart = new ApexCharts(emailTypesChartEl, emailTypesChartOptions);
+    emailTypesChart.render();
   }
 })(); 

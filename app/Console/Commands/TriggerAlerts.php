@@ -40,7 +40,8 @@ TriggerAlerts extends Command
 
         foreach ($alerts as $alert) {
             Log::info("Démarrage du job AlertStock pour l'alerte ID: " . $alert->id);
-            \App\Jobs\AlertStock::dispatch($alert->id);
+            // Exécution directe au lieu d'envoyer dans la queue
+            (new \App\Jobs\AlertStock($alert->id))->handle();
             $this->info("Alerte {$alert->id} envoyée !");
         }
     }

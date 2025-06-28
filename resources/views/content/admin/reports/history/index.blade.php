@@ -62,7 +62,7 @@
     </table>
   </div>
   <div class="card-footer">
-    {{ $historiqueReports->links() }}
+    {{ $historiqueReports->links('pagination::bootstrap-4') }}
   </div>
 </div>
 @endsection
