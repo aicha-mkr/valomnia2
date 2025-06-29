@@ -15,13 +15,34 @@ class ReportMail extends Mailable
     use Queueable, SerializesModels;
 
     public $report;
+    public $title;
+    public $btn_link;
+    public $btn_name;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(Report $report)
+    public function __construct(Report $report, $title = null, $btn_link = null, $btn_name = null)
     {
         $this->report = $report;
+        $this->title = $title ?? 'Weekly Business Report';
+        $this->btn_link = $btn_link ?? url('/organisation/reports');
+        $this->btn_name = $btn_name ?? 'View Full Report';
+    }
+
+    /**
+     * Build the message.
+     */
+    public function build()
+    {
+        return $this->subject($this->title)
+            ->view('emails.rapport')
+            ->with([
+                'report' => $this->report,
+                'title' => $this->title,
+                'btn_link' => $this->btn_link,
+                'btn_name' => $this->btn_name,
+            ]);
     }
 
     /**

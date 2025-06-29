@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Log;
 use App\Models\Report;
 use App\Models\ReportHistory;
 use App\Mail\ReportMail;
+use Illuminate\Support\Facades\Http;
 
 class SendReportEmail implements ShouldQueue
 {
@@ -46,47 +47,38 @@ class SendReportEmail implements ShouldQueue
         ]);
 
         try {
-            Log::info('Creating ReportMail instance', [
-                'report_id' => $this->report->id
+            // 1. Fetch data from the API
+            $url = env('URL_API', 'https://agro.valomnia.com/api/v2.1/report');
+            $response = Http::get($url, [
+                'user_id' => $this->report->user_id,
+                'startDate' => $this->report->startDate,
+                'endDate' => $this->report->endDate,
             ]);
-            
-            // Créer l'instance du mail
+            if ($response->ok()) {
+                $data = $response->json();
+                $apiReport = $data['data'][0] ?? null;
+                if ($apiReport) {
+                    foreach ($this->report->getFillable() as $field) {
+                        if (isset($apiReport[$field])) {
+                            $this->report->$field = $apiReport[$field];
+                        }
+                    }
+                }
+            } else {
+                Log::error('API report fetch failed', ['body' => $response->body()]);
+            }
+
+            // 2. Create and send the email
             $mail = new ReportMail($this->report);
-            
-            Log::info('ReportMail instance created successfully', [
-                'report_id' => $this->report->id
-            ]);
-            
-            Log::info('Sending email to recipient', [
-                'report_id' => $this->report->id,
-                'recipient' => $this->recipientEmail
-            ]);
-            
-            // Envoyer l'email
             Mail::to($this->recipientEmail)->send($mail);
-            
-            Log::info('Email sent successfully', [
-                'report_id' => $this->report->id,
-                'recipient' => $this->recipientEmail
-            ]);
-            
-            Log::info('Recording success in report history', [
-                'report_id' => $this->report->id
-            ]);
-            
-            // Enregistrer le succès dans l'historique
+
+            // 3. Record success in history
             $this->recordHistory('sent', 1);
-            
-            Log::info('Success recorded in report history', [
-                'report_id' => $this->report->id,
-                'status' => 'sent'
-            ]);
-            
+
             Log::info('Report email job completed successfully', [
                 'report_id' => $this->report->id,
                 'recipient' => $this->recipientEmail
             ]);
-            
         } catch (\Exception $e) {
             Log::error('Exception occurred in SendReportEmail job', [
                 'report_id' => $this->report->id,
@@ -96,21 +88,8 @@ class SendReportEmail implements ShouldQueue
                 'line' => $e->getLine(),
                 'attempt' => $this->attempts()
             ]);
-            
-            Log::info('Recording failure in report history', [
-                'report_id' => $this->report->id,
-                'attempt' => $this->attempts()
-            ]);
-            
-            // Enregistrer l'échec dans l'historique
             $this->recordHistory('failed', $this->attempts());
-            
-            Log::info('Failure recorded in report history', [
-                'report_id' => $this->report->id,
-                'status' => 'failed'
-            ]);
-            
-            throw $e; // Relancer l'exception pour que le job soit marqué comme échoué
+            throw $e;
         }
     }
 

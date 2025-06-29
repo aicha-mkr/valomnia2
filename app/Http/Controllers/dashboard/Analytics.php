@@ -188,6 +188,16 @@ class Analytics extends Controller
     // Emails envoyés récents (nouvelle section)
     $recentEmails = $this->getRecentEmails();
 
+    // Use the same data as Email Sent Over Time chart for Alerts & Reports Created (This Month)
+    $alertsCreatedEvolution = [
+        'labels' => $emailsEvolution['labels'],
+        'data' => $emailsEvolution['series'][0]['data']
+    ];
+    $reportsCreatedEvolution = [
+        'labels' => $emailsEvolution['labels'],
+        'data' => $emailsEvolution['series'][1]['data']
+    ];
+
     return view('content.dashboard.dashboards-analytics', compact(
       'totalReports',
       'totalAlerts',
@@ -200,7 +210,9 @@ class Analytics extends Controller
       'totalEmailsSentThisMonth',
       'recentEmails',
       'emailTypesDistribution',
-      'emailTypesData'
+      'emailTypesData',
+      'alertsCreatedEvolution',
+      'reportsCreatedEvolution'
     ));
   }
 
@@ -215,7 +227,7 @@ class Analytics extends Controller
     $orders = json_decode($response, true);
     if (isset($orders['data']) && is_array($orders['data'])) {
       return count($orders['data']);
-    }
+  }
     return 0;
   }
 
@@ -246,29 +258,29 @@ class Analytics extends Controller
         $lists = $dashboardData['lists'];
 
         // Prepare data for view
-        $dashboardData = [
+            $dashboardData = [
             'total_revenue' => $metrics['total_revenue'],
             'total_clients' => $metrics['total_clients'],
             'average_sales' => $metrics['average_sales'],
             'total_orders' => $metrics['total_orders'],
             'total_quantities' => $metrics['total_quantities'],
-            'top_selling_items' => [],
+                'top_selling_items' => [],
             'growth_percentage' => $metrics['growth_percentage'],
             'payments' => $metrics['payments'],
             'transactions' => $metrics['transactions'],
             'profile_revenue' => $metrics['profile_revenue'],
             'profile_growth' => $metrics['profile_growth'],
-            'order_statistics' => [
+                'order_statistics' => [
                 'total_orders' => $metrics['total_orders'],
                 'electronic' => round($metrics['total_orders'] * 0.4),
                 'fashion' => round($metrics['total_orders'] * 0.3),
                 'decor' => round($metrics['total_orders'] * 0.2),
                 'sports' => round($metrics['total_orders'] * 0.1)
-            ],
-            'expense_overview' => [
+                ],
+                'expense_overview' => [
                 'total_balance' => $metrics['total_revenue'] * 0.12,
                 'growth_percentage' => rand(40, 50)
-            ],
+                ],
             'emails_sent' => rand(50, 200),
             'email_templates' => $metrics['email_templates'],
             'email_success_rate' => rand(85, 98),
@@ -318,10 +330,10 @@ class Analytics extends Controller
         $ordersHistoryDataMonth = $chartData['ordersHistory']['month']['data'];
 
         // Mock data for remaining charts
-        $topItemsLabels = [];
-        $topItemsData = [];
-        $mainLabels = ['Category 1', 'Category 2', 'Category 3'];
-        $mainData = [30, 25, 20];
+            $topItemsLabels = [];
+            $topItemsData = [];
+        $mainLabels = [];
+        $mainData = [];
         $clientsHistoryLabels = [];
         $clientsHistoryData = [];
         for ($i = 29; $i >= 0; $i--) {
@@ -329,8 +341,15 @@ class Analytics extends Controller
             $clientsHistoryData[] = rand(0, 5);
         }
 
-        $alertsCreatedEvolution = ['labels' => $emailsEvolution['labels'], 'data' => $emailsEvolution['series'][0]['data']];
-        $reportsCreatedEvolution = ['labels' => $emailsEvolution['labels'], 'data' => $emailsEvolution['series'][1]['data']];
+        // Use the same data as emailsEvolution for Alerts & Reports Created (This Month)
+        $alertsCreatedEvolution = [
+            'labels' => $emailsEvolution['labels'],
+            'data' => $emailsEvolution['series'][0]['data']
+        ];
+        $reportsCreatedEvolution = [
+            'labels' => $emailsEvolution['labels'],
+            'data' => $emailsEvolution['series'][1]['data']
+        ];
 
         // Add missing variables for the view
         $topProductLabels = ['Product 1', 'Product 2', 'Product 3', 'Product 4', 'Product 5'];
@@ -338,6 +357,71 @@ class Analytics extends Controller
         $allAlerts = \App\Models\Alert::with('type')->get();
         $allReports = \App\Models\Report::all();
         $categories = $lists['categories'];
+
+        // Generate mainLabels and mainData for Articles per Category (Top 3)
+        if (isset($categories) && isset($itemsList)) {
+            $categoryCounts = [];
+            foreach ($categories as $cat) {
+                $catName = $cat['name'] ?? 'Unknown';
+                $catRef = $cat['reference'] ?? null;
+                $categoryCounts[$catName] = 0;
+                foreach ($itemsList as $item) {
+                    if (($item['itemCategory']['reference'] ?? null) === $catRef) {
+                        $categoryCounts[$catName]++;
+                    }
+                }
+            }
+            arsort($categoryCounts);
+            // Remove categories with zero articles
+            $categoryCounts = array_filter($categoryCounts, function($count) {
+                return $count > 0;
+            });
+            $mainLabels = array_slice(array_keys($categoryCounts), 0, 3);
+            $mainData = array_slice(array_values($categoryCounts), 0, 3);
+        }
+
+        // Generate emailsEvolution for organisation dashboard (same as analytics)
+        $alertQuery = \App\Models\AlertHistory::selectRaw('DATE_FORMAT(created_at, "%d") as day, COUNT(id) as count')
+            ->whereYear('created_at', date('Y'))
+            ->whereMonth('created_at', date('m'))
+            ->where(function($q) {
+                $q->where('status', 1)
+                  ->orWhere('status', 3)
+                  ->orWhere('status', 'sent')
+                  ->orWhere('attempts', '>', 0);
+            })
+            ->groupBy('day')
+            ->orderByRaw('MIN(created_at)')
+            ->get();
+
+        $reportQuery = \App\Models\ReportHistory::selectRaw('DATE_FORMAT(created_at, "%d") as day, COUNT(id) as count')
+            ->whereYear('created_at', date('Y'))
+            ->whereMonth('created_at', date('m'))
+            ->where('status', 'sent')
+            ->groupBy('day')
+            ->orderByRaw('MIN(created_at)')
+            ->get();
+
+        $days = [];
+        $daysInMonth = date('t');
+        for ($i = 1; $i <= $daysInMonth; $i++) {
+            $days[] = sprintf('%02d', $i);
+        }
+        $alertCounts = $alertQuery->pluck('count', 'day')->all();
+        $reportCounts = $reportQuery->pluck('count', 'day')->all();
+        $alertsSeries = [];
+        $reportsSeries = [];
+        foreach ($days as $day) {
+            $alertsSeries[] = (int) ($alertCounts[$day] ?? 0);
+            $reportsSeries[] = (int) ($reportCounts[$day] ?? 0);
+        }
+        $emailsEvolution = [
+            'labels' => $days,
+            'series' => [
+                [ 'name' => 'Alert Emails', 'data' => $alertsSeries ],
+                [ 'name' => 'Report Emails', 'data' => $reportsSeries ]
+            ]
+        ];
 
         // Store in session for PDF export
         session([
@@ -377,29 +461,40 @@ class Analytics extends Controller
             'mainData',
             'categories'
         ));
-    }
-
+            }
+            
     /**
      * Generate activity feed
      */
     private function generateActivityFeed($user)
     {
-        $activityFeed = [];
-        
-        // Get recent reports created
+            $activityFeed = [];
+
+            // Get recent reports created
         $recentReports = \App\Models\Report::where('user_id', $user->id)->latest()->take(3)->get();
-        foreach ($recentReports as $report) {
-            $activityFeed[] = [
-                'date' => $report->created_at,
-                'message' => 'New report generated with revenue of <strong>' . number_format($report->total_revenue, 2) . ' TND</strong>.',
-                'type' => 'report'
-            ];
-        }
+            foreach ($recentReports as $report) {
+                $activityFeed[] = [
+                    'date' => $report->created_at,
+                    'message' => 'New report generated with revenue of <strong>' . number_format($report->total_revenue, 2) . ' TND</strong>.',
+                    'type' => 'report'
+                ];
+            }
+
+            // Get recent alerts created
+            $recentAlerts = \App\Models\Alert::where('user_id', $user->id)->with('type')->latest()->take(3)->get();
+            foreach ($recentAlerts as $alert) {
+                $alertTypeName = $alert->type ? $alert->type->name : 'Unknown Type';
+                $activityFeed[] = [
+                    'date' => $alert->created_at,
+                    'message' => 'New email alert created: <strong>' . $alert->title . '</strong> (' . $alertTypeName . ').',
+                    'type' => 'alert'
+                ];
+            }
 
         // Sort and limit
-        usort($activityFeed, function($a, $b) {
-            return $b['date'] <=> $a['date'];
-        });
+            usort($activityFeed, function($a, $b) {
+                return $b['date'] <=> $a['date'];
+            });
         
         return array_slice($activityFeed, 0, 5);
     }
@@ -554,5 +649,5 @@ class Analytics extends Controller
         case 'sent': return 'success';
         default: return 'secondary';
     }
-  }
+    }
 }

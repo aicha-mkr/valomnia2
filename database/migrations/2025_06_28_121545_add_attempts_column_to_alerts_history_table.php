@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('alerts_history', function (Blueprint $table) {
-            $table->integer('attempts')->default(0)->after('status');
+            //
         });
     }
 
@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('alerts_history', function (Blueprint $table) {
-            $table->dropColumn('attempts');
+            //
         });
     }
 };

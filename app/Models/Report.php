@@ -10,6 +10,7 @@ class Report extends Model
 
   protected $fillable = [
     'user_id',
+    'template_id',
     'date',
     'total_orders',
     'total_revenue',

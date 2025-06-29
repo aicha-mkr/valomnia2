@@ -55,64 +55,63 @@
             <div class="mb-4">
               <label for="rapport-title" class="form-label">Title</label>
               <input type="text" class="form-control" id="rapport-title" name="title"
-                     placeholder="Report Title" required oninput="updateReportTitle()" />
+                     placeholder="Report title" required oninput="updateReportTemplateContent()" />
             </div>
 
             <div class="mb-4">
-              <h5>Report Content</h5>
-              <textarea class="form-control" id="rapport-content" name="content" rows="6"
-                        placeholder="Enter report content here..." required
-                        oninput="updateRapportContent()"></textarea>
+              <label for="rapport-content" class="form-label">Content</label>
+              <textarea class="form-control" id="rapport-content" rows="3"
+                        placeholder="Report content" required oninput="updateReportTemplateContent()"></textarea>
             </div>
 
             <div class="form-check">
               <input class="form-check-input" type="checkbox" id="report-open"
-                     onclick="toggleReportSection()" />
+                     onclick="toggleReportSection()" checked />
               <label class="form-check-label" for="report-open">Show Report Button</label>
             </div>
 
-            <div id="urlSection" class="mb-4" style="display: none;">
+            <div id="urlSection" class="mb-4" style="display: block;">
               <label for="report-url" class="form-label">Specific URL</label>
               <input type="url" class="form-control" id="report-url" name="btn_link"
                      placeholder="Specific URL">
             </div>
 
-            <div class="mb-4" id="buttonTitleSection" style="display: none;">
+            <div class="mb-4" id="buttonTitleSection" style="display: block;">
               <label for="button-title" class="form-label">Button Title</label>
               <input type="text" class="form-control" id="button-rr" name="btn_name"
-                     placeholder="Enter button title" oninput="updateReportButtonText()" />
+                     placeholder="Enter button title" value="View Full Report" oninput="updateReportButtonText()" />
             </div>
 
             <h5>Select KPIs</h5>
             <div class="mb-4">
               <div class="form-check">
                 <input class="form-check-input" type="checkbox" value="total_orders"
-                       id="rapportTotalOrdersCheckbox" name="kpi[]" checked />
+                       id="rapportTotalOrdersCheckbox" name="kpi[]" checked onchange="updateReportKPIs()" />
                 <label class="form-check-label" for="rapportTotalOrdersCheckbox">Total Orders</label>
               </div>
               <div class="form-check">
                 <input class="form-check-input" type="checkbox" value="total_revenue"
-                       id="rapportTotalRevenueCheckbox" name="kpi[]" checked />
+                       id="rapportTotalRevenueCheckbox" name="kpi[]" checked onchange="updateReportKPIs()" />
                 <label class="form-check-label" for="rapportTotalRevenueCheckbox">Total Revenue</label>
               </div>
               <div class="form-check">
                 <input class="form-check-input" type="checkbox" value="average_sales"
-                       id="rapportAverageSalesCheckbox" name="kpi[]" checked />
+                       id="rapportAverageSalesCheckbox" name="kpi[]" checked onchange="updateReportKPIs()" />
                 <label class="form-check-label" for="rapportAverageSalesCheckbox">Average Sales</label>
               </div>
               <div class="form-check">
                 <input class="form-check-input" type="checkbox" value="total_quantities"
-                       id="rapportTotalQuantitiesCheckbox" name="kpi[]" checked />
+                       id="rapportTotalQuantitiesCheckbox" name="kpi[]" checked onchange="updateReportKPIs()" />
                 <label class="form-check-label" for="rapportTotalQuantitiesCheckbox">Total Quantities</label>
               </div>
               <div class="form-check">
                 <input class="form-check-input" type="checkbox" value="total_clients"
-                       id="rapportTotalClientsCheckbox" name="kpi[]" checked />
+                       id="rapportTotalClientsCheckbox" name="kpi[]" checked onchange="updateReportKPIs()" />
                 <label class="form-check-label" for="rapportTotalClientsCheckbox">Total Clients</label>
               </div>
               <div class="form-check">
                 <input class="form-check-input" type="checkbox" value="top_selling_items"
-                       id="rapportTopSellingItemsCheckbox" name="kpi[]" checked />
+                       id="rapportTopSellingItemsCheckbox" name="kpi[]" checked onchange="updateReportKPIs()" />
                 <label class="form-check-label" for="rapportTopSellingItemsCheckbox">Top Selling Items</label>
               </div>
             </div>
@@ -120,6 +119,10 @@
             <div class="mb-4">
               <button type="submit" class="btn btn-primary">Create Report</button>
             </div>
+            
+            <!-- Hidden fields for form submission -->
+            <input type="hidden" id="hidden-title" name="title" />
+            <input type="hidden" id="hidden-content" name="content" />
           </form>
 
         </div>
@@ -314,6 +317,32 @@
                   line-height: 1.4;
                   font-size: 12px;
                   font-family: sans-serif;
+                }
+
+                /* Custom styles for report button visibility */
+                table[data-module="button-dark"][data-visible="false"] {
+                  display: none !important;
+                  visibility: hidden !important;
+                  opacity: 0 !important;
+                }
+
+                table[data-module="button-dark"]:not([data-visible="false"]) {
+                  display: table !important;
+                  visibility: visible !important;
+                  opacity: 1 !important;
+                }
+
+                /* Force button visibility when needed */
+                .force-show-button {
+                  display: table !important;
+                  visibility: visible !important;
+                  opacity: 1 !important;
+                }
+
+                .force-hide-button {
+                  display: none !important;
+                  visibility: hidden !important;
+                  opacity: 0 !important;
                 }
               </style>
             </head>
@@ -581,15 +610,16 @@
                     padding-left: 24px;
                     padding-right: 24px;
                     padding-top: 16px;
-                    padding-bottom: 16px;
-                  ">
-
+                    padding-bottom: 16px;">
                         <p id="rapport-template-text"
                            style="margin-top: 0px; margin-bottom: 0px">
-                          Callously piranha however moronic selfless more because
-                          spitefully dear some far forward where
-                          mounted underneath however feeling out less alas.
+                          Welcome to your comprehensive business report. This document provides a detailed overview of your company's performance metrics and key insights for the reporting period. Below you will find the most important indicators that reflect your business growth and operational efficiency.
                         </p>
+                        
+                        <!-- KPIs Preview Section -->
+                        <div id="rapport-kpis-preview" style="margin-top: 20px;">
+                          <!-- KPIs will be dynamically inserted here -->
+                        </div>
                       </td>
                     </tr>
                     </tbody>
@@ -679,7 +709,7 @@
                           display: block;
                           padding: 12px 24px;
                           mso-text-raise: 3px;
-                        ">Contact Support</a>
+                        ">View Full Report</a>
                             </td>
                           </tr>
                           </tbody>
@@ -785,139 +815,6 @@
             </tbody>
             </table>
 
-            <table data-module="stats-3cols" data-visible="false"
-                   data-thumb="http://www.stampready.net/dashboard/editor/user_uploads/zip_uploads/2018/11/19/pcVNfzKjZ3goPqkxr2hYT0ws/service_canceled/thumbnails/stats-3cols.png"
-                   width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
-              <tbody>
-              <tr>
-                <td class="o_bg-light o_px-xs" align="center" data-bgcolor="Bg Light"
-                    style="background-color: #dbe5ea;padding-left: 8px;padding-right: 8px;">
-                  <!--[if mso]><table width="632" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
-                  <table class="o_block" width="100%" cellspacing="0" cellpadding="0" border="0"
-                         role="presentation" style="max-width: 632px;margin: 0 auto;">
-                    <tbody>
-                    <tr>
-                      <td class="o_re o_bg-white o_px o_pb-md" align="center"
-                          data-bgcolor="Bg White"
-                          style="font-size: 0;vertical-align: top;background-color: #ffffff;padding-left: 16px;padding-right: 16px;padding-bottom: 24px;">
-                        <!--[if mso]><table cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td width="200" align="center" valign="top" style="padding: 0px 8px;"><![endif]-->
-                        <div class="o_col o_col-2 o_col-full"
-                             style="display: inline-block;vertical-align: top;width: 100%;max-width: 200px;">
-                          <div
-                            style="font-size: 24px; line-height: 24px; height: 24px;">
-                            &nbsp; </div>
-                          <div class="o_px-xs"
-                               style="padding-left: 8px;padding-right: 8px;">
-                            <table width="100%" cellspacing="0" cellpadding="0"
-                                   border="0" role="presentation">
-                              <tbody>
-                              <tr>
-                                <td id="kpi1"
-                                    class="o_bg-ultra_light o_br o_text-xs o_sans o_px o_py-md"
-                                    align="center"
-                                    data-bgcolor="Bg Ultra Light"
-                                    data-size="Text XS" data-min="10"
-                                    data-max="18"
-                                    style="font-family: Helvetica, Arial, sans-serif;margin-top: 0px;margin-bottom: 0px;font-size: 14px;line-height: 21px;background-color: #ebf5fa;border-radius: 4px;padding-left: 16px;padding-right: 16px;padding-top: 24px;padding-bottom: 24px;">
-                                  <h1 class="o_heading o_text-dark"
-                                      data-color="Dark"
-                                      data-size="Heading 1" data-min="26"
-                                      data-max="46"
-                                      style="font-family: Helvetica, Arial, sans-serif;font-weight: bold;margin-top: 0px;margin-bottom: 0px;color: #242b3d;font-size: 36px;line-height: 47px;">
-                                    1,241</h1>
-                                  <p class="o_text-light"
-                                     data-color="Light"
-                                     style="color: #82899a;margin-top: 0px;margin-bottom: 0px;">
-                                    followers</p>
-                                </td>
-                              </tr>
-                              </tbody>
-                            </table>
-                          </div>
-                        </div>
-                        <!--[if mso]></td><td width="200" align="center" valign="top" style="padding: 0px 8px;"><![endif]-->
-                        <div class="o_col o_col-2 o_col-full"
-                             style="display: inline-block;vertical-align: top;width: 100%;max-width: 200px;">
-                          <div
-                            style="font-size: 24px; line-height: 24px; height: 24px;">
-                            &nbsp; </div>
-                          <div class="o_px-xs"
-                               style="padding-left: 8px;padding-right: 8px;">
-                            <table width="100%" cellspacing="0" cellpadding="0"
-                                   border="0" role="presentation">
-                              <tbody>
-                              <tr>
-                                <td id="kpi2"
-                                    class="o_bg-ultra_light o_br o_text-xs o_sans o_px o_py-md"
-                                    align="center"
-                                    data-bgcolor="Bg Ultra Light"
-                                    data-size="Text XS" data-min="10"
-                                    data-max="18"
-                                    style="font-family: Helvetica, Arial, sans-serif;margin-top: 0px;margin-bottom: 0px;font-size: 14px;line-height: 21px;background-color: #ebf5fa;border-radius: 4px;padding-left: 16px;padding-right: 16px;padding-top: 24px;padding-bottom: 24px;">
-                                  <h1 class="o_heading o_text-dark"
-                                      data-color="Dark"
-                                      data-size="Heading 1" data-min="26"
-                                      data-max="46"
-                                      style="font-family: Helvetica, Arial, sans-serif;font-weight: bold;margin-top: 0px;margin-bottom: 0px;color: #242b3d;font-size: 36px;line-height: 47px;">
-                                    6,874</h1>
-                                  <p class="o_text-light"
-                                     data-color="Light"
-                                     style="color: #82899a;margin-top: 0px;margin-bottom: 0px;">
-                                    appreciations</p>
-                                </td>
-                              </tr>
-                              </tbody>
-                            </table>
-                          </div>
-                        </div>
-                        <!--[if mso]></td><td width="200" align="center" valign="top" style="padding: 0px 8px;"><![endif]-->
-                        <div class="o_col o_col-2 o_col-full"
-                             style="display: inline-block;vertical-align: top;width: 100%;max-width: 200px;">
-                          <div
-                            style="font-size: 24px; line-height: 24px; height: 24px;">
-                            &nbsp; </div>
-                          <div id="kpi3" class="o_px-xs"
-                               style="padding-left: 8px;padding-right: 8px;">
-                            <table width="100%" cellspacing="0" cellpadding="0"
-                                   border="0" role="presentation">
-                              <tbody>
-                              <tr>
-                                <td class="o_bg-ultra_light o_br o_text-xs o_sans o_px o_py-md"
-                                    align="center"
-                                    data-bgcolor="Bg Ultra Light"
-                                    data-size="Text XS" data-min="10"
-                                    data-max="18"
-                                    style="font-family: Helvetica, Arial, sans-serif;margin-top: 0px;margin-bottom: 0px;font-size: 14px;line-height: 21px;background-color: #ebf5fa;border-radius: 4px;padding-left: 16px;padding-right: 16px;padding-top: 24px;padding-bottom: 24px;">
-                                  <h1 class="o_heading o_text-dark"
-                                      data-color="Dark"
-                                      data-size="Heading 1" data-min="26"
-                                      data-max="46"
-                                      style="font-family: Helvetica, Arial, sans-serif;font-weight: bold;margin-top: 0px;margin-bottom: 0px;color: #242b3d;font-size: 36px;line-height: 47px;">
-                                    26</h1>
-                                  <p class="o_text-light"
-                                     data-color="Light"
-                                     style="color: #82899a;margin-top: 0px;margin-bottom: 0px;">
-                                    projects</p>
-                                </td>
-                              </tr>
-                              </tbody>
-                            </table>
-                          </div>
-                        </div>
-                        <!--[if mso]></td></tr></table><![endif]-->
-                      </td>
-                    </tr>
-                    </tbody>
-                  </table>
-                  <!--[if mso]></td></tr></table><![endif]-->
-                </td>
-              </tr>
-              </tbody>
-            </table>
-
-
-
-
             <table data-module="order-summary0"
                    data-thumb="http://www.stampready.net/dashboard/editor/user_uploads/zip_uploads/2020/03/13/0D6ItbpLZUSmhj3YORzyfKEg/account_addons/thumbnails/order-summary.png"
                    width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
@@ -934,45 +831,7 @@
                           align="center" data-bgcolor="Bg White" data-color="Light"
                           data-size="Text XS" data-min="10" data-max="18"
                           style="font-family: Helvetica, Arial, sans-serif;margin-top: 0px;margin-bottom: 0px;font-size: 14px;line-height: 21px;background-color: #ffffff;color: #82899a;padding-left: 24px;padding-right: 24px;padding-top: 8px;">
-                        <p style="margin-top: 0px;margin-bottom: 0px;">TOP 5 PRODUCTS
-                        </p>
-                        <table width="100%" cellspacing="0" cellpadding="0" border="0"
-                               role="presentation" style="margin-top: 12px;">
-                          <thead>
-                            <tr>
-                              <th align="left" style="border-bottom: 1px solid #d3dce0; padding: 8px; font-weight: bold;">Reference</th>
-                              <th align="left" style="border-bottom: 1px solid #d3dce0; padding: 8px; font-weight: bold;">Name</th>
-                              <th align="left" style="border-bottom: 1px solid #d3dce0; padding: 8px; font-weight: bold;">Revenue</th>
-                          </tr>
-                          </thead>
-              <tbody>
-              <tr>
-                              <td style="padding: 8px; border-bottom: 1px solid #f0f0f0;">BK-0012</td>
-                              <td style="padding: 8px; border-bottom: 1px solid #f0f0f0;">SARDINE À LA SAUCE TOMATE 125 G</td>
-                              <td style="padding: 8px; border-bottom: 1px solid #f0f0f0;">16 941.625 DT</td>
-                              </tr>
-                            <tr>
-                              <td style="padding: 8px; border-bottom: 1px solid #f0f0f0;">BK-0021</td>
-                              <td style="padding: 8px; border-bottom: 1px solid #f0f0f0;">THON 160GR HUILE VÉGÉTALE</td>
-                              <td style="padding: 8px; border-bottom: 1px solid #f0f0f0;">16 027.200 DT</td>
-                            </tr>
-                            <tr>
-                              <td style="padding: 8px; border-bottom: 1px solid #f0f0f0;">AFL30002</td>
-                              <td style="padding: 8px; border-bottom: 1px solid #f0f0f0;">Brownies Noisette 30</td>
-                              <td style="padding: 8px; border-bottom: 1px solid #f0f0f0;">12 103.144 DT</td>
-                              </tr>
-                            <tr>
-                              <td style="padding: 8px; border-bottom: 1px solid #f0f0f0;">AFL30001</td>
-                              <td style="padding: 8px; border-bottom: 1px solid #f0f0f0;">Brownies Pépites 30</td>
-                              <td style="padding: 8px; border-bottom: 1px solid #f0f0f0;">7 798.695 DT</td>
-                            </tr>
-                            <tr>
-                              <td style="padding: 8px;">BK-0020</td>
-                              <td style="padding: 8px;">THON 160GR HUILE D'OLIVE</td>
-                              <td style="padding: 8px;">3 888 DT</td>
-                              </tr>
-                              </tbody>
-                            </table>
+                        <!-- TOP 5 PRODUCTS table will be shown dynamically via KPIs selection -->
                       </td>
                     </tr>
                     </tbody>
@@ -1087,28 +946,10 @@
                           oninput="updateAlertDescription()"></textarea>
               </div>
 
-           
+              
 
               <!-- Hidden content field -->
               <input type="hidden" id="hidden-content" name="content" />
-
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="alert-button-open"
-                       onclick="toggleAlertButtonSection()" />
-                <label class="form-check-label" for="alert-button-open">Show Action Button</label>
-              </div>
-
-              <div id="alertUrlSection" class="mb-4" style="display: none;">
-                <label for="alert-url" class="form-label">Specific URL</label>
-                <input type="url" class="form-control" id="alert-url" name="btn_link"
-                       placeholder="Specific URL">
-              </div>
-
-              <div class="mb-4" id="alertButtonTitleSection" style="display: none;">
-                <label for="alert-button-title" class="form-label">Button Title</label>
-                <input type="text" class="form-control" id="alert-button-title" name="btn_name"
-                       placeholder="Enter button title" oninput="updateAlertButtonText()" />
-              </div>
 
               <div class="mb-4">
                 <button type="submit" class="btn btn-primary">Create Alert</button>
@@ -1469,6 +1310,7 @@
                         </tr>
                         </tbody>
                       </table>
+                      <p class="timestamp" style="font-size: 12px; color: #82899a; margin-top: 8px;">Alert generated on: [Date and Time]</p>
                       <!-- KPIs Preview for Alert -->
                       <div id="alert-kpis-preview" style="margin-top: 16px;"></div>
                     </div>
@@ -1600,21 +1442,90 @@
       const urlSection = document.getElementById("urlSection");
       const buttonTitleSection = document.getElementById("buttonTitleSection");
       const buttonContainer = document.getElementById("button-container");
+      const rapportTemplate = document.getElementById("rapportTemplate");
+      const reportButton = document.getElementById("action-link2");
+      const reportButtonContainer = reportButton ? reportButton.closest('table[data-module="button-dark"]') : null;
+
+      console.log('=== toggleReportSection DEBUG ===');
+      console.log('checkbox checked:', checkbox.checked);
+      console.log('rapportTemplate found:', !!rapportTemplate);
+      console.log('rapportTemplate display:', rapportTemplate ? rapportTemplate.style.display : 'N/A');
+      console.log('reportButton found:', !!reportButton);
+      console.log('reportButtonContainer found:', !!reportButtonContainer);
+      
+      // Check if template is visible
+      if (rapportTemplate && rapportTemplate.style.display === "none") {
+        console.warn('Template is hidden! Button changes won\'t be visible.');
+      }
+      
+      if (reportButtonContainer) {
+        console.log('Button container current display:', reportButtonContainer.style.display);
+        console.log('Button container current visibility:', reportButtonContainer.style.visibility);
+        console.log('Button container data-visible:', reportButtonContainer.getAttribute('data-visible'));
+        console.log('Button container classes:', reportButtonContainer.className);
+      }
 
       if (checkbox.checked) {
         urlSection.style.display = "block";
         buttonTitleSection.style.display = "block";
         buttonContainer.style.display = "block"; // Use block for proper display
+        
+        // Show the button in the template preview - multiple approaches
+        if (reportButtonContainer) {
+          // Approach 1: CSS classes
+          reportButtonContainer.classList.remove('force-hide-button');
+          reportButtonContainer.classList.add('force-show-button');
+          
+          // Approach 2: Direct styles
+          reportButtonContainer.style.display = "table";
+          reportButtonContainer.style.visibility = "visible";
+          reportButtonContainer.style.opacity = "1";
+          
+          // Approach 3: Remove data-visible attribute
+          reportButtonContainer.removeAttribute('data-visible');
+          
+          console.log('Button container shown with multiple approaches');
+          console.log('After change - display:', reportButtonContainer.style.display);
+          console.log('After change - visibility:', reportButtonContainer.style.visibility);
+          console.log('After change - classes:', reportButtonContainer.className);
+        } else {
+          console.error('Report button container not found!');
+        }
       } else {
         urlSection.style.display = "none";
         buttonTitleSection.style.display = "none";
         buttonContainer.style.display = "none";
+        
+        // Hide the button in the template preview
+        if (reportButtonContainer) {
+          // Approach 1: CSS classes
+          reportButtonContainer.classList.remove('force-show-button');
+          reportButtonContainer.classList.add('force-hide-button');
+          
+          // Approach 2: Direct styles
+          reportButtonContainer.style.display = "none";
+          reportButtonContainer.style.visibility = "hidden";
+          reportButtonContainer.style.opacity = "0";
+          
+          // Approach 3: Set data-visible attribute
+          reportButtonContainer.setAttribute('data-visible', 'false');
+          
+          console.log('Button container hidden with multiple approaches');
+        } else {
+          console.error('Report button container not found!');
+        }
       }
+      console.log('=== END DEBUG ===');
     }
 
     function updateReportButtonText() {
-      const buttonText = document.getElementById("button-rr").value;
-      document.getElementById("report-button-preview").innerText = buttonText;
+      const buttonText = document.getElementById("button-rr").value || "View Full Report";
+      
+      // Update the button text in the template preview
+      const reportButton = document.getElementById("action-link2");
+      if (reportButton) {
+        reportButton.innerText = buttonText;
+      }
     }
 
     function toggleAlertButtonSection() {
@@ -1653,6 +1564,53 @@
       // Initialize the hidden content field with the default template content
       const templateContent = document.getElementById("template-text-alert").innerHTML;
       document.getElementById("hidden-content").value = templateContent;
+
+      // Add event listeners for report KPIs checkboxes
+      const reportKpiCheckboxes = [
+        'rapportTotalOrdersCheckbox',
+        'rapportTotalRevenueCheckbox',
+        'rapportAverageSalesCheckbox',
+        'rapportTotalQuantitiesCheckbox',
+        'rapportTotalClientsCheckbox',
+        'rapportTopSellingItemsCheckbox'
+      ];
+
+      reportKpiCheckboxes.forEach(checkboxId => {
+        const checkbox = document.getElementById(checkboxId);
+        if (checkbox) {
+          checkbox.addEventListener('change', updateReportKPIs);
+        }
+      });
+
+      // Add event listeners for report title and content fields
+      const rapportTitle = document.getElementById("rapport-title");
+      if (rapportTitle) {
+        rapportTitle.addEventListener('input', updateReportTemplateContent);
+      }
+
+      const rapportContent = document.getElementById("rapport-content");
+      if (rapportContent) {
+        rapportContent.addEventListener('input', updateReportTemplateContent);
+      }
+
+      // Initialize report KPIs preview
+      updateReportKPIs();
+      
+      // Initialize report button (visible by default)
+      const reportButton = document.getElementById("action-link2");
+      const reportButtonContainer = reportButton ? reportButton.closest('table[data-module="button-dark"]') : null;
+      if (reportButtonContainer) {
+        reportButtonContainer.classList.remove('force-hide-button');
+        reportButtonContainer.classList.add('force-show-button');
+        reportButtonContainer.style.display = "table";
+        reportButtonContainer.style.visibility = "visible";
+        reportButtonContainer.style.opacity = "1";
+        reportButtonContainer.removeAttribute('data-visible');
+        console.log('Report button initialized as visible by default');
+      }
+      
+      // Initialize button text
+      updateReportButtonText();
     });
 
     document.addEventListener("DOMContentLoaded", function () {
@@ -1698,6 +1656,7 @@
         '<td style="border: 1px solid #d3dce0; padding: 8px; font-size: 14px;"><span class="threshold-value" style="color: #fd7e14; font-weight: bold;">10</span></td>' +
         '</tr>' +
         '</tbody></table>' +
+        '<p class="timestamp" style="font-size: 12px; color: #82899a; margin-top: 8px;">Alert generated on: [Date and Time]</p>';
 
       const checkInOutHoursHTML =
         '<table class="stock-table" style="width:100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 16px; font-family: Helvetica, Arial, sans-serif;">' +
@@ -1729,6 +1688,7 @@
         '<td style="border: 1px solid #d3dce0; padding: 8px; font-size: 14px;"><span style="color: #dc3545; font-weight: bold;">+50%</span></td>' +
         '</tr>' +
         '</tbody></table>' +
+        '<p class="timestamp" style="font-size: 12px; color: #82899a; margin-top: 8px;">Alert generated on: [Date and Time]</p>';
 
       const defaultAlertTextOriginal = '<p style="font-family: Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px; color: #424651;">This is a custom alert message. </p>';
 
@@ -1831,5 +1791,166 @@
     document.addEventListener('DOMContentLoaded', function () {
       updateAlertKPIs();
     });
+
+    function updateReportKPIs() {
+      console.log('updateReportKPIs() called');
+      
+      const kpiLabels = {
+        'total_orders': 'Total Orders',
+        'total_revenue': 'Total Revenue',
+        'average_sales': 'Average Sales',
+        'total_quantities': 'Total Quantities',
+        'total_clients': 'Total Clients',
+        'top_selling_items': 'Top Selling Items'
+      };
+      
+      const selectedKPIs = [];
+      if (document.getElementById('rapportTotalOrdersCheckbox').checked) selectedKPIs.push('total_orders');
+      if (document.getElementById('rapportTotalRevenueCheckbox').checked) selectedKPIs.push('total_revenue');
+      if (document.getElementById('rapportAverageSalesCheckbox').checked) selectedKPIs.push('average_sales');
+      if (document.getElementById('rapportTotalQuantitiesCheckbox').checked) selectedKPIs.push('total_quantities');
+      if (document.getElementById('rapportTotalClientsCheckbox').checked) selectedKPIs.push('total_clients');
+      if (document.getElementById('rapportTopSellingItemsCheckbox').checked) selectedKPIs.push('top_selling_items');
+      
+      console.log('Selected KPIs:', selectedKPIs);
+      
+      let html = '';
+      if (selectedKPIs.length > 0) {
+        html += '<div style="margin-top: 20px; margin-bottom: 20px;">';
+        html += '<h4 style="color: #242b3d; font-family: Helvetica, Arial, sans-serif; margin-bottom: 15px;">Key Performance Indicators</h4>';
+        
+        // Show cards for regular KPIs first
+        const regularKPIs = selectedKPIs.filter(kpi => kpi !== 'top_selling_items');
+        if (regularKPIs.length > 0) {
+          console.log('Regular KPIs selected - showing cards:', regularKPIs);
+          html += '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px;">';
+          
+          regularKPIs.forEach(kpi => {
+            const label = kpiLabels[kpi];
+            let value = '';
+            let color = '#0366d6';
+            
+            // Simuler des valeurs pour l'aperçu
+            switch(kpi) {
+              case 'total_orders':
+                value = '1,247';
+                color = '#28a745';
+                break;
+              case 'total_revenue':
+                value = '45,230 TND';
+                color = '#dc3545';
+                break;
+              case 'average_sales':
+                value = '36.27 TND';
+                color = '#fd7e14';
+                break;
+              case 'total_quantities':
+                value = '3,891';
+                color = '#6f42c1';
+                break;
+              case 'total_clients':
+                value = '892';
+                color = '#17a2b8';
+                break;
+            }
+            
+            html += `<div style="background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 15px; text-align: center;">`;
+            html += `<div style="font-size: 24px; font-weight: bold; color: ${color}; margin-bottom: 5px;">${value}</div>`;
+            html += `<div style="font-size: 14px; color: #6c757d; font-weight: 500;">${label}</div>`;
+            html += `</div>`;
+          });
+          
+          html += '</div>';
+        }
+        
+        // Show table for top selling items after the cards
+        if (selectedKPIs.includes('top_selling_items')) {
+          console.log('Top selling items selected - showing table');
+          html += '<div style="margin-top: 20px;">';
+          html += '<h5 style="color: #242b3d; font-family: Helvetica, Arial, sans-serif; margin-bottom: 12px;">TOP 5 PRODUCTS</h5>';
+          html += '<table style="width: 100%; border-collapse: collapse; margin-top: 12px; font-family: Helvetica, Arial, sans-serif;">';
+          html += '<thead><tr>';
+          html += '<th style="border-bottom: 1px solid #d3dce0; padding: 8px; font-weight: bold; text-align: left;">Reference</th>';
+          html += '<th style="border-bottom: 1px solid #d3dce0; padding: 8px; font-weight: bold; text-align: left;">Name</th>';
+          html += '<th style="border-bottom: 1px solid #d3dce0; padding: 8px; font-weight: bold; text-align: left;">Revenue</th>';
+          html += '</tr></thead>';
+          html += '<tbody>';
+          html += '<tr><td style="padding: 8px; border-bottom: 1px solid #f0f0f0;">BK-0012</td><td style="padding: 8px; border-bottom: 1px solid #f0f0f0;">SARDINE À LA SAUCE TOMATE 125 G</td><td style="padding: 8px; border-bottom: 1px solid #f0f0f0;">16 941.625 DT</td></tr>';
+          html += '<tr><td style="padding: 8px; border-bottom: 1px solid #f0f0f0;">BK-0021</td><td style="padding: 8px; border-bottom: 1px solid #f0f0f0;">THON 160GR HUILE VÉGÉTALE</td><td style="padding: 8px; border-bottom: 1px solid #f0f0f0;">16 027.200 DT</td></tr>';
+          html += '<tr><td style="padding: 8px; border-bottom: 1px solid #f0f0f0;">AFL30002</td><td style="padding: 8px; border-bottom: 1px solid #f0f0f0;">Brownies Noisette 30</td><td style="padding: 8px; border-bottom: 1px solid #f0f0f0;">12 103.144 DT</td></tr>';
+          html += '<tr><td style="padding: 8px; border-bottom: 1px solid #f0f0f0;">AFL30001</td><td style="padding: 8px; border-bottom: 1px solid #f0f0f0;">Brownies Pépites 30</td><td style="padding: 8px; border-bottom: 1px solid #f0f0f0;">7 798.695 DT</td></tr>';
+          html += '<tr><td style="padding: 8px;">BK-0020</td><td style="padding: 8px;">THON 160GR HUILE D\'OLIVE</td><td style="padding: 8px;">3 888 DT</td></tr>';
+          html += '</tbody></table>';
+          html += '</div>';
+        }
+        
+        html += '</div>';
+      }
+      
+      console.log('Generated HTML:', html);
+      
+      // Mettre à jour l'aperçu dans le template
+      const kpisPreviewElement = document.getElementById('rapport-kpis-preview');
+      console.log('KPIs preview element found:', kpisPreviewElement);
+      if (kpisPreviewElement) {
+        kpisPreviewElement.innerHTML = html;
+        console.log('HTML updated in preview element');
+      }
+      
+      // Mettre à jour le contenu caché pour le formulaire
+      updateReportTemplateContent();
+    }
+
+    function updateReportTemplateContent() {
+      const title = document.getElementById("rapport-title").value || "Weekly Business Report";
+      const content = document.getElementById("rapport-content").value || "Here is your weekly business report with key performance indicators:";
+      const kpisContent = document.getElementById('rapport-kpis-preview').innerHTML;
+      
+      // Mettre à jour l'aperçu du titre dans le template
+      const titlePreview = document.getElementById("report-title2");
+      if (titlePreview) {
+        titlePreview.innerText = title;
+      }
+      
+      // Mettre à jour l'aperçu du contenu dans le template
+      const contentPreview = document.getElementById("rapport-template-text");
+      if (contentPreview) {
+        contentPreview.innerHTML = content;
+      }
+      
+      // Mettre à jour les champs cachés pour le formulaire
+      const hiddenTitle = document.getElementById("hidden-title");
+      if (hiddenTitle) {
+        hiddenTitle.value = title;
+      }
+      
+      const fullContent = content + kpisContent;
+      const hiddenContent = document.getElementById("hidden-content");
+      if (hiddenContent) {
+        hiddenContent.value = fullContent;
+      }
+    }
+
+    // Test function to force show button
+    function testShowButton() {
+      console.log('=== TEST SHOW BUTTON ===');
+      const reportButton = document.getElementById("action-link2");
+      const reportButtonContainer = reportButton ? reportButton.closest('table[data-module="button-dark"]') : null;
+      
+      console.log('Test - reportButton found:', !!reportButton);
+      console.log('Test - reportButtonContainer found:', !!reportButtonContainer);
+      
+      if (reportButtonContainer) {
+        reportButtonContainer.style.display = "table";
+        reportButtonContainer.style.visibility = "visible";
+        reportButtonContainer.style.opacity = "1";
+        reportButtonContainer.removeAttribute('data-visible');
+        reportButtonContainer.classList.remove('force-hide-button');
+        reportButtonContainer.classList.add('force-show-button');
+        console.log('Test - Button should now be visible');
+      } else {
+        console.error('Test - Button container not found!');
+      }
+    }
   </script>
 @endsection

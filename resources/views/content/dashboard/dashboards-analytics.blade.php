@@ -98,15 +98,15 @@
       <div class="card-body">
         <div id="alertsSentChart"></div>
       </div>
-    </div>
-  </div>
+        </div>
+          </div>
 
   <!-- Alert Types Distribution Donut Chart -->
   <div class="col-lg-4 col-12 mb-4">
     <div class="card h-100">
       <div class="card-header">
         <h5 class="card-title mb-0">Alert Types Distribution</h5>
-      </div>
+        </div>
       <div class="card-body">
         <div id="alertTypeChart"></div>
       </div>
@@ -122,7 +122,7 @@
           <span class="badge bg-label-primary me-2">Total: {{ $recentEmails->count() }}</span>
         </div>
       </div>
-      <div class="table-responsive">
+          <div class="table-responsive">
         <table class="table">
           <thead class="table-light">
             <tr>
@@ -133,14 +133,14 @@
               <th>Status</th>
               <th>Attempts</th>
               <th>Sent At</th>
-            </tr>
-          </thead>
-          <tbody>
+                </tr>
+              </thead>
+              <tbody>
             @forelse($recentEmails as $email)
             <tr>
               <td>
                 <div class="d-flex align-items-center">
-                  <div class="avatar avatar-sm me-3">
+                    <div class="avatar avatar-sm me-3">
                     @if($email['type'] === 'Alert')
                       <span class="avatar-initial rounded-circle bg-label-warning">
                         <i class='bx bxs-bell'></i>
@@ -150,17 +150,17 @@
                         <i class='bx bxs-report'></i>
                       </span>
                     @endif
-                  </div>
+                        </div>
                   <span class="fw-medium">{{ $email['type'] }}</span>
-                </div>
+                      </div>
               </td>
               <td>
-                <div class="d-flex flex-column">
+                      <div class="d-flex flex-column">
                   <span class="text-nowrap text-heading fw-medium">{{ $email['title'] }}</span>
                   @if($email['response'])
                     <small class="text-muted">{{ Str::limit($email['response'], 50) }}</small>
                   @endif
-                </div>
+                      </div>
               </td>
               <td>
                 <span class="badge bg-label-info">{{ $email['alert_type'] }}</span>
@@ -168,8 +168,8 @@
               <td>
                 <div class="d-flex flex-column">
                   <span class="text-nowrap text-heading fw-medium">{{ $email['recipient'] }}</span>
-                </div>
-              </td>
+                    </div>
+                  </td>
               <td>
                 <span class="badge bg-label-{{ $email['status_class'] }}">{{ $email['status'] }}</span>
               </td>
@@ -177,7 +177,7 @@
                 <span class="badge bg-label-secondary">{{ $email['attempts'] }}</span>
               </td>
               <td class="text-nowrap">{{ $email['sent_at']->format('M d, Y H:i') }}</td>
-            </tr>
+                </tr>
             @empty
             <tr>
               <td colspan="7" class="text-center py-4">
@@ -186,10 +186,10 @@
                   <span class="text-muted">No emails sent yet</span>
                 </div>
               </td>
-            </tr>
+                </tr>
             @endforelse
-          </tbody>
-        </table>
+              </tbody>
+            </table>
       </div>
     </div>
   </div>

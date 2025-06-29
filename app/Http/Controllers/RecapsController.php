@@ -121,7 +121,11 @@ class RecapsController extends Controller
         'schedule' => 'required|in:none,daily,weekly,monthly',
         'status' => 'nullable|in:on,1,0',
         'time' => 'nullable|date_format:H:i',
+        'email_template_id' => 'required|exists:email_templates,id',
       ]);
+
+      // Debug: log validated data
+      \Log::info('Validated data for report creation', $validated);
 
       $user = Session::get("user");
       if (!$user) {
@@ -155,7 +159,10 @@ class RecapsController extends Controller
         'total_quantities' => $demoData['total_quantities'] ?? null,
         'total_clients' => $demoData['total_clients'] ?? null,
         'top_selling_items' => $demoData['top_selling_items'] ?? null,
+        'template_id' => $validated['email_template_id'],
       ];
+      // Debug: log data array
+      \Log::info('Data array for report creation', $data);
 
       // Create report
       $report = Report::create($data);
@@ -163,6 +170,16 @@ class RecapsController extends Controller
       if (!$report) {
         Log::error('Report creation failed', $data);
         return back()->withInput()->with('error', 'Failed to save report configuration.');
+      }
+
+      // ENVOI IMMEDIAT SI "Send Now" SELECTIONNE
+      if ($validated['schedule'] === 'none') {
+        $emails = explode(',', $usersEmail);
+        foreach ($emails as $email) {
+          if (filter_var(trim($email), FILTER_VALIDATE_EMAIL)) {
+            dispatch(new \App\Jobs\SendReportEmail($report, trim($email)));
+          }
+        }
       }
 
       return redirect()->route('organisation-reports')->with('success', 'Report configured successfully with demo data.');

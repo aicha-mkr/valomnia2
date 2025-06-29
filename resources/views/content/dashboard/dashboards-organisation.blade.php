@@ -409,7 +409,7 @@
     @php
         $cards = [
             [
-                'title' => "CHIFFRE D'AFFAIRES",
+                'title' => "REVENUE",
                 'value' => number_format($dashboardData['total_revenue'], 2, ',', ' ') . ' TND',
                 'change' => '',
                 'icon' => 'chart'
@@ -562,7 +562,7 @@
 <!-- Pie chart du nombre d'articles par catégorie (top 10) -->
 <div class="card mb-2">
   <div class="card-header">
-    <h5 class="m-0 me-2">Articles per Category (Top 10)</h5>
+    <h5 class="m-0 me-2">Most Recent Popular Categories (by Sales Activities)</h5>
   </div>
   <div class="card-body">
     <div id="articlesPerCategoryPieChart"></div>

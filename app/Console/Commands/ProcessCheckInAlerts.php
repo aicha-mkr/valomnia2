@@ -42,19 +42,19 @@ class ProcessCheckInAlerts extends Command
         Log::info("Mode test activé - Exécution de l'alerte ID {$alertId} sans vérification de date");
         $shouldDispatch = true;
       } else {
-        // Vérifier si l'alerte est applicable aujourd'hui (sans vérifier l'heure)
-        $shouldDispatch = false;
-        if ($alert->every_day) {
-          // Si tous les jours, toujours applicable
+      // Vérifier si l'alerte est applicable aujourd'hui (sans vérifier l'heure)
+      $shouldDispatch = false;
+      if ($alert->every_day) {
+        // Si tous les jours, toujours applicable
+        $shouldDispatch = true;
+        Log::info("L'alerte ID {$alertId} est applicable car configurée pour tous les jours");
+      } else {
+        // Si jour spécifique, vérifier uniquement la date (pas l'heure)
+        if ($currentDateTime->toDateString() == $alert->date) {
           $shouldDispatch = true;
-          Log::info("L'alerte ID {$alertId} est applicable car configurée pour tous les jours");
+          Log::info("L'alerte ID {$alertId} est applicable car la date actuelle ({$currentDateTime->toDateString()}) correspond à la date configurée ({$alert->date})");
         } else {
-          // Si jour spécifique, vérifier uniquement la date (pas l'heure)
-          if ($currentDateTime->toDateString() == $alert->date) {
-            $shouldDispatch = true;
-            Log::info("L'alerte ID {$alertId} est applicable car la date actuelle ({$currentDateTime->toDateString()}) correspond à la date configurée ({$alert->date})");
-          } else {
-            Log::info("L'alerte ID {$alertId} n'est pas applicable car la date actuelle ({$currentDateTime->toDateString()}) ne correspond pas à la date configurée ({$alert->date})");
+          Log::info("L'alerte ID {$alertId} n'est pas applicable car la date actuelle ({$currentDateTime->toDateString()}) ne correspond pas à la date configurée ({$alert->date})");
           }
         }
       }
