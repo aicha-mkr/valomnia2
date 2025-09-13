@@ -10,9 +10,8 @@ class ApiCall {
     function __construct($need_token=false,$user_id=null)
     {
        // $this->url=env('URL_API');
-        if(!$need_token){
-            $this->header=array();
-        }else{
+       $this->header = array();
+        if($need_token){
             if(isset($user_id)){
                 $response=User::getAcessToken(intval($user_id));
                 if($response['status']==200){

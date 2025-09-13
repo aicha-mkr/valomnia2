@@ -330,5 +330,44 @@ class AlertController extends Controller
       return redirect()->route("organisation-alerts")->with("error", $ex->getMessage());
     }
   }
+/**
+ * Test sending an alert immediately
+ */
+public function testAlert($id)
+{
+    try {
+        $alert = Alert::findOrFail($id);
+        
+        if (!$alert->status) {
+            return redirect()->back()->with('error', 'Alert is not active.');
+        }
+
+        // Dispatch the alert job immediately
+        \App\Jobs\AlertStock::dispatch($alert->id);
+
+        return redirect()->back()->with('success', 'Test alert sent successfully. Check your email and logs.');
+    } catch (Exception $ex) {
+        Log::error('Error testing alert: ' . $ex->getMessage());
+        return redirect()->back()->with('error', 'Failed to send test alert: ' . $ex->getMessage());
+    }
+}
+
+/**
+ * Toggle alert status
+ */
+public function toggleStatus($id)
+{
+    try {
+        $alert = Alert::findOrFail($id);
+        $alert->status = !$alert->status;
+        $alert->save();
+
+        $status = $alert->status ? 'activated' : 'deactivated';
+        return redirect()->back()->with('success', "Alert has been {$status}.");
+    } catch (Exception $ex) {
+        return redirect()->back()->with('error', 'Failed to toggle alert status: ' . $ex->getMessage());
+    }
+}
+
 }
 

@@ -20,8 +20,26 @@ class Kernel extends ConsoleKernel
 
   protected function schedule(Schedule $schedule): void
     {
+      $schedule->command('alerts:send-scheduled')
+             ->everyMinute()
+             ->withoutOverlapping()
+             ->runInBackground();
         $schedule->command('app:trigger-alerts')->everyFiveMinutes();
         $schedule->command('alerts:check-in')->everyFiveMinutes();
+
+          $dailyAlerts = Alert::where('type', 'daily')
+                        ->where('active', true)
+                        ->get();
+    
+    foreach ($dailyAlerts as $alert) {
+        
+        $time = $alert->send_time ?? '09:00';
+        list($hour, $minute) = explode(':', $time);
+        
+        $schedule->job(new DailyAlert($alert->id))
+                ->dailyAt($time)
+                ->timezone($alert->timezone ?? 'UTC');
+    }
 
     }
 

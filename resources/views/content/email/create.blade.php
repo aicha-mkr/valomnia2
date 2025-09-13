@@ -932,6 +932,7 @@
               <div class="mb-4">
                 <label for="alert-type-selector" class="form-label">Alert Type</label>
                 <select class="form-select" id="alert-type-selector">
+                  <option value="daily" data-slug="daily-alert">Daily Alert</option>
                   <option value="custom" data-slug="custom">Custom Alert</option>
                   <option value="stock" data-slug="expired-stock">Stock Alert</option>
                   <option value="checkin" data-slug="checkin-out-of-hours">checkin out of hours</option>
@@ -1673,6 +1674,27 @@
         '</tbody></table>' +
         '<p class="timestamp" style="font-size: 12px; color: #82899a; margin-top: 8px;">Report generated on: [Date and Time]</p>';
 
+      const DailyAlertHTML =
+        '<table class="stock-table" style="width:100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 16px; font-family: Helvetica, Arial, sans-serif;">' +
+        '<thead><tr>' +
+        '<th style="border: 1px solid #d3dce0; padding: 8px; background-color: #f8f9fa; text-align: left; font-weight: bold; font-size: 14px;">Catégorie parente</th>' +
+        '<th style="border: 1px solid #d3dce0; padding: 8px; background-color: #f8f9fa; text-align: left; font-weight: bold; font-size: 14px;">Référence</th>' +
+        '<th style="border: 1px solid #d3dce0; padding: 8px; background-color: #f8f9fa; text-align: left; font-weight: bold; font-size: 14px;">Nom client</th>' +
+        '<th style="border: 1px solid #d3dce0; padding: 8px; background-color: #f8f9fa; text-align: left; font-weight: bold; font-size: 14px;">Total HT</th>' +
+        '<th style="border: 1px solid #d3dce0; padding: 8px; background-color: #f8f9fa; text-align: left; font-weight: bold; font-size: 14px;">Total TTC</th>' +
+        '<th style="border: 1px solid #d3dce0; padding: 8px; background-color: #f8f9fa; text-align: left; font-weight: bold; font-size: 14px;">Date de création</th>' +
+        '</tr></thead>' +
+        '<tbody><tr>' +
+        '<td style="border: 1px solid #d3dce0; padding: 8px; font-size: 14px;"></td>' +
+        '<td style="border: 1px solid #d3dce0; padding: 8px; font-size: 14px;"></td>' +
+        '<td style="border: 1px solid #d3dce0; padding: 8px; font-size: 14px;"></td>' +
+        '<td style="border: 1px solid #d3dce0; padding: 8px; font-size: 14px;"></td>' +
+        '<td style="border: 1px solid #d3dce0; padding: 8px; font-size: 14px;"></td>' +
+        '<td style="border: 1px solid #d3dce0; padding: 8px; font-size: 14px;"></td>' +
+        '</tr>' +
+        '</tbody></table>' +
+        '<p class="timestamp" style="font-size: 12px; color: #82899a; margin-top: 8px;">Report generated on: [Date and Time]</p>';
+
       const salesThresholdHTML =
         '<table class="stock-table" style="width:100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 16px; font-family: Helvetica, Arial, sans-serif;">' +
         '<thead><tr>' +
@@ -1715,6 +1737,11 @@
           let alertDescription = "";
 
           switch(selectedSlug) {
+             case "daily-alert":
+              templateHTML = DailyAlertHTML;
+              alertTitle = "Daily Alert";
+              alertDescription = "Commands:";
+              break;
             case "expired-stock":
               templateHTML = expiredStockHTML;
               alertTitle = "Stock Alert";

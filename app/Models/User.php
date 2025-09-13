@@ -123,7 +123,7 @@ class User extends Authenticatable
     {
         $response = array("status" => 400, "error" => "");
         try {
-            $api_call = new ApiCall(false);
+            $api_call = new ApiCall(true);
             $url_api = str_replace("organisation", $data["organisation"], env('URL_API','https://organisation.valomnia.com'));
             $data_request = [
                 "j_username" => $data["email"],

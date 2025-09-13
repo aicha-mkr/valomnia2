@@ -155,7 +155,10 @@ Route::group(['prefix' => 'admin'], function () {
 
 
 
+
 Route::group(['prefix' => 'organisation'], function () {
+    Route::post('/alerts/{id}/test', [AlertController::class, 'testAlert'])->name('alerts-test');
+    Route::patch('/alerts/{id}/toggle', [AlertController::class, 'toggleStatus'])->name('alerts-toggle');
     Route::get('/dashboard', [Analytics::class, 'indexOrganisation'])->name('dashboard-organisation');
     
     // AJAX routes for dashboard data management
